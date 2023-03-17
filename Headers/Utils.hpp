@@ -1,5 +1,5 @@
-#ifndef HELPER_HPP
-# define HELPER_HPP
+#ifndef UTILS_HPP
+# define UTILS_HPP
 
 #include <iostream>
 #include <vector>
