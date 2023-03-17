@@ -1,9 +1,14 @@
 NAME		= 	ircserv
 CC 			= 	c++
 CPPFLAGS	= 	-Wall -Wextra -Werror -std=c++98
-SRC 		=	Main.cpp	\
-				Helper.cpp
-HEADER		=	Helper.hpp
+SRC 		=	Channel.cpp	\
+				Client.cpp	\
+				Main.cpp	\
+				Server.cpp
+HEADER		=	./Headers/Channel.hpp	\
+				./Headers/Client.hpp	\
+				./Headers/Server.hpp	\
+				./Headers/Utils.hpp
 
 OBJ = $(SRC:%.cpp=%.o)
 all: $(NAME)
