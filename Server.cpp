@@ -53,35 +53,43 @@ void Server::startServer(){
 	else
 		std::cout << "Client connected!" <<std::endl;
 	
-	std::string hello = "Hallo von Server!";
+	pollfd fd;
+	fd.fd = clientSocket;
+	fd.events = POLLIN;
+	_fds.push_back(fd);
+
+	// std::string hello = "Hallo von Server!";
 	int i; 
-	i = send(clientSocket, hello.c_str(), hello.size(), 0);
+	// i = send(clientSocket, hello.c_str(), hello.size(), 0);
 
 	while (1) {
-		// int pollVal = poll(_fds.data(), _fds.size(), -1);
-		// if (pollVal == -1)
-		// 	throw(PollFail());
+		int pollVal = poll(_fds.data(), _fds.size(), -1);
+		if (pollVal == -1)
+			throw(PollFail());
 		// for (int i = 0; i < _fds.size(); i++) {
 		// 	if (_fds[i].revents & POLLIN) {
-		// 		if (_fds.data()->fd == _socket) {
-		// 			// sockaddr_in clientAddress;
-		// 			// socklen_t clientAddressSize = sizeof(clientAddress);
-		// 			// clientSocket = accept(_socket, (sockaddr *)&clientAddress, &clientAddressSize);
-		// 			// if (clientSocket ==  -1)
-		// 			// 	throw(ClientAcceptFail());
-		// 			// else
-		// 			// 	std::cout << "Client connected!" << std::endl;
-		// 			// pollfd new_fd;
-		// 			// new_fd.fd = clientSocket;
-		// 			// new_fd.events = POLLIN;
-		// 		}
+				if (_fds.data()->fd == _socket) {
+					sockaddr_in clientAddress;
+					socklen_t clientAddressSize = sizeof(clientAddress);
+					clientSocket = accept(_socket, (sockaddr *)&clientAddress, &clientAddressSize);
+					if (clientSocket ==  -1)
+						throw(ClientAcceptFail());
+					else
+						std::cout << "Client connected!" << std::endl;
+					pollfd new_fd;
+					new_fd.fd = clientSocket;
+					new_fd.events = POLLIN;
+					_fds.push_back(new_fd);
+				}
 		// 	}
 		// 	iter++;
+			// std:
 			char buffer[1024] = {0};
 			int valread;
-			valread = read(clientSocket, buffer, 1024);
+			valread = read(_fds.data()->fd, buffer, 1024);
 			std::cout << buffer << std::endl;
-			i = send(clientSocket, hello.c_str(), hello.size(), 0);
+			const std::string msg = ":Server opening Hallo, was geht\r\n";
+			i = send(_fds.data()->fd, msg.c_str(), msg.size(), 0);
 		}
 	close(_socket);
 }
