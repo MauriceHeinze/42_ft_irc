@@ -31,6 +31,11 @@ void Server::setSocket(){
 		throw(SocketBindingFail());
 	if (listen(_socket, 20) == -1)
 		throw(SocketListenFail());
+	pollfd fd;
+	fd.fd = _socket;
+	fd.events = POLLIN;
+	_fds.push_back(fd);
+
 }
 
 void Server::startServer(){
@@ -42,7 +47,6 @@ void Server::startServer(){
 		return ;
 	}
 
-	// std::vector<pollfd>::iterator iter = _fds.begin();
 	int clientSocket;
 
 	sockaddr_in clientAddress;
@@ -59,19 +63,27 @@ void Server::startServer(){
 	_fds.push_back(fd);
 
 	// std::string hello = "Hallo von Server!";
-	int i; 
 	// i = send(clientSocket, hello.c_str(), hello.size(), 0);
 
 	while (1) {
 		int pollVal = poll(_fds.data(), _fds.size(), -1);
 		if (pollVal == -1)
 			throw(PollFail());
-		// for (int i = 0; i < _fds.size(); i++) {
-		// 	if (_fds[i].revents & POLLIN) {
-				if (_fds.data()->fd == _socket) {
+		// std::vector<pollfd>::iterator iter = _fds.begin();
+		for (size_t i = 0; i < _fds.size(); i++) {
+			if (_fds[i].revents & (POLLHUP | POLL_ERR | POLLNVAL))
+			{
+				_fds.erase(_fds.begin()+i);
+				_fds.shrink_to_fit();
+			}	
+			if (_fds[i].revents & POLLIN) {
+				if (_fds[i].fd == _socket) {
+					std::cout << "!!!!Socket => "<< i << std::endl;
 					sockaddr_in clientAddress;
 					socklen_t clientAddressSize = sizeof(clientAddress);
+					std::cout << "before accept!" << std::endl;
 					clientSocket = accept(_socket, (sockaddr *)&clientAddress, &clientAddressSize);
+					std::cout << "after accept!" << std::endl;
 					if (clientSocket ==  -1)
 						throw(ClientAcceptFail());
 					else
@@ -80,16 +92,27 @@ void Server::startServer(){
 					new_fd.fd = clientSocket;
 					new_fd.events = POLLIN;
 					_fds.push_back(new_fd);
+					_fds[i].revents = 0;
+					_fds[i].events = POLLIN;
 				}
-		// 	}
-		// 	iter++;
+				else
+				{
+					//std::cout << "Socket => "<< i << std::endl;
+					char buffer[1024] = {0};
+					int valread;
+					valread = read(_fds[i].fd, buffer, 1024);
+					if (buffer[0] != 0)
+						std::cout << _fds.size() << "> " << buffer << std::endl;
+					buffer[0] = 0;
+					const std::string msg = ":Server opening Hallo, was geht\r\n";
+					send(_fds[i].fd, msg.c_str(), msg.size(), 0);
+					_fds[i].revents = 0;
+					_fds[i].events = POLLIN;
+				}
+			}
+			// iter++;
 			// std:
-			char buffer[1024] = {0};
-			int valread;
-			valread = read(_fds.data()->fd, buffer, 1024);
-			std::cout << buffer << std::endl;
-			const std::string msg = ":Server opening Hallo, was geht\r\n";
-			i = send(_fds.data()->fd, msg.c_str(), msg.size(), 0);
 		}
+	}
 	close(_socket);
 }
