@@ -1,4 +1,5 @@
 #include "./Headers/Utils.hpp"
+#include "./Headers/Server.hpp"
 
 int main(int argc, char *argv[])
 {
@@ -10,8 +11,15 @@ int main(int argc, char *argv[])
     else 
     {
         // start server
-        std::cout << "Port:     " << argv[1] << std::endl;
-        std::cout << "Password: " << argv[2] << std::endl;
+		Server server(argv);
+		try{
+			server.startServer();
+		}
+		catch (std::exception &e) {
+			std::cerr << e.what() << '\n';
+		}
+        // std::cout << "Port:     " << argv[1] << std::endl;
+        // std::cout << "Password: " << argv[2] << std::endl;
     }
     return (0);
 }
