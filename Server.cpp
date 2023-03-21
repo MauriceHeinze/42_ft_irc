@@ -1,4 +1,7 @@
 #include "./Headers/Server.hpp"
+#include	<sstream>
+#include	"./Headers/commands.h"
+#include	"./Headers/Connection.hpp"
 
 Server::Server(){
 	return ;
@@ -32,11 +35,10 @@ void Server::setSocket(){
 		throw(SocketBindingFail());
 	if (listen(_socket, 20) == -1)
 		throw(SocketListenFail());
-	pollfd fd;
-	fd.fd = _socket;
-	fd.events = POLLIN;
+	pollfd fd = {_socket, POLLIN, 0};
 	_fds.push_back(fd);
-
+	Connection fack_one;
+	_con.push_back(fack_one);
 }
 
 void Server::startServer(){
@@ -60,7 +62,7 @@ void Server::startServer(){
 			}	
 			if (_fds[i].revents & POLLIN) {
 				if (_fds[i].fd == _socket) {
-					acceptConnection(i);
+					acceptConnection();
 				}
 				else
 					recvMsg(i);
@@ -70,7 +72,7 @@ void Server::startServer(){
 	close(_socket);
 }
 
-void Server::acceptConnection(size_t i)
+void Server::acceptConnection()
 {
 	sockaddr_in clientAddress;
 	socklen_t clientAddressSize = sizeof(clientAddress);
@@ -80,15 +82,26 @@ void Server::acceptConnection(size_t i)
 		throw(ClientAcceptFail());
 	else
 		std::cout << "Client connected!" << std::endl;
-	pollfd new_fd;
-	new_fd.fd = clientSocket;
-	new_fd.events = POLLIN;
+	pollfd new_fd = {clientSocket, POLLIN, 0};
 	_fds.push_back(new_fd);
-	_fds[i].revents = 0;
-	_fds[i].events = POLLIN;
+	Connection new_con;
+	_con.push_back(new_con);
 	const std::string msg = ":Server opening Hallo, was geht\r\n";
 	send(clientSocket, msg.c_str(), msg.size(), 0);
 }
+
+void	Server::parsing(char* buffer, Connection& con)
+{
+	std::string input(buffer);
+	std::istringstream iss(input);
+	iss >> input;
+	std::cout << "first word" << input << "$"<<std::endl;
+	if ( input == "PASS" )
+	{
+		Command_PASS(*this, con);
+	}
+}
+
 
 void Server::recvMsg(size_t i)
 {
@@ -97,6 +110,7 @@ void Server::recvMsg(size_t i)
 	valread = recv(_fds[i].fd, buffer, 1024, 0);
 	if (buffer[0] != 0)
 		std::cout << "> " << buffer << std::endl;
+	parsing(buffer, _con[i]);
 	// const std::string msg = ":Server opening Hallo, was geht\r\n";
 	// send(_fds[i].fd, msg.c_str(), msg.size(), 0);
 	buffer[0] = 0;

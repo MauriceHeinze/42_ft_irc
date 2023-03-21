@@ -2,6 +2,7 @@
 # define SERVER_HPP
 
 #include "Utils.hpp"
+#include"Connection.hpp"
 
 class Server
 {
@@ -13,7 +14,7 @@ class Server
 
 		void setSocket();
 		void startServer();
-		void acceptConnection(size_t i);
+		void acceptConnection();
 		void recvMsg(size_t i);
 
 		class SocketCreationFail: public std::exception {
@@ -45,13 +46,17 @@ class Server
 				return "Error: poll failed";
 			}
 		};
-
+		std::string	get_password( void )
+		{
+			return(_password);
+		}
 	private:
 
+		void	parsing(char*, Connection&);
 		int	_socket;
 		int	_port;
 		std::string _password;
-
+		std::vector<Connection> _con;
 		std::vector<pollfd> _fds;
 
 };
