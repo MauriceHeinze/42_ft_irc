@@ -2,11 +2,9 @@ NAME		= 	ircserv
 CC 			= 	c++
 CPPFLAGS	= 	-Wall -Wextra -Werror -std=c++98
 SRC 		=	Channel.cpp	\
-				Client.cpp	\
 				Main.cpp	\
 				Server.cpp
 HEADER		=	./Headers/Channel.hpp	\
-				./Headers/Client.hpp	\
 				./Headers/Server.hpp	\
 				./Headers/Utils.hpp
 

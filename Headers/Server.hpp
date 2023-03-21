@@ -13,6 +13,8 @@ class Server
 
 		void setSocket();
 		void startServer();
+		void acceptConnection(size_t i);
+		void recvMsg(size_t i);
 
 		class SocketCreationFail: public std::exception {
 			const char *what() const throw() {
