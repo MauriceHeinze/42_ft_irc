@@ -16,6 +16,7 @@ Server::~Server(){
 
 void Server::setSocket(){
 	_socket = socket(AF_INET, SOCK_STREAM, 0);
+	fcntl(_socket, F_SETFL, O_NONBLOCK);
 	if(_socket == -1)
 		throw(SocketCreationFail());
 	int optval = 1;
@@ -47,15 +48,13 @@ void Server::startServer(){
 		return ;
 	}
 
-
 	while (1) {
 		int pollVal = poll(_fds.data(), _fds.size(), 5000);
 		std::cout << "current connections " << _fds.size() - 1 << std::endl;
 		if (pollVal == -1)
 			throw(PollFail());
 		for (size_t i = 0; i < _fds.size(); i++) {
-			if (_fds[i].revents & (POLLHUP | POLL_ERR | POLLNVAL))
-			{
+			if (_fds[i].revents & (POLLHUP | POLL_ERR | POLLNVAL)) {
 				_fds.erase(_fds.begin() + i);
 				_fds.shrink_to_fit();
 			}	
@@ -76,6 +75,7 @@ void Server::acceptConnection(size_t i)
 	sockaddr_in clientAddress;
 	socklen_t clientAddressSize = sizeof(clientAddress);
 	int clientSocket = accept(_socket, (sockaddr *)&clientAddress, &clientAddressSize);
+	fcntl(clientSocket, F_SETFL, O_NONBLOCK);
 	if (clientSocket ==  -1)
 		throw(ClientAcceptFail());
 	else
