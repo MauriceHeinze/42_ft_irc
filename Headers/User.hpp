@@ -6,15 +6,16 @@
 class User
 {
 	private:
-		const std::string	username;
-		const std::string	nickname;
+		const	std::string	username;
+		std::string			nickname;
 	public:
 		User::User( std::string username, std::string nickname );
 		User(const User &a);
 		~User();
 		User &operator= (const User& a);
-		const std::string getUsername( void );
-		const std::string getNickname( void );
+		void				setNickname( std::string name);
+		std::string			getNickname( void );
+		const std::string	getUsername( void );
 };
 
 #endif

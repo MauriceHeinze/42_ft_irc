@@ -1,6 +1,6 @@
 #include "./Headers/User.hpp"
 
-User::User( std::string username, std::string nickname ) : username(username), nickname(nickname)
+User::User( std::string username, std::string nickname ) : username(username)
 {
 
 }
@@ -26,7 +26,12 @@ const std::string User::getUsername( void )
 	return (this->username);
 }
 
-const std::string User::getNickname( void )
+void User::setNickname( std::string name)
+{
+	this->nickname = name;
+}
+
+std::string User::getNickname( void )
 {
 	return (this->nickname);
 }
