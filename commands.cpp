@@ -10,3 +10,19 @@ void	Command_PASS(Server& serv, Connection& con)
 	else
 		con._valid_password = false;
 }
+
+/*
+	// client commands
+	- set nickname
+	- set username
+	- join channel
+	- have private messages (PRIVMSG) and notices (NOTICE) fully working
+	- have different priviliges for regular users and operators
+	- set operator
+
+
+	// channel operation commands
+	- set topic (MODE)
+	- create channel
+	-
+*/

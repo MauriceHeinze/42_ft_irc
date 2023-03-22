@@ -24,7 +24,7 @@ void Server::setSocket(){
 		throw(SocketCreationFail());
 	int optval = 1;
 	if (setsockopt(_socket, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval)) == -1){
-		std::cerr << "setsockopt failed" << std::endl; 
+		std::cerr << "setsockopt failed" << std::endl;
 		return ;
 	}
 	sockaddr_in servAddress;
@@ -59,7 +59,7 @@ void Server::startServer(){
 			if (_fds[i].revents & (POLLHUP | POLL_ERR | POLLNVAL)) {
 				_fds.erase(_fds.begin() + i);
 				_fds.shrink_to_fit();
-			}	
+			}
 			if (_fds[i].revents & POLLIN) {
 				if (_fds[i].fd == _socket) {
 					acceptConnection();
