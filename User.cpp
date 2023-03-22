@@ -1,25 +1,25 @@
 #include "./Headers/User.hpp"
 
-User::User( std::string username, std::string nickname ) : username(username)
+User::User( std::string username ) : username(username)
 {
 
 }
 
-User::User(const User &a)
-{
+// User::User(const User &a)
+// {
 
-}
+// }
 
 User::~User()
 {
 
 }
 
-User& User::operator= (const User& a)
-{
+// User& User::operator= (const User& a)
+// {
 
-	return (*(this));
-}
+// 	return (*(this));
+// }
 
 const std::string User::getUsername( void )
 {

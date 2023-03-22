@@ -2,7 +2,14 @@
 
 Channel::Channel()
 {
-
+	_settings.inviteOnly = false;
+	_settings.moderated = false;
+	_settings.msgFromOutside = true;
+	_settings.password = "";
+	_settings.privateChannel = false;
+	_settings.secretChannel = false;
+	_settings.topicOperatorOnly = false;
+	_settings.userLimit = -1;
 }
 
 // Channel::Channel(const Channel &a)
@@ -21,9 +28,11 @@ Channel::~Channel()
 // 	return (*(this));
 // }
 
-void Channel::join(User &userRef)
+void Channel::join(User &userRef, std::string password)
 {
-	permissions perm = {false, false, &userRef};
+	if (_settings.password != password)
+		return ;
+	permissions perm = {false, false, true, &userRef};
 	_perm.push_back(perm);
 }
 

@@ -9,7 +9,7 @@ class User
 		const	std::string	username;
 		std::string			nickname;
 	public:
-		User( std::string username, std::string nickname );
+		User( std::string username );
 		User(const User &a);
 		~User();
 		User &operator= (const User& a);
