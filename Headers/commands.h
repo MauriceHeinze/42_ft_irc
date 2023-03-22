@@ -4,6 +4,8 @@
 
 #include	"Server.hpp"
 #include	"Connection.hpp"
-void	Command_PASS(Server& , Connection& );
+#include	<string>
+
+void	Command_PASS( Server& , Connection& , std::string );
 
 #endif

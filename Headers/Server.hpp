@@ -12,10 +12,12 @@ class Server
 		Server(char **argv);
 		~Server();
 
-		void setSocket();
-		void startServer();
-		void acceptConnection();
-		void recvMsg(size_t i);
+		void 		setSocket();
+		void 		startServer();
+		void 		acceptConnection();
+		void 		recvMsg(size_t i);
+		void		Command_PASS( Connection& , std::string );
+		std::string	get_password( void );
 
 		class SocketCreationFail: public std::exception {
 			const char *what() const throw() {
@@ -46,19 +48,14 @@ class Server
 				return "Error: poll failed";
 			}
 		};
-		std::string	get_password( void )
-		{
-			return(_password);
-		}
 	private:
 
-		void	parsing(char*, Connection&);
+		void	parsing(std::string , Connection&);
 		int	_socket;
 		int	_port;
 		std::string _password;
 		std::vector<Connection> _con;
 		std::vector<pollfd> _fds;
-
 };
 
 #endif

@@ -11,7 +11,7 @@ void Connection::set_password(std::string new_passwort= "")
 	this->_password = new_passwort;
 }
 
-Connection::Connection()
+Connection::Connection( pollfd* poll_fd ) : _pollfd(poll_fd)
 {
 	this->_valid_password = false;
 }

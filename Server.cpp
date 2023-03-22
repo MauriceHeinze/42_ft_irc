@@ -1,4 +1,4 @@
-#include "./Headers/Server.hpp"
+#include 	"./Headers/Server.hpp"
 #include	<sstream>
 #include	"./Headers/commands.h"
 #include	"./Headers/Connection.hpp"
@@ -37,8 +37,10 @@ void Server::setSocket(){
 		throw(SocketListenFail());
 	pollfd fd = {_socket, POLLIN, 0};
 	_fds.push_back(fd);
-	Connection fack_one;
-	_con.push_back(fack_one);
+	Connection first_one(&_fds.back());
+	std::cout << " pollfd " << fd.fd ;
+	std::cout << "con " << first_one._pollfd->fd << std::endl;
+	_con.push_back(first_one);
 }
 
 void Server::startServer(){
@@ -59,6 +61,8 @@ void Server::startServer(){
 			if (_fds[i].revents & (POLLHUP | POLL_ERR | POLLNVAL)) {
 				_fds.erase(_fds.begin() + i);
 				_fds.shrink_to_fit();
+				_con.erase(_con.begin() + i);
+				_con.shrink_to_fit();
 			}	
 			if (_fds[i].revents & POLLIN) {
 				if (_fds[i].fd == _socket) {
@@ -84,21 +88,25 @@ void Server::acceptConnection()
 		std::cout << "Client connected!" << std::endl;
 	pollfd new_fd = {clientSocket, POLLIN, 0};
 	_fds.push_back(new_fd);
-	Connection new_con;
+	Connection new_con(&_fds.back());
 	_con.push_back(new_con);
 	const std::string msg = ":Server opening Hallo, was geht\r\n";
 	send(clientSocket, msg.c_str(), msg.size(), 0);
 }
 
-void	Server::parsing(char* buffer, Connection& con)
+void	Server::parsing(std::string buffer, Connection& con)
 {
-	std::string input(buffer);
-	std::istringstream iss(input);
-	iss >> input;
-	std::cout << "first word" << input << "$"<<std::endl;
+	std::string input(buffer,0,buffer.find_first_of(32));
+	buffer.erase(0,buffer.find_first_of(32));
+	// std::cout << buffer.find_first_of(32) << std::endl;
+	// while()
+	// {
+		// input.insert(buffer.find_first_of(32),buffer);
+	// std::cout << input  << "|" << std::endl;
+	// }
 	if ( input == "PASS" )
-	{
-		Command_PASS(*this, con);
+	 {
+		Command_PASS(con, buffer);
 	}
 }
 
@@ -111,9 +119,14 @@ void Server::recvMsg(size_t i)
 	if (buffer[0] != 0)
 		std::cout << "> " << buffer << std::endl;
 	parsing(buffer, _con[i]);
-	// const std::string msg = ":Server opening Hallo, was geht\r\n";
+	// const std::string msg = ":Server respond\r\n";
 	// send(_fds[i].fd, msg.c_str(), msg.size(), 0);
 	buffer[0] = 0;
 	_fds[i].revents = 0;
 	_fds[i].events = POLLIN;
 }
+
+std::string	Server::get_password( void )
+{
+	return(_password);
+};
