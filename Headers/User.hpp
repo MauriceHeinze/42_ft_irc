@@ -7,7 +7,7 @@ class User
 {
 	private:
 		const	std::string	username;
-		std::string			nickname;
+		std::string			nickname = "";
 	public:
 		User::User( std::string username, std::string nickname );
 		User(const User &a);
