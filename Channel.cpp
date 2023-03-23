@@ -159,3 +159,11 @@ bool	Channel::isAllowedToSpeak(std::string nickname){
 	}
 	return false;
 }
+
+bool	Channel::userExists(std::string nickname){
+	for(int i = 0; _perm.size(); i++){
+		if (_perm[i].name->getNickname() == nickname)
+				return true;
+	}
+	return false;
+}

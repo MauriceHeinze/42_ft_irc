@@ -54,6 +54,7 @@ class Channel
 		bool		isVoice(std::string nickname);
 		bool		isAllowedToSpeak(std::string nickname);
 		bool		checkLimit();
+		bool		userExists(std::string nickname);
 
 };
 

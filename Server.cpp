@@ -140,4 +140,4 @@ void Server::recvMsg(size_t i)
 std::string	Server::get_password( void )
 {
 	return(_password);
-};
+}
