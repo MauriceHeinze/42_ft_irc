@@ -23,7 +23,6 @@ struct channelSettings{
 	std::string		password;
 };
 
-
 class Channel
 {
 	private:
@@ -39,7 +38,7 @@ class Channel
 		Channel &operator= (const Channel& a);
 		channelSettings	*_settings;
 
-		void		setTopic( std::string topic );
+		void		setTopic( std::string nickname, std::string topic );
 		std::string	getTopic( void );
 
 		void		join(User &userRef);

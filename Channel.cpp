@@ -102,9 +102,15 @@ void	Channel::invite(std::string nickname)
 	_invited.push_back(nickname);
 }
 
-void	Channel::setTopic( std::string topic )
+void	Channel::setTopic( std::string nickname, std::string topic )
 {
-	this->_topic = topic;
+	if (_settings->topicOperatorOnly)
+	{
+		if (isAdmin(nickname))
+			this->_topic = topic;
+	}
+	else
+		this->_topic = topic;
 }
 
 std::string	Channel::getTopic( void )
@@ -112,9 +118,6 @@ std::string	Channel::getTopic( void )
 	return (this->_topic);
 }
 
-
-
-// Funktion schreiben die Rechte zurückgibt, damit Lars weiss, wann er Funktionen aufrufen kann
 bool	Channel::isAdmin(std::string nickname){
 	for(int i = 0; _perm.size(); i++){
 		if (_perm[i].name->getNickname() == nickname){
