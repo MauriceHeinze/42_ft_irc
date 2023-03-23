@@ -23,16 +23,17 @@ struct channelSettings{
 	std::string		password;
 };
 
+
 class Channel
 {
 	private:
 		std::string	_topic;
 		std::vector<permissions> _perm;
 		std::vector<std::string> _invited;
-		std::vector<User> &_allServerUsers;
+		// std::vector<User> *_allServerUsers;
 
 	public:
-		Channel(Server servInfos);
+		Channel();
 		Channel(const Channel &a);
 		~Channel();
 		Channel &operator= (const Channel& a);
