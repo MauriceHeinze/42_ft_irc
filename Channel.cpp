@@ -30,12 +30,12 @@ Channel::~Channel()
 
 void	Channel::join(User &userRef, std::string password)
 {
-	if (_settings.password != password)
+	if (_settings->password != password)
 	{
 		throw("Password is incorrect");
 		return ;
 	}
-	if (_settings.inviteOnly && !isInvited(userRef.getNickname()))
+	if (_settings->inviteOnly && !isInvited(userRef.getNickname()))
 	{
 		throw("User is not invited");
 		return ;
