@@ -42,12 +42,12 @@ class Channel
 		void		setTopic( std::string topic );
 		std::string	getTopic( void );
 
-		void		join(User &userRef, std::string password);
+		void		join(User &userRef);
 		void		part(std::string nickname);
-		void		kick(std::string adminNickname, std::string ni);
-		void		oper(std::string adminNickname, std::string nickname);
-		void		mode(std::string adminNickname, std::string nickname);
-		void		invite(std::string adminNickname, std::string nickname);
+		void		kick(std::string nickname);
+		void		oper(std::string nickname);
+		void		mode(std::string nickname);
+		void		invite(std::string nickname);
 
 		bool		isInvited(std::string nickname);
 

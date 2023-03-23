@@ -58,14 +58,14 @@ void Server::startServer(){
 		if (pollVal == -1)
 			throw(PollFail());
 		for (size_t i = 0; i < _fds.size(); i++) {
-			if (_fds[i].revents & (POLLHUP | POLL_ERR | POLLNVAL)) 
+			if (_fds[i].revents & (POLLHUP | POLL_ERR | POLLNVAL))
 			{
 				std::cout << " Closing this fd = " <<_fds[i].fd << std::endl;
 				_fds.erase(_fds.begin() + i);
 				_fds.shrink_to_fit();
 				_con.erase(_con.begin() + i);
 				_con.shrink_to_fit();
-			}	
+			}
 			if (_fds[i].revents & POLLIN) {
 				if (_fds[i].fd == _socket) {
 					acceptConnection();
@@ -112,7 +112,6 @@ void Server::recvMsg(size_t i)
 {
 	char buffer[1024] = {0};
 	int valread;
-	while()
 	valread = recv(_fds[i].fd, buffer, 1024, 0);
 	if (buffer[0] != 0)
 		std::cout << "> " << buffer << std::endl;

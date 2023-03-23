@@ -28,18 +28,8 @@ Channel::~Channel()
 // 	return (*(this));
 // }
 
-void	Channel::join(User &userRef, std::string password)
+void	Channel::join(User &userRef)
 {
-	if (_settings->password != password)
-	{
-		throw("Password is incorrect");
-		return ;
-	}
-	if (_settings->inviteOnly && !isInvited(userRef.getNickname()))
-	{
-		throw("User is not invited");
-		return ;
-	}
 	permissions perm = {false, false, true, &userRef};
 	_perm.push_back(perm);
 }
@@ -58,76 +48,37 @@ void	Channel::part(std::string nickname)
 	throw("User not found in this channel");
 }
 
-void	Channel::kick(std::string adminNickname, std::string nickname)
+void	Channel::kick(std::string nickname)
 {
-	// find admin
-	for (size_t i = 0; i < _perm.size(); i++)
+	// check for user to kick
+	for (size_t k = 0; k < _perm.size(); k++)
 	{
-		if (_perm[i].name->getNickname() == adminNickname)
+		if (_perm[k].name->getNickname() == nickname)
 		{
-			// check for permissions
-			if (!_perm[i].isAdmin)
-			{
-				throw("User without permission tries to kick");
-				return ;
-			}
-			// check for user to kick
-			for (size_t k = 0; k < _perm.size(); k++)
-			{
-				if (_perm[k].name->getNickname() == nickname)
-				{
-					_perm.erase(_perm.begin() + k);
-					_perm.shrink_to_fit();
-					return ;
-				}
-			}
-			throw("User to kick not found in this channel");
+			_perm.erase(_perm.begin() + k);
+			_perm.shrink_to_fit();
+			return ;
 		}
 	}
-	throw("Admin not found in this channel");
+	throw("User to kick not found in this channel");
 }
 
-void	Channel::oper(std::string adminNickname, std::string nickname)
+void	Channel::oper(std::string nickname)
 {
-	// find admin
-	for (size_t i = 0; i < _perm.size(); i++)
+	// check for user to promote to operator
+	for (size_t k = 0; k < _perm.size(); k++)
 	{
-		if (_perm[i].name->getNickname() == adminNickname)
+		if (_perm[k].name->getNickname() == nickname)
 		{
-			// check for permissions
-			if (!_perm[i].isAdmin)
-			{
-				throw("User without permission tries to promote someone to operator");
-				return ;
-			}
-			// check for user to promote to operator
-			for (size_t k = 0; k < _perm.size(); k++)
-			{
-				if (_perm[k].name->getNickname() == nickname)
-				{
-					_perm[k].isAdmin = true;
-					_perm[k].isVoice = true;
-					return ;
-				}
-			}
-			throw("User to promote not found in this channel");
+			_perm[k].isAdmin = true;
+			_perm[k].isVoice = true;
+			return ;
 		}
 	}
-	throw("Admin that wants to promote not found in this channel");
+	throw("User to promote not found in this channel");
 }
 
-bool	Channel::isInvited(std::string nickname)
-{
-	// find out if user got invited
-	for (size_t i = 0; i < _perm.size(); i++)
-	{
-		if (_invited[i] == nickname)
-			return (true);
-	}
-	return (false);
-}
-
-void	Channel::invite(std::string adminNickname, std::string nickname)
+void	Channel::invite(std::string nickname)
 {
 	// check if user joined already
 	for (size_t i = 0; i < _perm.size(); i++)
@@ -138,29 +89,17 @@ void	Channel::invite(std::string adminNickname, std::string nickname)
 			return ;
 		}
 	}
-	//
-	for (size_t i = 0; i < _perm.size(); i++)
+	// check if user got invited already
+	for (size_t i = 0; i < _invited.size(); i++)
 	{
-		if (_perm[i].name->getNickname() == adminNickname)
+		if (_invited[i] == nickname)
 		{
-			// // check for permissions
-			// if (!_perm[i].isAdmin)
-			// {
-			// 	throw("User without permission tries to invite someone");
-			// 	return ;
-			// }
-			// // check for user to invite
-			// for (size_t k = 0; k < _allServerUsers->size(); k++)
-			// {
-			// 	if ((*_allServerUsers)[k].getNickname() == nickname)
-			// 	{
-			// 		_invited.push_back(nickname);
-			// 		return ;
-			// 	}
-			// }
+			throw("User already invited");
+			return ;
 		}
 	}
-	throw("User to invite does not exist on Server");
+	// invite
+	_invited.push_back(nickname);
 }
 
 void	Channel::setTopic( std::string topic )
@@ -173,3 +112,6 @@ std::string	Channel::getTopic( void )
 	return (this->_topic);
 }
 
+
+
+// Funktion schreiben die Rechte zurückgibt, damit Lars weiss, wann er Funktionen aufrufen kann

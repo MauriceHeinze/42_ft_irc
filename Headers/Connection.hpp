@@ -6,7 +6,7 @@
 # include <sys/poll.h>
 # include "User.hpp"
 
-class Connection : 
+class Connection
 {
 	private:
 	public:
