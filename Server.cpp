@@ -24,7 +24,7 @@ void Server::setSocket(){
 		throw(SocketCreationFail());
 	int optval = 1;
 	if (setsockopt(_socket, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(optval)) == -1){
-		std::cerr << "setsockopt failed" << std::endl; 
+		std::cerr << "setsockopt failed" << std::endl;
 		return ;
 	}
 	sockaddr_in servAddress;
@@ -93,7 +93,7 @@ void Server::acceptConnection()
 	_fds.push_back(new_fd);
 	Connection new_con(&_fds.back());
 	_con.push_back(new_con);
-	const std::string msg = ":Server opening Hallo, was geht\r\n";
+	const std::string msg = ":Server PRIVMSG Mario :Hallo, was geht\r\n";
 	send(clientSocket, msg.c_str(), msg.size(), 0);
 }
 

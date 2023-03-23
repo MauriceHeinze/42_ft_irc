@@ -1,17 +1,20 @@
 NAME		= 	ircserv
 CC 			= 	c++
 CPPFLAGS	= 	-Wall -Wextra -Werror -std=c++98
-SRC 		=	Channel.cpp	\
-				Main.cpp	\
-				Server.cpp	\
-				Connection.cpp \
-				commands.cpp
-HEADER		=	./Headers/Channel.hpp	\
-				./Headers/Server.hpp	\
-				./Headers/Utils.hpp		\
-				./Headers/Connection.hpp\
-				./Headers/commands.h
-			
+SRC 		=	Channel.cpp		\
+				commands.cpp	\
+				Connection.cpp	\
+				Main.cpp		\
+				Server.cpp		\
+				User.cpp		\
+				Utils.cpp
+HEADER		=	./Headers/Channel.hpp		\
+				./Headers/commands.h		\
+				./Headers/Connection.hpp	\
+				./Headers/Server.hpp		\
+				./Headers/User.hpp			\
+				./Headers/Utils.hpp
+
 OBJ = $(SRC:%.cpp=%.o)
 all: $(NAME)
 $(NAME): $(OBJ) $(HEADER)
