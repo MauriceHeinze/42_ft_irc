@@ -9,7 +9,7 @@ Channel::Channel()
 	_settings->privateChannel = false;
 	_settings->secretChannel = false;
 	_settings->topicOperatorOnly = false;
-	_settings->userLimit = -1;
+	_settings->userLimit = UINT_MAX;
 }
 
 // Channel::Channel(const Channel &a)
@@ -32,6 +32,12 @@ void	Channel::join(User &userRef)
 {
 	permissions perm = {false, false, true, &userRef};
 	_perm.push_back(perm);
+}
+
+bool	Channel::checkLimit(){
+	if (_perm.size() < _settings->userLimit)
+		return true;
+	return false;
 }
 
 void	Channel::part(std::string nickname)
@@ -102,9 +108,15 @@ void	Channel::invite(std::string nickname)
 	_invited.push_back(nickname);
 }
 
-void	Channel::setTopic( std::string topic )
+void	Channel::setTopic( std::string nickname, std::string topic )
 {
-	this->_topic = topic;
+	if (_settings->topicOperatorOnly)
+	{
+		if (isAdmin(nickname))
+			this->_topic = topic;
+	}
+	else
+		this->_topic = topic;
 }
 
 std::string	Channel::getTopic( void )
@@ -112,6 +124,38 @@ std::string	Channel::getTopic( void )
 	return (this->_topic);
 }
 
+bool	Channel::isAdmin(std::string nickname){
+	for(int i = 0; _perm.size(); i++){
+		if (_perm[i].name->getNickname() == nickname){
+			if (_perm[i].isAdmin == true)
+				return true;
+			else
+				return false;
+		}
+	}
+	return false;
+}
 
+bool	Channel::isVoice(std::string nickname){
+		for(int i = 0; _perm.size(); i++){
+		if (_perm[i].name->getNickname() == nickname){
+			if (_perm[i].isVoice == true)
+				return true;
+			else
+				return false;
+		}
+	}
+	return false;
+}
 
-// Funktion schreiben die Rechte zurückgibt, damit Lars weiss, wann er Funktionen aufrufen kann
+bool	Channel::isAllowedToSpeak(std::string nickname){
+	for(int i = 0; _perm.size(); i++){
+		if (_perm[i].name->getNickname() == nickname){
+			if (_perm[i].isAllowedToSpeak == true)
+				return true;
+			else
+				return false;
+		}
+	}
+	return false;
+}

@@ -4,6 +4,7 @@
 #include "Utils.hpp"
 #include "Server.hpp"
 #include "User.hpp"
+#include <limits>
 
 struct permissions{
 	bool	isAdmin;
@@ -23,7 +24,6 @@ struct channelSettings{
 	std::string		password;
 };
 
-
 class Channel
 {
 	private:
@@ -39,7 +39,7 @@ class Channel
 		Channel &operator= (const Channel& a);
 		channelSettings	*_settings;
 
-		void		setTopic( std::string topic );
+		void		setTopic( std::string nickname, std::string topic );
 		std::string	getTopic( void );
 
 		void		join(User &userRef);
@@ -50,6 +50,10 @@ class Channel
 		void		invite(std::string nickname);
 
 		bool		isInvited(std::string nickname);
+		bool		isAdmin(std::string nickname);
+		bool		isVoice(std::string nickname);
+		bool		isAllowedToSpeak(std::string nickname);
+		bool		checkLimit();
 
 };
 

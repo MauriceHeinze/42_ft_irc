@@ -1,6 +1,6 @@
 #include 	"./Headers/Server.hpp"
 #include	<sstream>
-#include	"./Headers/commands.h"
+#include	"./Headers/Commands.hpp"
 #include	"./Headers/User.hpp"
 
 Server::Server(){
@@ -66,7 +66,7 @@ void Server::startServer(){
 				_fds.shrink_to_fit();
 				_users.erase(_users.begin() + i);
 				_users.shrink_to_fit();
-			}	
+			}
 			if (_fds[i].revents & POLLIN) {
 				if (_fds[i].fd == _socket) {
 					acceptConnection();

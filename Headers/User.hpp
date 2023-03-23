@@ -20,7 +20,9 @@ class User
 		User				&operator= (const User& a);
 		void				setNickname( const std::string &name);
 		const std::string	&getNickname( void );
+		void				setUsername( const std::string &name);
 		const std::string	&getUsername( void );
+		void				setFullname( const std::string &name);
 		const std::string	&getFullname( void );
 };
 #endif
