@@ -9,7 +9,7 @@ Channel::Channel()
 	_settings->privateChannel = false;
 	_settings->secretChannel = false;
 	_settings->topicOperatorOnly = false;
-	_settings->userLimit = -1;
+	_settings->userLimit = UINT_MAX;
 }
 
 // Channel::Channel(const Channel &a)

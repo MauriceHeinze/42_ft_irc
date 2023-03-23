@@ -4,6 +4,7 @@
 #include "Utils.hpp"
 #include "Server.hpp"
 #include "User.hpp"
+#include <limits>
 
 struct permissions{
 	bool	isAdmin;
