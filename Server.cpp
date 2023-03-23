@@ -1,7 +1,7 @@
 #include 	"./Headers/Server.hpp"
 #include	<sstream>
 #include	"./Headers/commands.h"
-#include	"./Headers/Connection.hpp"
+#include	"./Headers/User.hpp"
 
 Server::Server(){
 	return ;
@@ -37,10 +37,10 @@ void Server::setSocket(){
 		throw(SocketListenFail());
 	pollfd fd = {_socket, POLLIN, 0};
 	_fds.push_back(fd);
-	Connection first_one(&_fds.back());
+	User first_one;
 	std::cout << " pollfd " << fd.fd ;
 	std::cout << "con " << first_one._pollfd->fd << std::endl;
-	_con.push_back(first_one);
+	_users.push_back(first_one);
 }
 
 void Server::startServer(){
@@ -60,11 +60,12 @@ void Server::startServer(){
 		for (size_t i = 0; i < _fds.size(); i++) {
 			if (_fds[i].revents & (POLLHUP | POLL_ERR | POLLNVAL)) 
 			{
+				close(_fds[i].fd);
 				std::cout << " Closing this fd = " <<_fds[i].fd << std::endl;
 				_fds.erase(_fds.begin() + i);
 				_fds.shrink_to_fit();
-				_con.erase(_con.begin() + i);
-				_con.shrink_to_fit();
+				_users.erase(_users.begin() + i);
+				_users.shrink_to_fit();
 			}	
 			if (_fds[i].revents & POLLIN) {
 				if (_fds[i].fd == _socket) {
@@ -90,8 +91,8 @@ void Server::acceptConnection()
 		std::cout << "Client connected!" << "using the fd =" << clientSocket <<std::endl;
 	pollfd new_fd = {clientSocket, POLLIN, 0};
 	_fds.push_back(new_fd);
-	Connection new_con(&_fds.back());
-	_con.push_back(new_con);
+	User new_user;
+	_users.push_back(new_user);
 	const std::string msg = ":Server opening :Hallo, was geht\r\n";
 	send(clientSocket, msg.c_str(), msg.size(), 0);
 }
@@ -112,7 +113,6 @@ void Server::recvMsg(size_t i)
 {
 	char buffer[1024] = {0};
 	int valread;
-	while()
 	valread = recv(_fds[i].fd, buffer, 1024, 0);
 	if (buffer[0] != 0)
 		std::cout << "> " << buffer << std::endl;

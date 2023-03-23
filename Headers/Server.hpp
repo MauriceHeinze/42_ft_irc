@@ -58,7 +58,7 @@ class Server
 		int	_port;
 		std::string _password;
 		std::vector<User> _users;
-		std::vector<Connection> _con;
+		//std::vector<Connection> _con;
 		std::vector<pollfd> _fds;
 };
 
