@@ -2,7 +2,6 @@
 # define SERVER_HPP
 
 #include "Utils.hpp"
-#include "Connection.hpp"
 #include "Channel.hpp"
 #include "User.hpp"
 

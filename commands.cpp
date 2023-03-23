@@ -1,6 +1,5 @@
 
 #include	"./Headers/Server.hpp"
-#include	"./Headers/Connection.hpp"
 #include	<sstream>
 #include	<iostream>
 # include 	<sys/socket.h>

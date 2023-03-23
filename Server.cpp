@@ -58,7 +58,7 @@ void Server::startServer(){
 		if (pollVal == -1)
 			throw(PollFail());
 		for (size_t i = 0; i < _fds.size(); i++) {
-			if (_fds[i].revents & (POLLHUP | POLL_ERR | POLLNVAL)) 
+			if (_fds[i].revents & (POLLHUP | POLL_ERR | POLLNVAL))
 			{
 				close(_fds[i].fd);
 				std::cout << " Closing this fd = " <<_fds[i].fd << std::endl;
