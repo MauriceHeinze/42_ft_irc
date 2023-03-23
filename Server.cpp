@@ -103,9 +103,19 @@ void	Server::parsing(std::string buffer, int iter)
 	buffer.erase(0,buffer.find_first_of(32) + 1);
 	buffer.resize(buffer.size()-2);
 	if ( input == "PASS" )
-	 {
 		Command_PASS(buffer, iter);
+	else if (_users[iter]._valid_password == false)
+		send(_fds[iter].fd, ":Server Error Passwort for Server is not correct. \n pls use PASS to change it\r\n", 80, 0);
+	else if (input == "NICK")
+	{
+		//check for valid NICK
+		_users[iter].setNickname(buffer);
 	}
+	else if (_users[iter].getNickname().empty())
+	{
+		send(_fds[iter].fd, ":Server Error No Nickname set. \n pls use NICK to change it\r\n", 61, 0);
+	}
+	
 }
 
 
@@ -127,4 +137,4 @@ void Server::recvMsg(size_t i)
 std::string	Server::get_password( void )
 {
 	return(_password);
-};
+}
