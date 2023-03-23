@@ -50,6 +50,9 @@ class Channel
 		void		invite(std::string nickname);
 
 		bool		isInvited(std::string nickname);
+		bool		isAdmin(std::string nickname);
+		bool		isVoice(std::string nickname);
+		bool		isAllowedToSpeak(std::string nickname);
 
 };
 

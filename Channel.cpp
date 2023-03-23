@@ -115,3 +115,38 @@ std::string	Channel::getTopic( void )
 
 
 // Funktion schreiben die Rechte zurückgibt, damit Lars weiss, wann er Funktionen aufrufen kann
+bool	Channel::isAdmin(std::string nickname){
+	for(int i = 0; _perm.size(); i++){
+		if (_perm[i].name->getNickname() == nickname){
+			if (_perm[i].isAdmin == true)
+				return true;
+			else
+				return false;
+		}
+	}
+	return false;
+}
+
+bool	Channel::isVoice(std::string nickname){
+		for(int i = 0; _perm.size(); i++){
+		if (_perm[i].name->getNickname() == nickname){
+			if (_perm[i].isVoice == true)
+				return true;
+			else
+				return false;
+		}
+	}
+	return false;
+}
+
+bool	Channel::isAllowedToSpeak(std::string nickname){
+	for(int i = 0; _perm.size(); i++){
+		if (_perm[i].name->getNickname() == nickname){
+			if (_perm[i].isAllowedToSpeak == true)
+				return true;
+			else
+				return false;
+		}
+	}
+	return false;
+}
