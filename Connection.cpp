@@ -1,16 +1,6 @@
 
 #include	"./Headers/Connection.hpp"
 
-std::string Connection::get_password( void )
-{
-	return(this->_password);
-}
-
-void Connection::set_password(std::string new_passwort= "")
-{
-	this->_password = new_passwort;
-}
-
 Connection::Connection( pollfd* poll_fd ) : _pollfd(poll_fd)
 {
 	this->_valid_password = false;

@@ -4,6 +4,7 @@
 #include "Utils.hpp"
 #include "Connection.hpp"
 #include "Channel.hpp"
+#include "User.hpp"
 
 class Server
 {
@@ -13,8 +14,7 @@ class Server
 		Server(char **argv);
 		~Server();
 
-		std::vector<User> _users;
-		std::vector<Channel> _channels;
+		// std::vector<Channel> _channels;
 
 		void 		setSocket();
 		void 		startServer();
@@ -57,6 +57,7 @@ class Server
 		int	_socket;
 		int	_port;
 		std::string _password;
+		std::vector<User> _users;
 		std::vector<Connection> _con;
 		std::vector<pollfd> _fds;
 };

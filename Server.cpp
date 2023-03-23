@@ -75,7 +75,7 @@ void Server::startServer(){
 			}
 		}
 	}
-	close( );
+	close( _socket);
 }
 
 void Server::acceptConnection()
@@ -92,20 +92,15 @@ void Server::acceptConnection()
 	_fds.push_back(new_fd);
 	Connection new_con(&_fds.back());
 	_con.push_back(new_con);
-	const std::string msg = ":Server PRIVMSG Mario :Hallo, was geht\r\n";
+	const std::string msg = ":Server opening :Hallo, was geht\r\n";
 	send(clientSocket, msg.c_str(), msg.size(), 0);
 }
 
 void	Server::parsing(std::string buffer, int iter)
 {
 	std::string input(buffer,0,buffer.find_first_of(32));
-	buffer.erase(0,buffer.find_first_of(32));
-	// std::cout << buffer.find_first_of(32) << std::endl;
-	// while()
-	// {
-		// input.insert(buffer.find_first_of(32),buffer);
-	// std::cout << input  << "|" << std::endl;
-	// }
+	buffer.erase(0,buffer.find_first_of(32) + 1);
+	buffer.resize(buffer.size()-2);
 	if ( input == "PASS" )
 	 {
 		Command_PASS(buffer, iter);
@@ -117,6 +112,7 @@ void Server::recvMsg(size_t i)
 {
 	char buffer[1024] = {0};
 	int valread;
+	while()
 	valread = recv(_fds[i].fd, buffer, 1024, 0);
 	if (buffer[0] != 0)
 		std::cout << "> " << buffer << std::endl;

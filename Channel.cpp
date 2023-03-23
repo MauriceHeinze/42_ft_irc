@@ -1,6 +1,6 @@
 #include "./Headers/Channel.hpp"
 
-Channel::Channel(Server servInfos) : _allServerUsers(servInfos._users)
+Channel::Channel()
 {
 	_settings->inviteOnly = false;
 	_settings->moderated = false;
@@ -143,21 +143,21 @@ void	Channel::invite(std::string adminNickname, std::string nickname)
 	{
 		if (_perm[i].name->getNickname() == adminNickname)
 		{
-			// check for permissions
-			if (!_perm[i].isAdmin)
-			{
-				throw("User without permission tries to invite someone");
-				return ;
-			}
-			// check for user to invite
-			for (size_t k = 0; k < _allServerUsers.size(); k++)
-			{
-				if (_allServerUsers[k].getNickname() == nickname)
-				{
-					_invited.push_back(nickname);
-					return ;
-				}
-			}
+			// // check for permissions
+			// if (!_perm[i].isAdmin)
+			// {
+			// 	throw("User without permission tries to invite someone");
+			// 	return ;
+			// }
+			// // check for user to invite
+			// for (size_t k = 0; k < _allServerUsers->size(); k++)
+			// {
+			// 	if ((*_allServerUsers)[k].getNickname() == nickname)
+			// 	{
+			// 		_invited.push_back(nickname);
+			// 		return ;
+			// 	}
+			// }
 		}
 	}
 	throw("User to invite does not exist on Server");
