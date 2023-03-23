@@ -61,7 +61,6 @@ void Server::startServer(){
 			if (_fds[i].revents & (POLLHUP | POLL_ERR | POLLNVAL)) 
 			{
 				std::cout << " Closing this fd = " <<_fds[i].fd << std::endl;
-				close(_fds[i].fd);
 				_fds.erase(_fds.begin() + i);
 				_fds.shrink_to_fit();
 				_con.erase(_con.begin() + i);
@@ -76,7 +75,7 @@ void Server::startServer(){
 			}
 		}
 	}
-	close(_socket);
+	close( );
 }
 
 void Server::acceptConnection()

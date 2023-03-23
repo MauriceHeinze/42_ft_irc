@@ -14,9 +14,7 @@ void	Server::Command_PASS(std::string str, int iter)
 		send(_con[iter]._pollfd->fd, ":Server ERROR Password already is correct\r\n", 44, 0);
 		return ;
 	}
-	else
-		_con[iter].set_password(str);
-	if (get_password().compare(_con[iter].get_password()))
+	if (get_password().compare(str))
 	{
 		send(_con[iter]._pollfd->fd, ":Server INFO Password is correct\r\n", 35, 0);
 		_con[iter]._valid_password = true;
