@@ -103,9 +103,12 @@ void	Server::parsing(std::string buffer, int iter)
 	buffer.erase(0,buffer.find_first_of(32) + 1);
 	buffer.resize(buffer.size()-2);
 	if ( input == "PASS" )
+	{
 		Command_PASS(buffer, iter);
+
+	}
 	else if (_users[iter]._valid_password == false)
-		send(_fds[iter].fd, ":Server Error Passwort for Server is not correct. \n pls use PASS to change it\r\n", 80, 0);
+		send(_fds[iter].fd, ":Server 421\r\n", 16, 0);
 	else if (input == "NICK")
 	{
 		//check for valid NICK
