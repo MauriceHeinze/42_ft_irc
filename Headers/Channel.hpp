@@ -52,6 +52,7 @@ class Channel
 		bool		isAdmin(std::string nickname);
 		bool		isVoice(std::string nickname);
 		bool		isAllowedToSpeak(std::string nickname);
+		bool		checkLimit();
 
 };
 

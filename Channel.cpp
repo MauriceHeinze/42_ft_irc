@@ -34,6 +34,12 @@ void	Channel::join(User &userRef)
 	_perm.push_back(perm);
 }
 
+bool	Channel::checkLimit(){
+	if (_perm.size() < _settings->userLimit)
+		return true;
+	return false;
+}
+
 void	Channel::part(std::string nickname)
 {
 	for (size_t i = 0; i < _perm.size(); i++)
