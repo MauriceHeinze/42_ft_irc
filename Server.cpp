@@ -58,7 +58,10 @@ void Server::startServer(){
 		if (pollVal == -1)
 			throw(PollFail());
 		for (size_t i = 0; i < _fds.size(); i++) {
-			if (_fds[i].revents & (POLLHUP | POLL_ERR | POLLNVAL)) {
+			if (_fds[i].revents & (POLLHUP | POLL_ERR | POLLNVAL)) 
+			{
+				std::cout << " Closing this fd = " <<_fds[i].fd << std::endl;
+				close(_fds[i].fd);
 				_fds.erase(_fds.begin() + i);
 				_fds.shrink_to_fit();
 				_con.erase(_con.begin() + i);
@@ -85,7 +88,7 @@ void Server::acceptConnection()
 	if (clientSocket ==  -1)
 		throw(ClientAcceptFail());
 	else
-		std::cout << "Client connected!" << std::endl;
+		std::cout << "Client connected!" << "using the fd =" << clientSocket <<std::endl;
 	pollfd new_fd = {clientSocket, POLLIN, 0};
 	_fds.push_back(new_fd);
 	Connection new_con(&_fds.back());
@@ -94,7 +97,7 @@ void Server::acceptConnection()
 	send(clientSocket, msg.c_str(), msg.size(), 0);
 }
 
-void	Server::parsing(std::string buffer, Connection& con)
+void	Server::parsing(std::string buffer, int iter)
 {
 	std::string input(buffer,0,buffer.find_first_of(32));
 	buffer.erase(0,buffer.find_first_of(32));
@@ -106,7 +109,7 @@ void	Server::parsing(std::string buffer, Connection& con)
 	// }
 	if ( input == "PASS" )
 	 {
-		Command_PASS(con, buffer);
+		Command_PASS(buffer, iter);
 	}
 }
 
@@ -118,7 +121,7 @@ void Server::recvMsg(size_t i)
 	valread = recv(_fds[i].fd, buffer, 1024, 0);
 	if (buffer[0] != 0)
 		std::cout << "> " << buffer << std::endl;
-	parsing(buffer, _con[i]);
+	parsing(buffer, i);
 	// const std::string msg = ":Server respond\r\n";
 	// send(_fds[i].fd, msg.c_str(), msg.size(), 0);
 	buffer[0] = 0;

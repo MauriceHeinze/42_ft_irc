@@ -16,7 +16,7 @@ class Server
 		void 		startServer();
 		void 		acceptConnection();
 		void 		recvMsg(size_t i);
-		void		Command_PASS( Connection& , std::string );
+		void		Command_PASS( std::string , int iter);
 		std::string	get_password( void );
 
 		class SocketCreationFail: public std::exception {
@@ -50,7 +50,7 @@ class Server
 		};
 	private:
 
-		void	parsing(std::string , Connection&);
+		void	parsing(std::string, int iter);
 		int	_socket;
 		int	_port;
 		std::string _password;
