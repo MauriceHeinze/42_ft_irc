@@ -2,6 +2,7 @@
 # define CHANNEL_HPP
 
 #include "Utils.hpp"
+#include "Server.hpp"
 #include "User.hpp"
 
 struct permissions{
@@ -26,23 +27,35 @@ class Channel
 {
 	private:
 		std::string	_topic;
-		std::vector<std::string> _bannedUsers;
 		std::vector<permissions> _perm;
+		std::vector<std::string> _invited;
+		std::vector<User> &_allServerUsers;
+
 	public:
-		Channel();
+		Channel(Server servInfos);
 		Channel(const Channel &a);
 		~Channel();
 		Channel &operator= (const Channel& a);
-		channelSettings	_settings;
+		channelSettings	*_settings;
 
 		void		setTopic( std::string topic );
 		std::string	getTopic( void );
 
-		void 		join(User &userRef, std::string password);
-		void 		part(std::string username);
-		void 		kick(std::string adminName, std::string username);
-		void 		oper(std::string adminName, std::string username);
-		void 		mode(std::string adminName, std::string username);
+		void		join(User &userRef, std::string password);
+		void		part(std::string nickname);
+		void		kick(std::string adminNickname, std::string ni);
+		void		oper(std::string adminNickname, std::string nickname);
+		void		mode(std::string adminNickname, std::string nickname);
+		void		invite(std::string adminNickname, std::string nickname);
+
+		bool		isInvited(std::string nickname);
+
 };
 
 #endif
+
+// CAP LS -
+// CAP * LS :End of cap negotation //
+// CAP END
+
+// PING

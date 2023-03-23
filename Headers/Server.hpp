@@ -3,6 +3,7 @@
 
 #include "Utils.hpp"
 #include "Connection.hpp"
+#include "Channel.hpp"
 
 class Server
 {
@@ -11,6 +12,9 @@ class Server
 		Server();
 		Server(char **argv);
 		~Server();
+
+		std::vector<User> _users;
+		std::vector<Channel> _channels;
 
 		void 		setSocket();
 		void 		startServer();
@@ -49,7 +53,6 @@ class Server
 			}
 		};
 	private:
-
 		void	parsing(std::string, int iter);
 		int	_socket;
 		int	_port;
