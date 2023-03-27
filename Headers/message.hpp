@@ -5,6 +5,7 @@
 #include	<string>
 #include	<vector>
 
+
 //<prefix>   ::= <servername> | <nick> [ '!' <user> ] [ '@' <host> ]
 struct s_prefix{
 	//':'
@@ -34,17 +35,18 @@ struct s_param{
 //<message>  ::= [':' <prefix> <SPACE> ] <command> <params> <crlf>
 class message
 {
-	private:
+	// private:
+	public:
 		s_prefix					prefix;//optional
 		s_command					command;
 		std::vector<s_param>		params;
 		//'/10''/13' aka crlf
-
-
-		void						deconstruct_msg(std::string);
-		void						deconstruct_prefix(std::string& ,int&);
-		void						deconstruct_command(std::string& ,int&);
+		void						deconstruct_params( std::string& ,int& );
+		void						deconstruct_msg( std::string );
+		void						deconstruct_prefix( std::string& ,int& );
+		void						deconstruct_command( std::string& ,int& );
 	public:
+		std::string get_full_string();
 		message();
 		message(std::string);
 		message(const message &a);

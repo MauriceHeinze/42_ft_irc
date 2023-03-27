@@ -53,6 +53,7 @@ void Server::startServer(){
 	}
 
 	while (1) {
+		std::cout << "before oink" << std::endl;
 		int pollVal = poll(_fds.data(), _fds.size(), 5000);
 		std::cout << "current connections " << _fds.size() - 1 << std::endl;
 		if (pollVal == -1)
@@ -72,7 +73,10 @@ void Server::startServer(){
 					acceptConnection();
 				}
 				else
+				{
+					std::cout << "MSG recieve from socket " << i << std::endl;
 					recvMsg(i);
+				}
 			}
 		}
 	}
@@ -97,11 +101,14 @@ void Server::acceptConnection()
 	send(clientSocket, msg.c_str(), msg.size(), 0);
 }
 
+#include "./Headers/Message.hpp"
+
 void	Server::parsing(std::string buffer, int iter)
 {
 	std::string input(buffer,0,buffer.find_first_of(32));
 	buffer.erase(0,buffer.find_first_of(32) + 1);
 	buffer.resize(buffer.size()-2);
+	//message msg(buffer);
 	if ( input == "PASS" )
 	{
 		Command_PASS(buffer, iter);
@@ -124,9 +131,15 @@ void	Server::parsing(std::string buffer, int iter)
 
 void Server::recvMsg(size_t i)
 {
+
 	char buffer[1024] = {0};
 	int valread;
 	valread = recv(_fds[i].fd, buffer, 1024, 0);
+	if (valread == 0)
+	{
+		std::cout << "Connection Closed " << i << std::endl;
+		return ;
+	}	
 	if (buffer[0] != 0)
 		std::cout << "> " << buffer << std::endl;
 	parsing(buffer, i);
