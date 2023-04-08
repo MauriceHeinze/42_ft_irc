@@ -101,14 +101,11 @@ void Server::acceptConnection()
 	send(clientSocket, msg.c_str(), msg.size(), 0);
 }
 
-#include "./Headers/Message.hpp"
-
 void	Server::parsing(std::string buffer, int iter)
 {
 	std::string input(buffer,0,buffer.find_first_of(32));
 	buffer.erase(0,buffer.find_first_of(32) + 1);
 	buffer.resize(buffer.size()-2);
-	//message msg(buffer);
 	if ( input == "PASS" )
 	{
 		Command_PASS(buffer, iter);
@@ -127,7 +124,6 @@ void	Server::parsing(std::string buffer, int iter)
 	}
 	
 }
-
 
 void Server::recvMsg(size_t i)
 {

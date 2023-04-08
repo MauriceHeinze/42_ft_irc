@@ -3,7 +3,7 @@
 #ifndef CLASS_User
 # define CLASS_User
 
-class User
+class User : public pollfd
 {
 	private:
 		std::string	username;
