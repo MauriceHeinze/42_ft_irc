@@ -276,5 +276,6 @@ std::string	BNF_Translate::get_full_string( void )
 		}
 		msg.append(params[i].trailing_or_middle);
 	}
+	msg.append("\10\13");
 	return(msg);
 }
