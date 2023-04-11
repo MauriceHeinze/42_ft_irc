@@ -111,27 +111,40 @@ void	Server::parsing(std::string buffer, int iter)
 	BNF_Translate msg(buffer);
 	if (msg.getter_command() == "CAP")
 	{
+		//will be his own function
 		std::cout << "Cap send" << std::endl;
 		send(this->_fds[iter].fd,":irc.unknown.net CAP * LS :\13\10",30,0);// no capabilities
 		send(this->_fds[iter].fd,"PONG",4,0);// temp
 	}
-	if (msg.getter_command() == "PIG")
+	else  if (msg.getter_command() == "PING")
 	{
+		//will be his own function
 		BNF_Translate send_msg(msg.get_full_msg());
 		send_msg.setter_command("PONG");
 		send(this->_fds[iter].fd,send_msg.get_full_msg().c_str(),send_msg.get_full_msg().size(),0);
 	}
-	if (msg.getter_command() == "PASS")
+	else if (msg.getter_command() == "PASS")
 	{
 		// call PASS_func
 	}
 	// protection for everthing that need Password_valid
-	if (msg.getter_command() == "NICK")
+	else if (msg.getter_command() == "NICK")
 	{
 		//call Nick_func	
 	}
 	// protection for everthing that need valid_nick
-
+	else if (msg.getter_command() == "JOIN")
+	{
+		//call Join_func	
+	}
+	else if (msg.getter_command() == "MODE")
+	{
+		//call Mode_func	
+	}
+	else if (msg.getter_command() == "PRVT")
+	{
+		//call PRVT_func	
+	}
 }
 
 void Server::recvMsg(size_t i)
