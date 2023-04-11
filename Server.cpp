@@ -38,8 +38,7 @@ void Server::setSocket(){
 	pollfd fd = {_socket, POLLIN, 0};
 	_fds.push_back(fd);
 	User first_one;
-	std::cout << " pollfd " << fd.fd ;
-	std::cout << "con " << first_one._pollfd->fd << std::endl;
+	 first_one._pollfd->fd = fd.fd;
 	_users.push_back(first_one);
 }
 
@@ -53,7 +52,6 @@ void Server::startServer(){
 	}
 
 	while (1) {
-		std::cout << "before oink" << std::endl;
 		int pollVal = poll(_fds.data(), _fds.size(), 5000);
 		std::cout << "current connections " << _fds.size() - 1 << std::endl;
 		if (pollVal == -1)
@@ -101,34 +99,45 @@ void Server::acceptConnection()
 	send(clientSocket, msg.c_str(), msg.size(), 0);
 }
 
+#include	"./Headers/BNF_Translate.hpp"
+
 void	Server::parsing(std::string buffer, int iter)
 {
-	std::string input(buffer,0,buffer.find_first_of(32));
-	buffer.erase(0,buffer.find_first_of(32) + 1);
-	buffer.resize(buffer.size()-2);
-	if ( input == "PASS" )
+	(void)iter;// just for Error flags
+	for (size_t i = 0; i < buffer.size(); i++)
 	{
-		Command_PASS(buffer, iter);
+		std::cout << (int)buffer[i] << std::endl;
+	}
+	BNF_Translate msg(buffer);
+	if (msg.getter_command() == "CAP")
+	{
+		std::cout << "Cap send" << std::endl;
+		send(this->_fds[iter].fd,":irc.unknown.net CAP * LS :\13\10",30,0);// no capabilities
+		send(this->_fds[iter].fd,"PONG",4,0);// temp
+	}
+	if (msg.getter_command() == "PIG")
+	{
+		BNF_Translate send_msg(msg.get_full_msg());
+		send_msg.setter_command("PONG");
+		send(this->_fds[iter].fd,send_msg.get_full_msg().c_str(),send_msg.get_full_msg().size(),0);
+	}
+	if (msg.getter_command() == "PASS")
+	{
+		// call PASS_func
+	}
+	// protection for everthing that need Password_valid
+	if (msg.getter_command() == "NICK")
+	{
+		//call Nick_func	
+	}
+	// protection for everthing that need valid_nick
 
-	}
-	else if (_users[iter]._valid_password == false)
-		send(_fds[iter].fd, ":Server 421\r\n", 16, 0);
-	else if (input == "NICK")
-	{
-		//check for valid NICK
-		_users[iter].setNickname(buffer);
-	}
-	else if (_users[iter].getNickname().empty())
-	{
-		send(_fds[iter].fd, ":Server Error No Nickname set. \n pls use NICK to change it\r\n", 61, 0);
-	}
-	
 }
 
 void Server::recvMsg(size_t i)
 {
 
-	char buffer[1024] = {0};
+	char buffer[1024];
 	int valread;
 	valread = recv(_fds[i].fd, buffer, 1024, 0);
 	if (valread == 0)
