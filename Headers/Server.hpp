@@ -60,7 +60,6 @@ class Server
 		std::vector<User> _users;
 		std::vector<pollfd> _fds;
 		//std::vector<Connection> _con;
-		std::vector<pollfd> _fds;
 };
 
 #endif
