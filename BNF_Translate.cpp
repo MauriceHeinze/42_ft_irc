@@ -247,7 +247,7 @@ BNF_Translate& BNF_Translate::operator= (const BNF_Translate& a)
 	return (*(this));
 }
 
-std::string	BNF_Translate::get_full_string( void )
+std::string	BNF_Translate::get_full_msg( void )
 {
 	std::string msg;
 	if (this->prefix.nick_or_servername.empty() == false)

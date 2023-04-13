@@ -103,7 +103,7 @@ void Server::acceptConnection()
 
 void	Server::parsing(std::string buffer, int iter)
 {
-	(void)iter;// just for Error flags
+	(void)iter;// just for ignoring Error flags for now
 	for (size_t i = 0; i < buffer.size(); i++)
 	{
 		std::cout << (int)buffer[i] << std::endl;
@@ -127,6 +127,11 @@ void	Server::parsing(std::string buffer, int iter)
 	{
 		// call PASS_func
 	}
+	//if ()//check here if passwort is vaild
+	// {
+	// 	//error msg function 
+	//
+	// }
 	// protection for everthing that need Password_valid
 	else if (msg.getter_command() == "NICK")
 	{
@@ -135,11 +140,12 @@ void	Server::parsing(std::string buffer, int iter)
 	// protection for everthing that need valid_nick
 	else if (msg.getter_command() == "JOIN")
 	{
+		//msg.getter_params()[0].trailing_or_middle.c_str();
 		//call Join_func	
 	}
 	else if (msg.getter_command() == "MODE")
 	{
-		//call Mode_func	
+		//call Mode_func
 	}
 	else if (msg.getter_command() == "PRVT")
 	{
