@@ -103,7 +103,7 @@ void Server::acceptConnection()
 
 void	Server::parsing(std::string buffer, int iter)
 {
-	(void)iter;// just for ignoring Error flags for now
+	// (void)iter;// just for ignoring Error flags for now
 	for (size_t i = 0; i < buffer.size(); i++)
 	{
 		std::cout << (int)buffer[i] << std::endl;
@@ -125,23 +125,23 @@ void	Server::parsing(std::string buffer, int iter)
 	}
 	else if (msg.getter_command() == "PASS")
 	{
+		Command_PASS(msg.getter_params()[0].trailing_or_middle,iter);
 		// call PASS_func
 	}
-	//if ()//check here if passwort is vaild
-	// {
-	// 	//error msg function 
-	//
-	// }
+	if (this->_users[iter]._valid_password == false)//check here if passwort is vaild
+	{
+		send(this->_fds[iter].fd,)
+	}
 	// protection for everthing that need Password_valid
 	else if (msg.getter_command() == "NICK")
 	{
-		//call Nick_func	
+		//call Nick_func
 	}
 	// protection for everthing that need valid_nick
 	else if (msg.getter_command() == "JOIN")
 	{
 		//msg.getter_params()[0].trailing_or_middle.c_str();
-		//call Join_func	
+		//call Join_func
 	}
 	else if (msg.getter_command() == "MODE")
 	{
@@ -152,6 +152,8 @@ void	Server::parsing(std::string buffer, int iter)
 		//call PRVT_func	
 	}
 }
+
+
 
 void Server::recvMsg(size_t i)
 {

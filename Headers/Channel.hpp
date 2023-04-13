@@ -2,7 +2,6 @@
 # define CHANNEL_HPP
 
 #include "Utils.hpp"
-#include "Server.hpp"
 #include "User.hpp"
 #include <limits>
 

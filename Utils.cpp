@@ -10,8 +10,9 @@
 #include <netinet/in.h>
 #include <unistd.h>
 
+//  NOTE USE THE  NICKNAME AFER THE NUMBER
 // MODES
-#define ERR_NEEDMOREPARAMS "462 $ :Not enough parameters" ;
+#define ERR_NEEDMOREPARAMS(nickname) "462 " nickname  ":Not enough parameters\13\10"
 #define ERR_CHANOPRIVSNEEDED "482 $ :You're not channel operator" ;
 #define ERR_NOTONCHANNEL  "442 $ :You're not on that channel";
 #define RPL_BANLIST "367 $ $";
@@ -40,7 +41,7 @@
 #define RPL_AWAY "414 $ :$ message>" ; // <nick> :<away message>
 #define ERR_NOTEXTTOSEND "412:No text to send" ;
 #define ERR_NOTOPLEVEL "413 $ :No toplevel domain specified"; // <mask> :No toplevel domain specified
-#define ERR_TOOMANYTARGETS "407 $ :Duplicate recipients. No message delivered"; // "<target> :Duplicate recipients. No message delivered
+#define ERR_TOOMANYTARGETS(x) "407 X :Duplicate recipients. No message delivered"; // "<target> :Duplicate recipients. No message delivered
 
 
 // TOPIC
