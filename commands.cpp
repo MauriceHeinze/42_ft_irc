@@ -13,7 +13,7 @@ void	Server::Command_PASS(std::string str, int iter)
 		send(_fds[iter].fd, ":Server ERROR Password already is correct\r\n", 44, 0);
 		return ;
 	}
-	if (get_password().compare(str) == 0)
+	else if (get_password().compare(str) == 0)
 	{
 		send(_fds[iter].fd, ":Server INFO Password is correct\r\n", 35, 0);
 		_users[iter]._valid_password = true;

@@ -59,6 +59,7 @@ class Server
 		std::vector<User> _users;
 		//std::vector<Connection> _con;
 		std::vector<pollfd> _fds;
+		std::vector<Channel> _channels;
 };
 
 

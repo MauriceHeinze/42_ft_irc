@@ -125,12 +125,17 @@ void	Server::parsing(std::string buffer, int iter)
 	}
 	else if (msg.getter_command() == "PASS")
 	{
+		if (_users[iter]._valid_password == false){
+			if (msg.getter_params()[0].trailing_or_middle.compare(_password) == 0){
+				_users[iter]._valid_password = true;
+			}
+		}
 		// call PASS_func
 	}
 	// protection for everthing that need Password_valid
 	else if (msg.getter_command() == "NICK")
 	{
-		//call Nick_func	
+		//call Nick_func
 	}
 	// protection for everthing that need valid_nick
 	else if (msg.getter_command() == "JOIN")

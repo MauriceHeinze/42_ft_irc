@@ -2,7 +2,7 @@ NAME		= 	ircserv
 CC 			= 	c++
 CPPFLAGS	= 	-Wall -Wextra -Werror -std=c++98
 SRC 		=	Channel.cpp			\
-				commands.cpp		\
+				Commands.cpp		\
 				Main.cpp			\
 				Server.cpp			\
 				User.cpp			\
