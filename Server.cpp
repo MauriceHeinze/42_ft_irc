@@ -103,7 +103,7 @@ void Server::acceptConnection()
 
 void	Server::parsing(std::string buffer, int iter)
 {
-	(void)iter;// just for Error flags
+	// (void)iter;// just for ignoring Error flags for now
 	for (size_t i = 0; i < buffer.size(); i++)
 	{
 		std::cout << (int)buffer[i] << std::endl;
@@ -125,12 +125,12 @@ void	Server::parsing(std::string buffer, int iter)
 	}
 	else if (msg.getter_command() == "PASS")
 	{
-		if (_users[iter]._valid_password == false){
-			if (msg.getter_params()[0].trailing_or_middle.compare(_password) == 0){
-				_users[iter]._valid_password = true;
-			}
-		}
+		Command_PASS(msg.getter_params()[0].trailing_or_middle,iter);
 		// call PASS_func
+	}
+	if (this->_users[iter]._valid_password == false)//check here if passwort is vaild
+	{
+		send(this->_fds[iter].fd,)
 	}
 	// protection for everthing that need Password_valid
 	else if (msg.getter_command() == "NICK")
@@ -140,17 +140,20 @@ void	Server::parsing(std::string buffer, int iter)
 	// protection for everthing that need valid_nick
 	else if (msg.getter_command() == "JOIN")
 	{
-		//call Join_func	
+		//msg.getter_params()[0].trailing_or_middle.c_str();
+		//call Join_func
 	}
 	else if (msg.getter_command() == "MODE")
 	{
-		//call Mode_func	
+		//call Mode_func
 	}
 	else if (msg.getter_command() == "PRVT")
 	{
 		//call PRVT_func	
 	}
 }
+
+
 
 void Server::recvMsg(size_t i)
 {

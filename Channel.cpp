@@ -1,6 +1,6 @@
 #include "./Headers/Channel.hpp"
 
-Channel::Channel()
+Channel::Channel(std::string name) :_name(name)
 {
 	_settings->inviteOnly = false;
 	_settings->moderated = false;

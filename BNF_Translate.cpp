@@ -16,6 +16,10 @@ const std::string _special(special);
 const std::string _nonnonwhite(nonnonwhite);
 };
 
+namespace error{
+	BNF_Translate msg();
+}
+
 void	BNF_Translate::deconstruct_prefix(std::string& msg,int& i)
 {
 	i++;

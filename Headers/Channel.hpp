@@ -2,7 +2,6 @@
 # define CHANNEL_HPP
 
 #include "Utils.hpp"
-#include "Server.hpp"
 #include "User.hpp"
 #include <limits>
 
@@ -30,10 +29,10 @@ class Channel
 		std::string	_topic;
 		std::vector<permissions> _perm;
 		std::vector<std::string> _invited;
+		const std::string	_name;
 		// std::vector<User> *_allServerUsers;
-
 	public:
-		Channel();
+		Channel(std::string name);
 		Channel(const Channel &a);
 		~Channel();
 		Channel &operator= (const Channel& a);

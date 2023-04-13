@@ -56,11 +56,11 @@ class Server
 		int	_socket;
 		int	_port;
 		std::string _password;
+		// std::vector<Channel> _channels;
 		std::vector<User> _users;
+		std::vector<pollfd> _fds;
 		//std::vector<Connection> _con;
 		std::vector<pollfd> _fds;
-		std::vector<Channel> _channels;
 };
-
 
 #endif
