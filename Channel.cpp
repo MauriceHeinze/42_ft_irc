@@ -12,21 +12,22 @@ Channel::Channel(std::string name) :_name(name)
 	_settings->userLimit = UINT_MAX;
 }
 
-// Channel::Channel(const Channel &a)
-// {
-
-// }
+Channel::Channel(const Channel &a)
+{
+	*this = a;
+}
 
 Channel::~Channel()
 {
 
 }
 
-// Channel& Channel::operator= (const Channel& a)
-// {
-
-// 	return (*(this));
-// }
+Channel& Channel::operator= (const Channel &a)
+{
+	if (this != &a)
+		return *this;
+	return (*(this));
+}
 
 void	Channel::join(User &userRef)
 {
@@ -122,6 +123,11 @@ void	Channel::setTopic( std::string nickname, std::string topic )
 std::string	Channel::getTopic( void )
 {
 	return (this->_topic);
+}
+
+std::string	Channel::getName( void )
+{
+	return (this->_name);
 }
 
 bool	Channel::isAdmin(std::string nickname){

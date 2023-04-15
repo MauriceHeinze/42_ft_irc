@@ -1,4 +1,3 @@
-
 #ifndef CLASS_TranslateBNF
 # define CLASS_TranslateBNF
 
@@ -7,7 +6,7 @@ struct s_prefix{
 	//':'
 	bool			nick;// bool for nick or servername
 	std::string		nick_or_servername;// will only use nick for now
-	// '!' 
+	// '!'
 	std::string		user;//optional
 	// '@'
 	std::string		host;//optional

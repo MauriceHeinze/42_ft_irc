@@ -1,6 +1,4 @@
-
 #pragma once
-
 #ifndef CHANNEL_HPP
 # define CHANNEL_HPP
 
@@ -41,6 +39,7 @@ class Channel
 
 		void		setTopic( std::string nickname, std::string topic );
 		std::string	getTopic( void );
+		std::string	getName( void );
 
 		void		join(User &userRef);
 		void		part(std::string nickname);
