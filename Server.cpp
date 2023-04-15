@@ -167,6 +167,12 @@ void	Server::parsing(std::string buffer, int iter)
 		Channel	*currentChannel = &this->_channels[channelIndex];
 		User	&currentUser = this->_users[userIndex];
 
+		if (channelIndex == -1)
+		{
+			Channel newChannel(channelName);
+			this->_channels.push_back(newChannel);
+			channelIndex = getChannel(this->_channels, channelName);
+		}
 		if (channelIndex != -1 && !userExists)
 		{
 			if (currentChannel->_settings->inviteOnly) // check if user is invited
