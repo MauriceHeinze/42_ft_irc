@@ -130,8 +130,18 @@ std::string	Channel::getName( void )
 	return (this->_name);
 }
 
+bool	Channel::isInvited(std::string nickname){
+	for(int i = 0; _invited.size(); i++)
+	{
+		if (_invited[i] == nickname)
+			return true;
+	}
+	return false;
+}
+
 bool	Channel::isAdmin(std::string nickname){
-	for(int i = 0; _perm.size(); i++){
+	for(int i = 0; _perm.size(); i++)
+	{
 		if (_perm[i].name->getNickname() == nickname){
 			if (_perm[i].isAdmin == true)
 				return true;
@@ -143,19 +153,21 @@ bool	Channel::isAdmin(std::string nickname){
 }
 
 bool	Channel::isVoice(std::string nickname){
-		for(int i = 0; _perm.size(); i++){
-		if (_perm[i].name->getNickname() == nickname){
-			if (_perm[i].isVoice == true)
-				return true;
-			else
-				return false;
-		}
+	for(int i = 0; _perm.size(); i++)
+		{
+			if (_perm[i].name->getNickname() == nickname){
+				if (_perm[i].isVoice == true)
+					return true;
+				else
+					return false;
+			}
 	}
 	return false;
 }
 
 bool	Channel::isAllowedToSpeak(std::string nickname){
-	for(int i = 0; _perm.size(); i++){
+	for(int i = 0; _perm.size(); i++)
+	{
 		if (_perm[i].name->getNickname() == nickname){
 			if (_perm[i].isAllowedToSpeak == true)
 				return true;
@@ -167,7 +179,8 @@ bool	Channel::isAllowedToSpeak(std::string nickname){
 }
 
 bool	Channel::userExists(std::string nickname){
-	for(int i = 0; _perm.size(); i++){
+	for(int i = 0; _perm.size(); i++)
+	{
 		if (_perm[i].name->getNickname() == nickname)
 				return true;
 	}

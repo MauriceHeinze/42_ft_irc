@@ -20,7 +20,7 @@ bool	isUser(std::vector<User> users, std::string channelName)
 	return (false);
 }
 
-int	getChannel(std::vector<Channel> &channels, std::string channelName)
+int	getChannel(std::vector<Channel> channels, std::string channelName)
 {
 	for (size_t i = 0; i < channels.size(); i++)
 	{
@@ -30,7 +30,7 @@ int	getChannel(std::vector<Channel> &channels, std::string channelName)
 	return (-1);
 }
 
-int	getUser(std::vector<User> &users, std::string nickname)
+int	getUser(std::vector<User> users, std::string nickname)
 {
 	for (size_t i = 0; i < users.size(); i++)
 	{

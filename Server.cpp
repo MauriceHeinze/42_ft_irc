@@ -174,20 +174,26 @@ void	Server::parsing(std::string buffer, int iter)
 				if (this->_channels[channelIndex].isInvited(nickname))
 					this->_channels[channelIndex].join(currentUser);
 				else
+				{
 					// return error
+				}
 			}
 			else if (currentChannel->_settings->password.length() > 0) // check if password for channel is correct
 			{
 				if (this->_channels[channelIndex]._settings->password == password)
 					this->_channels[channelIndex].join(currentUser);
 				else
+				{
 					// return error
+				}
 			}
-			else if (!currentChannel->_settings->inviteOnly && !currentChannel->_settings->password.length() == 0) // Everyone can join
+			else if (!currentChannel->_settings->inviteOnly && currentChannel->_settings->password.length() != 0) // Everyone can join
 				this->_channels[channelIndex].join(currentUser);
 		}
 		else
+		{
 			// return error
+		}
 	}
 	else if (msg.getter_command() == "MODE")
 	{
