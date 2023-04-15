@@ -155,9 +155,39 @@ void	Server::parsing(std::string buffer, int iter)
 	}
 	else if (msg.getter_command() == "JOIN")
 	{
+		std::string channelName = msg.getter_params()[0].trailing_or_middle;
+		std::string nickname = msg.getter_params()[1].trailing_or_middle;
+		std::string password = msg.getter_params()[2].trailing_or_middle;
 
-		//msg.getter_params()[0].trailing_or_middle.c_str();
-		//call Join_func
+		int channelIndex = getChannel(this->_channels, channelName);
+		int userIndex = getUser(this->_users, channelName);
+
+		bool userExists = this->_channels[channelIndex].userExists(nickname);
+
+		Channel	*currentChannel = &this->_channels[channelIndex];
+		User	&currentUser = this->_users[userIndex];
+
+		if (channelIndex != -1 && !userExists)
+		{
+			if (currentChannel->_settings->inviteOnly) // check if user is invited
+			{
+				if (this->_channels[channelIndex].isInvited(nickname))
+					this->_channels[channelIndex].join(currentUser);
+				else
+					// return error
+			}
+			else if (currentChannel->_settings->password.length() > 0) // check if password for channel is correct
+			{
+				if (this->_channels[channelIndex]._settings->password == password)
+					this->_channels[channelIndex].join(currentUser);
+				else
+					// return error
+			}
+			else if (!currentChannel->_settings->inviteOnly && !currentChannel->_settings->password.length() == 0) // Everyone can join
+				this->_channels[channelIndex].join(currentUser);
+		}
+		else
+			// return error
 	}
 	else if (msg.getter_command() == "MODE")
 	{
@@ -165,11 +195,9 @@ void	Server::parsing(std::string buffer, int iter)
 	}
 	else if (msg.getter_command() == "PRVT")
 	{
-		//call PRVT_func	
+		//call PRVT_func
 	}
 }
-
-
 
 void Server::recvMsg(size_t i)
 {
@@ -181,7 +209,7 @@ void Server::recvMsg(size_t i)
 	{
 		std::cout << "Connection Closed " << i << std::endl;
 		return ;
-	}	
+	}
 	if (buffer[0] != 0)
 		std::cout << "> " << buffer << std::endl;
 	parsing(buffer, i);

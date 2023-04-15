@@ -3,7 +3,7 @@
 #define	letter		"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 #define	number		"0123456789"
 #define	special		"-[]\\`ˆ{}"
-#define	nonnonwhite	"\32\10\13\0" 
+#define	nonnonwhite	"\32\10\13\0"
 //#define	non_empty	"\32\10\13\0" // first one cant be ':'
 //#define empty 		"\10\13\0"
 
@@ -34,7 +34,7 @@ void	TranslateBNF::deconstruct_prefix(std::string& msg,int& i)
 	else
 	{
 		//std::cout << "Error" << std::endl;
-	}  
+	}
 	if (msg[i] == '!')
 	{
 		i++;
@@ -206,6 +206,9 @@ void	TranslateBNF::setter_params( std::vector<s_param> params)
 	this->params = params;
 }
 
+
+// getter_params()[0] parameter (e.g. channel name)
+// getter_params()[1] nickname
 std::vector<s_param>	TranslateBNF::getter_params( void )
 {
 	return(this->params);
@@ -227,7 +230,7 @@ TranslateBNF::TranslateBNF(std::string msg)
 
 TranslateBNF::TranslateBNF()
 {
-	
+
 }
 
 TranslateBNF::TranslateBNF(const TranslateBNF &a)
@@ -239,7 +242,7 @@ TranslateBNF::TranslateBNF(const TranslateBNF &a)
 
 TranslateBNF::~TranslateBNF()
 {
-	
+
 }
 
 TranslateBNF& TranslateBNF::operator= (const TranslateBNF& a)
