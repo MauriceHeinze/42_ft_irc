@@ -12,6 +12,7 @@ class User : public pollfd
 	public:
 		pollfd*		_pollfd;
 		bool		_valid_password;
+		bool		_valid_nickname;
 		std::string			msg; // buffer to store message content until \r\n is received // check recv function options for buffer
 		User( std::string username);
 		User();

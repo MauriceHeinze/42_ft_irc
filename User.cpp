@@ -3,12 +3,14 @@
 User::User( std::string username ) : username(username)
 {
 	_valid_password = false;
+	_valid_nickname = false;
 }
 
 User::User()
 {
 	username = "no_name";
 	_valid_password = false;
+	_valid_nickname = false;
 }
 // User::User(const User &a)
 // {

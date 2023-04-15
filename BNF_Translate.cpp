@@ -35,7 +35,7 @@ void	BNF_Translate::deconstruct_prefix(std::string& msg,int& i)
 	else
 	{
 		//std::cout << "Error" << std::endl;
-	}
+	}  
 	if (msg[i] == '!')
 	{
 		i++;

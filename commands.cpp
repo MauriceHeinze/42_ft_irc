@@ -6,14 +6,18 @@
 
 void	Server::Command_PASS(std::string str, int iter)
 {
+	std::string tmp;
 	std::cout << "passwort = "<< str <<" size " <<str.size()<< std::endl;
 	std::cout << "pollfd.fd = "<< _fds[iter].fd << std::endl;
+	tmp = str.substr(0, str.find_first_of("\r\n"));
+	// std::cout << "$" << tmp << "$" << std::endl;
+	// std::cout << "$" << str << "$" << std::endl;
 	if ( _users[iter]._valid_password == true )
 	{
 		send(_fds[iter].fd, ":Server ERROR Password already is correct\r\n", 44, 0);
 		return ;
 	}
-	else if (get_password().compare(str) == 0)
+	else if (!str.empty() && get_password().compare(tmp) == 0)
 	{
 		send(_fds[iter].fd, ":Server INFO Password is correct\r\n", 35, 0);
 		_users[iter]._valid_password = true;

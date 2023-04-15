@@ -37,9 +37,9 @@ void Server::setSocket(){
 		throw(SocketListenFail());
 	pollfd fd = {_socket, POLLIN, 0};
 	_fds.push_back(fd);
-	User first_one;
-	 first_one._pollfd->fd = fd.fd;
-	_users.push_back(first_one);
+	// User first_one;
+	// first_one._pollfd->fd = fd.fd;
+	// _users.push_back(first_one);
 }
 
 void Server::startServer(){
@@ -125,21 +125,37 @@ void	Server::parsing(std::string buffer, int iter)
 	}
 	else if (msg.getter_command() == "PASS")
 	{
-		Command_PASS(msg.getter_params()[0].trailing_or_middle,iter);
+		// std::cout << "password: "<< msg.getter_params()[0].trailing_or_middle << std::endl;
+		Command_PASS(msg.getter_params()[0].trailing_or_middle, iter);
 		// call PASS_func
 	}
 	if (this->_users[iter]._valid_password == false)//check here if passwort is vaild
 	{
-		send(this->_fds[iter].fd,)
+		// send(this->_fds[iter].fd,)
+		return ;
 	}
 	// protection for everthing that need Password_valid
 	else if (msg.getter_command() == "NICK")
 	{
+		if (_users[iter]._valid_nickname == false && msg.getter_params()[0].trailing_or_middle.empty()){
+			_users[iter].setNickname(msg.getter_params()[0].trailing_or_middle);
+			_users[iter]._valid_nickname = true;
+		}
+		else {
+
+		}
 		//call Nick_func
+		std::cout << "nickname: "<< _users[iter].getNickname() << std::endl;
 	}
 	// protection for everthing that need valid_nick
+	if (this->_users[iter]._valid_nickname == false)//check here if passwort is vaild
+	{
+		// send(this->_fds[iter].fd,)
+		return ;
+	}
 	else if (msg.getter_command() == "JOIN")
 	{
+
 		//msg.getter_params()[0].trailing_or_middle.c_str();
 		//call Join_func
 	}

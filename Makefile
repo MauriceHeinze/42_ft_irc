@@ -1,6 +1,6 @@
 NAME		= 	ircserv
 CC 			= 	c++
-CPPFLAGS	= 	-Wall -Wextra -Werror -std=c++98
+CPPFLAGS	= 	-Wall -Wextra -Werror -std=c++98 -g
 SRC 		=	Channel.cpp			\
 				Commands.cpp		\
 				Main.cpp			\
@@ -19,7 +19,7 @@ HEADER		=	./Headers/Channel.hpp		\
 OBJ = $(SRC:%.cpp=%.o)
 all: $(NAME)
 $(NAME): $(OBJ) $(HEADER)
-	@$(CC) $(CFLAGS) $(OBJ) -o $(NAME)
+	@$(CC) $(CPPFLAGS) $(OBJ) -o $(NAME)
 clean:
 	@rm -f $(OBJ)
 fclean: clean
