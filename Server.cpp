@@ -1,7 +1,7 @@
-#include 	"./Headers/Server.hpp"
-#include	<sstream>
-#include	"./Headers/Commands.hpp"
-#include	"./Headers/User.hpp"
+// #include 	"./Headers/Server.hpp"
+// #include	<sstream>
+// #include	"./Headers/Commands.hpp"
+#include	"./Headers/Utils.hpp"
 
 Server::Server(){
 	return ;
@@ -99,7 +99,7 @@ void Server::acceptConnection()
 	send(clientSocket, msg.c_str(), msg.size(), 0);
 }
 
-#include	"./Headers/BNF_Translate.hpp"
+#include	"./Headers/TranslateBNF.hpp"
 
 void	Server::parsing(std::string buffer, int iter)
 {
@@ -108,7 +108,7 @@ void	Server::parsing(std::string buffer, int iter)
 	{
 		std::cout << (int)buffer[i] << std::endl;
 	}
-	BNF_Translate msg(buffer);
+	TranslateBNF msg(buffer);
 	if (msg.getter_command() == "CAP")
 	{
 		//will be his own function
@@ -119,7 +119,7 @@ void	Server::parsing(std::string buffer, int iter)
 	else  if (msg.getter_command() == "PING")
 	{
 		//will be his own function
-		BNF_Translate send_msg(msg.get_full_msg());
+		TranslateBNF send_msg(msg.get_full_msg());
 		send_msg.setter_command("PONG");
 		send(this->_fds[iter].fd,send_msg.get_full_msg().c_str(),send_msg.get_full_msg().size(),0);
 	}

@@ -1,9 +1,10 @@
+
+#pragma once
+
 #ifndef CHANNEL_HPP
 # define CHANNEL_HPP
 
 #include "Utils.hpp"
-#include "User.hpp"
-#include <limits>
 
 struct permissions{
 	bool	isAdmin;
@@ -58,6 +59,7 @@ class Channel
 };
 
 #endif
+
 
 // CAP LS -
 // CAP * LS :End of cap negotation //

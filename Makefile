@@ -7,14 +7,14 @@ SRC 		=	Channel.cpp			\
 				Server.cpp			\
 				User.cpp			\
 				Utils.cpp			\
-				BNF_Translate.cpp
+				TranslateBNF.cpp
 
 HEADER		=	./Headers/Channel.hpp		\
 				./Headers/Commands.hpp		\
 				./Headers/Server.hpp		\
 				./Headers/User.hpp			\
 				./Headers/Utils.hpp			\
-				./Headers/BNF_Translate.hpp
+				./Headers/TranslateBNF.hpp
 
 OBJ = $(SRC:%.cpp=%.o)
 all: $(NAME)

@@ -1,9 +1,6 @@
 
-#ifndef CLASS_BNF_Translate
-# define CLASS_BNF_Translate
-
-#include	<string>
-#include	<vector>
+#ifndef CLASS_TranslateBNF
+# define CLASS_TranslateBNF
 
 //<prefix>   ::= <servername> | <nick> [ '!' <user> ] [ '@' <host> ]
 struct s_prefix{
@@ -32,7 +29,7 @@ struct s_param{
 };
 
 //<message>  ::= [':' <prefix> <SPACE> ] <command> <params> <crlf>
-class BNF_Translate
+class TranslateBNF
 {
 			s_prefix				prefix;//optional
 			s_command				command;
@@ -58,11 +55,11 @@ class BNF_Translate
 		std::string				get_prefix_nick( void );
 		std::string				get_prefix_user( void );
 		std::string				get_prefix_host( void );
-		BNF_Translate();
-		BNF_Translate(std::string);
-		BNF_Translate(const BNF_Translate &a);
-		~BNF_Translate();
-		BNF_Translate &operator= (const BNF_Translate& a);
+		TranslateBNF();
+		TranslateBNF(std::string);
+		TranslateBNF(const TranslateBNF &a);
+		~TranslateBNF();
+		TranslateBNF &operator= (const TranslateBNF& a);
 };
 
 #endif

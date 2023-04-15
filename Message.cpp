@@ -1,4 +1,4 @@
-#include "./Headers/BNF_Translate.hpp"
+#include "./Headers/TranslateBNF.hpp"
 #include <iostream>
 #include <string>
 
@@ -10,7 +10,7 @@ int main()
 		buffer.resize(100);
 		std::cout << "Type Message" << std::endl;
 		std::cin.getline((char *)buffer.c_str(),100);
-		BNF_Translate	msg(buffer);
+		TranslateBNF	msg(buffer);
 		buffer.clear();
 	}
 }

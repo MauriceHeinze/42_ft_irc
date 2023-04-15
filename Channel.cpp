@@ -1,4 +1,4 @@
-#include "./Headers/Channel.hpp"
+#include "./Headers/Utils.hpp"
 
 Channel::Channel(std::string name) :_name(name)
 {

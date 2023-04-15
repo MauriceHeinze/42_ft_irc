@@ -1,7 +1,8 @@
-#include "./Utils.hpp"
-
+#pragma once
 #ifndef CLASS_User
 # define CLASS_User
+
+#include "./Utils.hpp"
 
 class User : public pollfd
 {
@@ -26,4 +27,5 @@ class User : public pollfd
 		void				setFullname( const std::string &name);
 		const std::string	&getFullname( void );
 };
+
 #endif

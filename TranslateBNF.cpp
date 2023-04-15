@@ -1,5 +1,4 @@
-#include	"./Headers/BNF_Translate.hpp"
-#include	<iostream>
+#include	"./Headers/Utils.hpp"
 
 #define	letter		"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 #define	number		"0123456789"
@@ -17,10 +16,10 @@ const std::string _nonnonwhite(nonnonwhite);
 };
 
 namespace error{
-	BNF_Translate msg();
+	TranslateBNF msg();
 }
 
-void	BNF_Translate::deconstruct_prefix(std::string& msg,int& i)
+void	TranslateBNF::deconstruct_prefix(std::string& msg,int& i)
 {
 	i++;
 	prefix.nick = true;
@@ -58,7 +57,7 @@ void	BNF_Translate::deconstruct_prefix(std::string& msg,int& i)
 	i++;
 }
 
-void	BNF_Translate::deconstruct_command(std::string& msg,int& i)
+void	TranslateBNF::deconstruct_command(std::string& msg,int& i)
 {
 	if ( msg[i] != '\0' && tools::_letter.find(msg[i]) != std::string::npos)
 	{
@@ -85,7 +84,7 @@ void	BNF_Translate::deconstruct_command(std::string& msg,int& i)
 	}
 }
 
-void	BNF_Translate::deconstruct_params(std::string& msg,int& i)
+void	TranslateBNF::deconstruct_params(std::string& msg,int& i)
 {
 	s_param param;
 	if (msg[i] != '\0' && msg[i] == ':')
@@ -109,7 +108,7 @@ void	BNF_Translate::deconstruct_params(std::string& msg,int& i)
 	params.push_back(param);
 }
 
-void	BNF_Translate::deconstruct_msg (std::string msg)
+void	TranslateBNF::deconstruct_msg (std::string msg)
 {
 	int	i = 0;
 	std::cout << msg << std::endl;
@@ -146,74 +145,74 @@ void	BNF_Translate::deconstruct_msg (std::string msg)
 }
 
 
-void	BNF_Translate::set_prefix_servername(std::string servername)
+void	TranslateBNF::set_prefix_servername(std::string servername)
 {
 	this->prefix.nick_or_servername = servername;
 	this->prefix.nick = false;
 }
 
-void	BNF_Translate::set_prefix_nick(std::string nick)
+void	TranslateBNF::set_prefix_nick(std::string nick)
 {
 	this->prefix.nick_or_servername = nick;
 	this->prefix.nick = true;
 }
 
 
-void	BNF_Translate::set_prefix_host(std::string host)
+void	TranslateBNF::set_prefix_host(std::string host)
 {
 	this->prefix.host = host;
 }
 
 
-void	BNF_Translate::set_prefix_user(std::string user)
+void	TranslateBNF::set_prefix_user(std::string user)
 {
 	this->prefix.user = user;
 }
 
-std::string	BNF_Translate::get_prefix_user( void )
+std::string	TranslateBNF::get_prefix_user( void )
 {
 	return (this->prefix.user);
 }
 
-std::string	BNF_Translate::get_prefix_host( void )
+std::string	TranslateBNF::get_prefix_host( void )
 {
 	return (this->prefix.host);
 }
 
-void	BNF_Translate::setter_command( std::string command )
+void	TranslateBNF::setter_command( std::string command )
 {
 	this->command.command = command;
 }
 
-std::string	BNF_Translate::getter_command( void )
+std::string	TranslateBNF::getter_command( void )
 {
 	return(this->command.command);
 }
 
-void	BNF_Translate::setter_num( std::string num )
+void	TranslateBNF::setter_num( std::string num )
 {
 	this->command.num = num;
 }
 
-std::string	BNF_Translate::getter_num( void )
+std::string	TranslateBNF::getter_num( void )
 {
 	return(this->command.num);
 }
 
 
 
-void	BNF_Translate::setter_params( std::vector<s_param> params)
+void	TranslateBNF::setter_params( std::vector<s_param> params)
 {
 	this->params = params;
 }
 
-std::vector<s_param>	BNF_Translate::getter_params( void )
+std::vector<s_param>	TranslateBNF::getter_params( void )
 {
 	return(this->params);
 }
 
 
-std::string	BNF_Translate::get_prefix_servername( void )
+std::string	TranslateBNF::get_prefix_servername( void )
 {
 	if (this->prefix.nick == false)
 		return (this->prefix.nick_or_servername);
@@ -221,29 +220,29 @@ std::string	BNF_Translate::get_prefix_servername( void )
 		return (std::string());
 }
 
-BNF_Translate::BNF_Translate(std::string msg)
+TranslateBNF::TranslateBNF(std::string msg)
 {
 	deconstruct_msg(msg);
 }
 
-BNF_Translate::BNF_Translate()
+TranslateBNF::TranslateBNF()
 {
 	
 }
 
-BNF_Translate::BNF_Translate(const BNF_Translate &a)
+TranslateBNF::TranslateBNF(const TranslateBNF &a)
 {
 	this->command = a.command;
 	this->prefix = a.prefix;
 	this->params = a.params;
 }
 
-BNF_Translate::~BNF_Translate()
+TranslateBNF::~TranslateBNF()
 {
 	
 }
 
-BNF_Translate& BNF_Translate::operator= (const BNF_Translate& a)
+TranslateBNF& TranslateBNF::operator= (const TranslateBNF& a)
 {
 	this->command = a.command;
 	this->prefix = a.prefix;
@@ -251,7 +250,7 @@ BNF_Translate& BNF_Translate::operator= (const BNF_Translate& a)
 	return (*(this));
 }
 
-std::string	BNF_Translate::get_full_msg( void )
+std::string	TranslateBNF::get_full_msg( void )
 {
 	std::string msg;
 	if (this->prefix.nick_or_servername.empty() == false)
