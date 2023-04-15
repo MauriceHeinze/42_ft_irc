@@ -1,30 +1,50 @@
-NAME		= 	ircserv
-CC 			= 	c++
-CPPFLAGS	= 	-Wall -Wextra -Werror -std=c++98 -g
-SRC 		=	Channel.cpp			\
-				Commands.cpp		\
-				Main.cpp			\
-				Server.cpp			\
-				User.cpp			\
-				Utils.cpp			\
-				TranslateBNF.cpp
+NAME        := ircserv
 
-HEADER		=	./Headers/Channel.hpp		\
-				./Headers/Commands.hpp		\
-				./Headers/Server.hpp		\
-				./Headers/User.hpp			\
-				./Headers/Utils.hpp			\
-				./Headers/TranslateBNF.hpp
+CXX         := c++
+CXXFLAGS    := -Wall -Wextra -Werror -std=c++98
 
-OBJ = $(SRC:%.cpp=%.o)
+CPPFLAGS    :=
+DEPFLAGS     = -MT $@ -MMD -MP -MF $(DDIR)/$*.d
+
+LDFLAGS     :=
+LDLIBS      :=
+
+VPATH       := ./ src/
+SRCS        := Main.cpp Channel.cpp Commands.cpp Server.cpp TranslateBNF.cpp User.cpp Utils.cpp
+
+ODIR        := obj
+OBJS        := $(SRCS:%.cpp=$(ODIR)/%.o)
+
+DDIR        := $(ODIR)/.deps
+DEPS        := $(SRCS:%.cpp=$(DDIR)/%.d)
+
+
+$(NAME): $(OBJS)
+	$(CXX) $(CXXFLAGS) $(LDFLAGS) $(OBJS) -o $@ $(LDLIBS)
+
+$(ODIR)/%.o: %.cpp $(DDIR)/%.d | $(ODIR) $(DDIR)
+	$(CXX) $(CXXFLAGS) $(CPPFLAGS) $(DEPFLAGS) -c $< -o $@
+
+$(ODIR):
+	mkdir -p $@
+
+$(DDIR):
+	mkdir -p $@
+
 all: $(NAME)
-$(NAME): $(OBJ) $(HEADER)
-	@$(CC) $(CPPFLAGS) $(OBJ) -o $(NAME)
+
 clean:
-	@rm -f $(OBJ)
+	$(RM) -r $(DDIR) $(ODIR)
+
 fclean: clean
-	@rm -f $(NAME)
+	$(RM) $(NAME)
+
 re: fclean all
+
+.PHONY: all clean fclean re
+
+$(DEPS):
+-include $(DEPS)
 
 ip:
 	ipconfig getifaddr en1

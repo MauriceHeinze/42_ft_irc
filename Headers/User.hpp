@@ -2,7 +2,7 @@
 #ifndef CLASS_User
 # define CLASS_User
 
-#include "./Utils.hpp"
+#include "Utils.hpp"
 
 class User : public pollfd
 {
