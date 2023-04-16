@@ -170,6 +170,7 @@ void	Server::parsing(std::string buffer, int iter)
 		// create channel if it doesn't exist yet
 		if (channelIndex == -1)
 		{
+			// return error - ERR_NOSUCHCHANNEL
 			Channel newChannel(channelName);
 			this->_channels.push_back(newChannel);
 			channelIndex = getChannel(this->_channels, channelName);
@@ -179,27 +180,32 @@ void	Server::parsing(std::string buffer, int iter)
 			if (currentChannel->_settings->inviteOnly) // check if user is invited
 			{
 				if (this->_channels[channelIndex].isInvited(nickname))
+				{
 					this->_channels[channelIndex].join(currentUser);
+					// return RPL_TOPIC
+				}
 				else
 				{
-					// return error
+					// return error - ERR_INVITEONLYCHAN
 				}
 			}
 			else if (currentChannel->_settings->password.length() > 0) // check if password for channel is correct
 			{
 				if (this->_channels[channelIndex]._settings->password == password)
+				{
 					this->_channels[channelIndex].join(currentUser);
+					// return RPL_TOPIC
+				}
 				else
 				{
-					// return error
+					// return error - ERR_BADCHANNELKEY
 				}
 			}
 			else if (!currentChannel->_settings->inviteOnly && currentChannel->_settings->password.length() != 0) // Everyone can join
+			{
 				this->_channels[channelIndex].join(currentUser);
-		}
-		else
-		{
-			// return error
+				// return RPL_TOPIC
+			}
 		}
 	}
 	else if (msg.getter_command() == "KICK")
@@ -232,12 +238,16 @@ void	Server::parsing(std::string buffer, int iter)
 			}
 			else
 			{
-				// return error - user that tries to kick is not admin
+				// return error - ERR_CHANOPRIVSNEEDED
 			}
 		}
-		else
+		else if (channelIndex != -1)
 		{
-			// return error
+			// return error - ERR_NOSUCHCHANNEL
+		}
+		else if (!userToBeKickedExists)
+		{
+			// return error - ERR_NOTONCHANNEL
 		}
 	}
 	else if (msg.getter_command() == "TOPIC")
@@ -256,20 +266,31 @@ void	Server::parsing(std::string buffer, int iter)
 		{
 			if (topic.length() == 0)
 			{
-				// send topic to client
+				if (currentChannel->getTopic().length() > 0)
+				{
+					// return - RPL_TOPIC
+				}
+				else
+				{
+					// return - RPL_NOTOPIC
+				}
 			}
 			else
 			{
 				if (currentChannel->isAdmin(nickname))
 				{
 					currentChannel->setTopic(nickname, topic);
-					// send set topic to client
+					// return - RPL_TOPIC
+				}
+				else
+				{
+					// return - ERR_CHANOPRIVSNEEDED
 				}
 			}
 		}
-		else
+		else if (!userExists)
 		{
-			// return error
+			// return error - ERR_NOTONCHANNEL
 		}
 	}
 	else if (msg.getter_command() == "PART")
@@ -299,9 +320,9 @@ void	Server::parsing(std::string buffer, int iter)
 	}
 	else if (msg.getter_command() == "MODE")
 	{
-		//call PRVT_func
+
 	}
-	else if (msg.getter_command() == "PRVT")
+	else if (msg.getter_command() == "PRIVMSG")
 	{
 		//call PRVT_func
 	}
