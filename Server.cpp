@@ -274,7 +274,28 @@ void	Server::parsing(std::string buffer, int iter)
 	}
 	else if (msg.getter_command() == "PART")
 	{
-		//call PRVT_func
+		std::string channelName = msg.getter_params()[0].trailing_or_middle;
+		std::string nickname = msg.getter_params()[1].trailing_or_middle;
+
+		int channelIndex = getChannel(this->_channels, channelName);
+		bool userExists = this->_channels[channelIndex].userExists(nickname);
+
+		Channel	*currentChannel = &this->_channels[channelIndex];
+
+		if (channelIndex != -1 && userExists)
+			currentChannel->part(nickname);
+		else if (channelName.length() == 0)
+		{
+			// return error - ERR_NEEDMOREPARAMS
+		}
+		else if (channelIndex == -1)
+		{
+			// return error - ERR_NOSUCHCHANNEL
+		}
+		else if (!userExists)
+		{
+			// return error - ERR_NOTONCHANNEL
+		}
 	}
 	else if (msg.getter_command() == "MODE")
 	{
