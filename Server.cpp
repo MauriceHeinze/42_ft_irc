@@ -210,13 +210,11 @@ void	Server::parsing(std::string buffer, int iter)
 		std::string comment = msg.getter_params()[2].trailing_or_middle;
 
 		int channelIndex = getChannel(this->_channels, channelName);
-		int userIndex = getUser(this->_users, channelName);
 
 		bool userExists = this->_channels[channelIndex].userExists(nickname);
 		bool userToBeKickedExists = this->_channels[channelIndex].userExists(nicknameToBeKicked);
 
 		Channel	*currentChannel = &this->_channels[channelIndex];
-		User	&currentUser = this->_users[userIndex];
 
 		if (channelIndex != -1 && !userExists && !userToBeKickedExists)
 		{
@@ -249,12 +247,10 @@ void	Server::parsing(std::string buffer, int iter)
 		std::string topic = msg.getter_params()[2].trailing_or_middle;
 
 		int channelIndex = getChannel(this->_channels, channelName);
-		int userIndex = getUser(this->_users, channelName);
 
 		bool userExists = this->_channels[channelIndex].userExists(nickname);
 
 		Channel	*currentChannel = &this->_channels[channelIndex];
-		User	&currentUser = this->_users[userIndex];
 
 		if (channelIndex != -1 && !userExists)
 		{
