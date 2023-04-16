@@ -167,6 +167,7 @@ void	Server::parsing(std::string buffer, int iter)
 		Channel	*currentChannel = &this->_channels[channelIndex];
 		User	&currentUser = this->_users[userIndex];
 
+		// create channel if it doesn't exist yet
 		if (channelIndex == -1)
 		{
 			Channel newChannel(channelName);
@@ -201,9 +202,87 @@ void	Server::parsing(std::string buffer, int iter)
 			// return error
 		}
 	}
+	else if (msg.getter_command() == "KICK")
+	{
+		std::string channelName = msg.getter_params()[0].trailing_or_middle;
+		std::string nickname = msg.getter_params()[1].trailing_or_middle;
+		std::string nicknameToBeKicked = msg.getter_params()[1].trailing_or_middle;
+		std::string comment = msg.getter_params()[2].trailing_or_middle;
+
+		int channelIndex = getChannel(this->_channels, channelName);
+		int userIndex = getUser(this->_users, channelName);
+
+		bool userExists = this->_channels[channelIndex].userExists(nickname);
+		bool userToBeKickedExists = this->_channels[channelIndex].userExists(nicknameToBeKicked);
+
+		Channel	*currentChannel = &this->_channels[channelIndex];
+		User	&currentUser = this->_users[userIndex];
+
+		if (channelIndex != -1 && !userExists && !userToBeKickedExists)
+		{
+			if (currentChannel->isAdmin(nickname)) // check if user that wants to kick has privileges
+			{
+				currentChannel->kick(nicknameToBeKicked);
+				if (comment.length() > 0)
+				{
+					// send message to client with [comment] variable
+				}
+				else
+				{
+					// send message to client without a comment
+				}
+			}
+			else
+			{
+				// return error - user that tries to kick is not admin
+			}
+		}
+		else
+		{
+			// return error
+		}
+	}
+	else if (msg.getter_command() == "TOPIC")
+	{
+		std::string channelName = msg.getter_params()[0].trailing_or_middle;
+		std::string nickname = msg.getter_params()[1].trailing_or_middle;
+		std::string topic = msg.getter_params()[2].trailing_or_middle;
+
+		int channelIndex = getChannel(this->_channels, channelName);
+		int userIndex = getUser(this->_users, channelName);
+
+		bool userExists = this->_channels[channelIndex].userExists(nickname);
+
+		Channel	*currentChannel = &this->_channels[channelIndex];
+		User	&currentUser = this->_users[userIndex];
+
+		if (channelIndex != -1 && !userExists)
+		{
+			if (topic.length() == 0)
+			{
+				// send topic to client
+			}
+			else
+			{
+				if (currentChannel->isAdmin(nickname))
+				{
+					currentChannel->setTopic(nickname, topic);
+					// send set topic to client
+				}
+			}
+		}
+		else
+		{
+			// return error
+		}
+	}
+	else if (msg.getter_command() == "PART")
+	{
+		//call PRVT_func
+	}
 	else if (msg.getter_command() == "MODE")
 	{
-		//call Mode_func
+		//call PRVT_func
 	}
 	else if (msg.getter_command() == "PRVT")
 	{

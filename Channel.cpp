@@ -152,6 +152,15 @@ bool	Channel::isAdmin(std::string nickname){
 	return false;
 }
 
+bool	Channel::isUser(std::string nickname){
+	for(int i = 0; _perm.size(); i++)
+	{
+		if (_perm[i].name->getNickname() == nickname)
+			return true;
+	}
+	return false;
+}
+
 bool	Channel::isVoice(std::string nickname){
 	for(int i = 0; _perm.size(); i++)
 		{
