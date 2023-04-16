@@ -174,7 +174,7 @@ void	Server::parsing(std::string buffer, int iter)
 			this->_channels.push_back(newChannel);
 			channelIndex = getChannel(this->_channels, channelName);
 		}
-		if (channelIndex != -1 && !userExists)
+		if (channelIndex != -1 && userExists)
 		{
 			if (currentChannel->_settings->inviteOnly) // check if user is invited
 			{
@@ -216,7 +216,7 @@ void	Server::parsing(std::string buffer, int iter)
 
 		Channel	*currentChannel = &this->_channels[channelIndex];
 
-		if (channelIndex != -1 && !userExists && !userToBeKickedExists)
+		if (channelIndex != -1 && userExists && userToBeKickedExists)
 		{
 			if (currentChannel->isAdmin(nickname)) // check if user that wants to kick has privileges
 			{
@@ -252,7 +252,7 @@ void	Server::parsing(std::string buffer, int iter)
 
 		Channel	*currentChannel = &this->_channels[channelIndex];
 
-		if (channelIndex != -1 && !userExists)
+		if (channelIndex != -1 && userExists)
 		{
 			if (topic.length() == 0)
 			{
