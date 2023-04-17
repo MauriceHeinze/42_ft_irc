@@ -334,14 +334,26 @@ void Server::recvMsg(size_t i)
 	char buffer[1024];
 	int valread;
 	valread = recv(_fds[i].fd, buffer, 1024, 0);
+	_users[i].msg.append(buffer);
 	if (valread == 0)
 	{
 		std::cout << "Connection Closed " << i << std::endl;
 		return ;
 	}
-	if (buffer[0] != 0)
-		std::cout << "> " << buffer << std::endl;
-	parsing(buffer, i);
+	// if (buffer[0] != 0)
+	// 	std::cout << "> " << buffer << std::endl;
+	// std::cout << " before"  << std::endl;
+	// while(1)
+	// {
+	// std::string buf(_users[i].msg);
+	// size_t end = buf.find_first_of("\13\10");
+	// if(end == std::string::npos)
+	// 	break;
+	// buf.resize(end);
+	// _users[i].msg = _users[i].msg.c_str() + end;
+	// std::cout <<  "buf = " << buf << std::endl;
+	// parsing(buf, i);
+	// }
 	// const std::string msg = ":Server respond\r\n";
 	// send(_fds[i].fd, msg.c_str(), msg.size(), 0);
 	buffer[0] = 0;
