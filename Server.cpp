@@ -3,6 +3,13 @@
 // #include	"./Headers/Commands.hpp"
 #include	"./Headers/Utils.hpp"
 
+#define SEND_FLAGS 0
+
+void	Server::send_msg(std::string msg,int user_id)
+{
+	send(this->_fds[user_id].fd,msg.c_str(),msg.size(), SEND_FLAGS);
+}
+
 Server::Server(){
 	return ;
 }
@@ -101,31 +108,18 @@ void Server::acceptConnection()
 
 void	Server::parsing(std::string buffer, int user_id)
 {
-	// (void)user_id;// just for ignoring Error flags for now
-	for (size_t i = 0; i < buffer.size(); i++)
-	{
-		std::cout << (int)buffer[i] << std::endl;
-	}
 	TranslateBNF msg(buffer);
 	if (msg.getter_command() == "CAP")
 	{
-		//will be his own function
-		std::cout << "Cap send" << std::endl;
-		send(this->_fds[user_id].fd,":irc.unknown.net CAP * LS :\13\10",30,0);// no capabilities
-		send(this->_fds[user_id].fd,"PONG",4,0);// temp
+		Command_CAP(msg, user_id);
 	}
 	else  if (msg.getter_command() == "PING")
 	{
-		//will be his own function
-		TranslateBNF send_msg(msg.get_full_msg());
-		send_msg.setter_command("PONG");
-		send(this->_fds[user_id].fd,send_msg.get_full_msg().c_str(),send_msg.get_full_msg().size(),0);
+		Command_PING(msg, user_id);
 	}
 	else if (msg.getter_command() == "PASS")
 	{
-		// std::cout << "password: "<< msg.getter_params()[0].trailing_or_middle << std::endl;
-		Command_PASS(msg.getter_params()[0].trailing_or_middle, user_id);
-		// call PASS_func
+		Command_PASS(msg, user_id);
 	}
 	if (this->_users[user_id]._valid_password == false)//check here if passwort is vaild
 	{

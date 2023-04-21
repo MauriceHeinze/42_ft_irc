@@ -1,30 +1,21 @@
-
 #include	"./Headers/Utils.hpp"
-// #include	<sstream>
-// #include	<iostream>
-// # include 	<sys/socket.h>
 
-void	Server::Command_PASS(std::string str, int user_id)
+void	Server::Command_PASS(TranslateBNF msg, int user_id)
 {
-	std::string tmp;
-	std::cout << "passwort = "<< str <<" size " <<str.size()<< std::endl;
-	std::cout << "pollfd.fd = "<< _fds[user_id].fd << std::endl;
-	tmp = str.substr(0, str.find_first_of("\r\n"));
-	// std::cout << "$" << tmp << "$" << std::endl;
-	// std::cout << "$" << str << "$" << std::endl;
+	std::string str = msg.getter_params()[0].trailing_or_middle;
 	if ( _users[user_id]._valid_password == true )
 	{
-		send(_fds[user_id].fd, ":Server ERROR Password already is correct\r\n", 44, 0);
+		send_msg(":Server ERROR Password already is correct\r\n", user_id);
 		return ;
 	}
-	else if (!str.empty() && get_password().compare(tmp) == 0)
+	else if (!str.empty() && get_password().compare(str) == 0)
 	{
-		send(_fds[user_id].fd, ":Server INFO Password is correct\r\n", 35, 0);
+		send_msg(":Server INFO Password is correct\r\n", user_id);
 		_users[user_id]._valid_password = true;
 	}
 	else
 	{
-		send(_fds[user_id].fd, ":Server ERROR Password is false\r\n", 34, 0);
+		send_msg(":Server ERROR Password is false\r\n", user_id);
 		_users[user_id]._valid_password = false;
 	}
 }
@@ -208,9 +199,24 @@ void	Server::Command_P_MSG(TranslateBNF msg, int user_id)
 	(void)user_id;
 	(void)msg;
 }
+
 void	Server::Command_MODE(TranslateBNF msg, int user_id)
 {
 	(void)user_id;
 	(void)msg;
 }
 
+void	Server::Command_PING(TranslateBNF msg, int user_id)
+{
+	TranslateBNF send_msg(msg.get_full_msg());
+	send_msg.setter_command("PONG");
+	// send_msg("PONG\13\10", user_id);
+	send(this->_fds[user_id].fd,send_msg.get_full_msg().c_str(),send_msg.get_full_msg().size(),0);
+}
+
+void	Server::Command_CAP(TranslateBNF msg, int user_id)
+{
+	(void)msg;
+	std::cout << "Cap send" << std::endl;
+	send_msg(":irc.unknown.net CAP * LS :\13\10", user_id);
+}

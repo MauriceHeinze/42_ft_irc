@@ -20,7 +20,6 @@ class Server
 		void 		startServer();
 		void 		acceptConnection();
 		void 		recvMsg(size_t i);
-		void		Command_PASS( std::string , int user_id);
 		std::string	get_password( void );
 
 		class SocketCreationFail: public std::exception {
@@ -53,6 +52,7 @@ class Server
 			}
 		};
 	private:
+		void	Command_PASS( TranslateBNF msg, int user_id);
 		void	Command_JOIN( TranslateBNF msg, int user_id);
 		void	Command_KICK( TranslateBNF msg, int user_id);
 		void	Command_TOPIC(TranslateBNF msg, int user_id);
@@ -60,8 +60,10 @@ class Server
 		void	Command_PART( TranslateBNF msg, int user_id);
 		void	Command_MODE( TranslateBNF msg, int user_id);
 		void	Command_P_MSG(TranslateBNF msg, int user_id);
-	private:
-		void	parsing(std::string, int user_id);
+		void	Command_PING( TranslateBNF msg, int user_id);
+		void	Command_CAP(  TranslateBNF msg, int user_id);
+		void	send_msg(std::string msg, int user_id);
+		void	parsing( std::string msg, int user_id);
 		int	_socket;
 		int	_port;
 		std::string _password;
