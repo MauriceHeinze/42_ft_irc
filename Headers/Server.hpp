@@ -3,7 +3,8 @@
 #ifndef SERVER_HPP
 # define SERVER_HPP
 
-#include "Utils.hpp"
+#include	"Utils.hpp"
+#include	"TranslateBNF.hpp"
 
 class Server
 {
@@ -51,6 +52,9 @@ class Server
 				return "Error: poll failed";
 			}
 		};
+		void	Command_JOIN( TranslateBNF msg, int iter);
+		void	Command_KICK( TranslateBNF msg, int iter);
+		void	Command_TOPIC(TranslateBNF msg, int iter);
 	private:
 		void	parsing(std::string, int iter);
 		int	_socket;

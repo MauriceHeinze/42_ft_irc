@@ -99,7 +99,153 @@ void Server::acceptConnection()
 	send(clientSocket, msg.c_str(), msg.size(), 0);
 }
 
-#include	"./Headers/TranslateBNF.hpp"
+
+
+void Server::Command_JOIN(TranslateBNF msg ,int iter)
+		{
+		(void)iter;
+		std::string channelName = msg.getter_params()[0].trailing_or_middle;
+		std::string nickname = msg.getter_params()[1].trailing_or_middle;
+		std::string password = msg.getter_params()[2].trailing_or_middle;
+
+		int channelIndex = getChannel(this->_channels, channelName);
+		int userIndex = getUser(this->_users, channelName);
+
+		bool userExists = this->_channels[channelIndex].userExists(nickname);
+
+		Channel	*currentChannel = &this->_channels[channelIndex];
+		User	&currentUser = this->_users[userIndex];
+
+		// create channel if it doesn't exist yet
+		if (channelIndex == -1)
+		{
+			// return error - ERR_NOSUCHCHANNEL
+			Channel newChannel(channelName);
+			this->_channels.push_back(newChannel);
+			channelIndex = getChannel(this->_channels, channelName);
+		}
+		if (channelIndex != -1 && userExists)
+		{
+			if (currentChannel->_settings->inviteOnly) // check if user is invited
+			{
+				if (this->_channels[channelIndex].isInvited(nickname))
+				{
+					this->_channels[channelIndex].join(currentUser);
+					// return RPL_TOPIC
+				}
+				else
+				{
+					// return error - ERR_INVITEONLYCHAN
+				}
+			}
+			else if (currentChannel->_settings->password.length() > 0) // check if password for channel is correct
+			{
+				if (this->_channels[channelIndex]._settings->password == password)
+				{
+					this->_channels[channelIndex].join(currentUser);
+					// return RPL_TOPIC
+				}
+				else
+				{
+					// return error - ERR_BADCHANNELKEY
+				}
+			}
+			else if (!currentChannel->_settings->inviteOnly && currentChannel->_settings->password.length() != 0) // Everyone can join
+			{
+				this->_channels[channelIndex].join(currentUser);
+				// return RPL_TOPIC
+			}
+		}
+}
+
+void Server::Command_KICK(TranslateBNF msg,int iter)
+{
+	(void)iter;
+		std::string channelName = msg.getter_params()[0].trailing_or_middle;
+		std::string nickname = msg.getter_params()[1].trailing_or_middle;
+		std::string nicknameToBeKicked = msg.getter_params()[1].trailing_or_middle;
+		std::string comment = msg.getter_params()[2].trailing_or_middle;
+
+		int channelIndex = getChannel(this->_channels, channelName);
+
+		bool userExists = this->_channels[channelIndex].userExists(nickname);
+		bool userToBeKickedExists = this->_channels[channelIndex].userExists(nicknameToBeKicked);
+
+		Channel	*currentChannel = &this->_channels[channelIndex];
+
+		if (channelIndex != -1 && userExists && userToBeKickedExists)
+		{
+			if (currentChannel->isAdmin(nickname)) // check if user that wants to kick has privileges
+			{
+				currentChannel->kick(nicknameToBeKicked);
+				if (comment.length() > 0)
+				{
+					// send message to client with [comment] variable
+				}
+				else
+				{
+					// send message to client without a comment
+				}
+			}
+			else
+			{
+				// return error - ERR_CHANOPRIVSNEEDED
+			}
+		}
+		else if (channelIndex != -1)
+		{
+			// return error - ERR_NOSUCHCHANNEL
+		}
+		else if (!userToBeKickedExists)
+		{
+			// return error - ERR_NOTONCHANNEL
+		}
+}
+
+	void	Server::Command_TOPIC(TranslateBNF mag, iter)
+		{
+
+		std::string channelName = msg.getter_params()[0].trailing_or_middle;
+		std::string nickname = msg.getter_params()[1].trailing_or_middle;
+		std::string topic = msg.getter_params()[2].trailing_or_middle;
+
+		int channelIndex = getChannel(this->_channels, channelName);
+
+		bool userExists = this->_channels[channelIndex].userExists(nickname);
+
+		Channel	*currentChannel = &this->_channels[channelIndex];
+
+		if (channelIndex != -1 && userExists)
+		{
+			if (topic.length() == 0)
+			{
+				if (currentChannel->getTopic().length() > 0)
+				{
+					// return - RPL_TOPIC
+				}
+				else
+				{
+					// return - RPL_NOTOPIC
+				}
+			}
+			else
+			{
+				if (currentChannel->isAdmin(nickname))
+				{
+					currentChannel->setTopic(nickname, topic);
+					// return - RPL_TOPIC
+				}
+				else
+				{
+					// return - ERR_CHANOPRIVSNEEDED
+				}
+			}
+		}
+		else if (!userExists)
+		{
+			// return error - ERR_NOTONCHANNEL
+		}
+		}
 
 void	Server::parsing(std::string buffer, int iter)
 {
@@ -155,143 +301,15 @@ void	Server::parsing(std::string buffer, int iter)
 	}
 	else if (msg.getter_command() == "JOIN")
 	{
-		std::string channelName = msg.getter_params()[0].trailing_or_middle;
-		std::string nickname = msg.getter_params()[1].trailing_or_middle;
-		std::string password = msg.getter_params()[2].trailing_or_middle;
-
-		int channelIndex = getChannel(this->_channels, channelName);
-		int userIndex = getUser(this->_users, channelName);
-
-		bool userExists = this->_channels[channelIndex].userExists(nickname);
-
-		Channel	*currentChannel = &this->_channels[channelIndex];
-		User	&currentUser = this->_users[userIndex];
-
-		// create channel if it doesn't exist yet
-		if (channelIndex == -1)
-		{
-			// return error - ERR_NOSUCHCHANNEL
-			Channel newChannel(channelName);
-			this->_channels.push_back(newChannel);
-			channelIndex = getChannel(this->_channels, channelName);
-		}
-		if (channelIndex != -1 && userExists)
-		{
-			if (currentChannel->_settings->inviteOnly) // check if user is invited
-			{
-				if (this->_channels[channelIndex].isInvited(nickname))
-				{
-					this->_channels[channelIndex].join(currentUser);
-					// return RPL_TOPIC
-				}
-				else
-				{
-					// return error - ERR_INVITEONLYCHAN
-				}
-			}
-			else if (currentChannel->_settings->password.length() > 0) // check if password for channel is correct
-			{
-				if (this->_channels[channelIndex]._settings->password == password)
-				{
-					this->_channels[channelIndex].join(currentUser);
-					// return RPL_TOPIC
-				}
-				else
-				{
-					// return error - ERR_BADCHANNELKEY
-				}
-			}
-			else if (!currentChannel->_settings->inviteOnly && currentChannel->_settings->password.length() != 0) // Everyone can join
-			{
-				this->_channels[channelIndex].join(currentUser);
-				// return RPL_TOPIC
-			}
-		}
+		Command_JOIN(msg ,iter);
 	}
 	else if (msg.getter_command() == "KICK")
 	{
-		std::string channelName = msg.getter_params()[0].trailing_or_middle;
-		std::string nickname = msg.getter_params()[1].trailing_or_middle;
-		std::string nicknameToBeKicked = msg.getter_params()[1].trailing_or_middle;
-		std::string comment = msg.getter_params()[2].trailing_or_middle;
-
-		int channelIndex = getChannel(this->_channels, channelName);
-
-		bool userExists = this->_channels[channelIndex].userExists(nickname);
-		bool userToBeKickedExists = this->_channels[channelIndex].userExists(nicknameToBeKicked);
-
-		Channel	*currentChannel = &this->_channels[channelIndex];
-
-		if (channelIndex != -1 && userExists && userToBeKickedExists)
-		{
-			if (currentChannel->isAdmin(nickname)) // check if user that wants to kick has privileges
-			{
-				currentChannel->kick(nicknameToBeKicked);
-				if (comment.length() > 0)
-				{
-					// send message to client with [comment] variable
-				}
-				else
-				{
-					// send message to client without a comment
-				}
-			}
-			else
-			{
-				// return error - ERR_CHANOPRIVSNEEDED
-			}
-		}
-		else if (channelIndex != -1)
-		{
-			// return error - ERR_NOSUCHCHANNEL
-		}
-		else if (!userToBeKickedExists)
-		{
-			// return error - ERR_NOTONCHANNEL
-		}
+		Command_KICK(msg,iter);
 	}
 	else if (msg.getter_command() == "TOPIC")
 	{
-		std::string channelName = msg.getter_params()[0].trailing_or_middle;
-		std::string nickname = msg.getter_params()[1].trailing_or_middle;
-		std::string topic = msg.getter_params()[2].trailing_or_middle;
-
-		int channelIndex = getChannel(this->_channels, channelName);
-
-		bool userExists = this->_channels[channelIndex].userExists(nickname);
-
-		Channel	*currentChannel = &this->_channels[channelIndex];
-
-		if (channelIndex != -1 && userExists)
-		{
-			if (topic.length() == 0)
-			{
-				if (currentChannel->getTopic().length() > 0)
-				{
-					// return - RPL_TOPIC
-				}
-				else
-				{
-					// return - RPL_NOTOPIC
-				}
-			}
-			else
-			{
-				if (currentChannel->isAdmin(nickname))
-				{
-					currentChannel->setTopic(nickname, topic);
-					// return - RPL_TOPIC
-				}
-				else
-				{
-					// return - ERR_CHANOPRIVSNEEDED
-				}
-			}
-		}
-		else if (!userExists)
-		{
-			// return error - ERR_NOTONCHANNEL
-		}
+		Command_TOPIC(msg, iter);
 	}
 	else if (msg.getter_command() == "PART")
 	{
