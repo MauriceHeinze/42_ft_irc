@@ -329,45 +329,30 @@ void	Server::parsing(std::string buffer, int iter)
 }
 
 
-void Server::recvMsg(size_t i)
+void Server::recvMsg(size_t user_id)
 {
 
 	char buffer[1024];
 	int valread;
 	memset(buffer, 0, 1024); //set the buffer to 0
-	valread = recv(_fds[i].fd, buffer, 1024, 0);
+	valread = recv(_fds[user_id].fd, buffer, 1024, 0);
+
+
 	if (valread == 0)// check for error 
 	{
-		std::cout << "Connection Closed " << i << std::endl;
+		std::cout << "Connection Closed " << user_id << std::endl;
 		return ;
 	}
-	this->_users[i].insert_in_user_buffer(buffer);
+	this->_users[user_id].insert_in_user_buffer(buffer);
 	while (1)
 	{
-		std::string command= this->_users[i].get_next_command();
+		std::string command= this->_users[user_id].get_next_command();
 		if (command[0] == 0)
 			break;
-		std::cout << "new command"<< std::endl << command << std::endl;
+		parsing(command, user_id);
 	}
-	// if (buffer[0] != 0)
-	// 	std::cout << "> " << buffer << std::endl;
-	// std::cout << " before"  << std::endl;
-	// while(1)
-	// {
-	// std::string buf(_users[i].msg);
-	// size_t end = buf.find_first_of("\13\10");
-	// if(end == std::string::npos)
-	// 	break;
-	// buf.resize(end);
-	// _users[i].msg = _users[i].msg.c_str() + end;
-	// std::cout <<  "buf = " << buf << std::endl;
-	// parsing(buf, i);
-	// }
-	// const std::string msg = ":Server respond\r\n";
-	// send(_fds[i].fd, msg.c_str(), msg.size(), 0);
-	buffer[0] = 0;
-	_fds[i].revents = 0;
-	_fds[i].events = POLLIN;
+	_fds[user_id].revents = 0;
+	_fds[user_id].events = POLLIN;
 }
 
 std::string	Server::get_password( void )
