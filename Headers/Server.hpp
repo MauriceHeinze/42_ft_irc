@@ -20,7 +20,7 @@ class Server
 		void 		startServer();
 		void 		acceptConnection();
 		void 		recvMsg(size_t i);
-		void		Command_PASS( std::string , int iter);
+		void		Command_PASS( std::string , int user_id);
 		std::string	get_password( void );
 
 		class SocketCreationFail: public std::exception {
@@ -52,11 +52,16 @@ class Server
 				return "Error: poll failed";
 			}
 		};
-		void	Command_JOIN( TranslateBNF msg, int iter);
-		void	Command_KICK( TranslateBNF msg, int iter);
-		void	Command_TOPIC(TranslateBNF msg, int iter);
 	private:
-		void	parsing(std::string, int iter);
+		void	Command_JOIN( TranslateBNF msg, int user_id);
+		void	Command_KICK( TranslateBNF msg, int user_id);
+		void	Command_TOPIC(TranslateBNF msg, int user_id);
+		void	Command_NICK( TranslateBNF msg, int user_id);
+		void	Command_PART( TranslateBNF msg, int user_id);
+		void	Command_MODE( TranslateBNF msg, int user_id);
+		void	Command_P_MSG(TranslateBNF msg, int user_id);
+	private:
+		void	parsing(std::string, int user_id);
 		int	_socket;
 		int	_port;
 		std::string _password;

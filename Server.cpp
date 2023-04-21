@@ -99,157 +99,9 @@ void Server::acceptConnection()
 	send(clientSocket, msg.c_str(), msg.size(), 0);
 }
 
-
-
-void Server::Command_JOIN(TranslateBNF msg ,int iter)
-		{
-		(void)iter;
-		std::string channelName = msg.getter_params()[0].trailing_or_middle;
-		std::string nickname = msg.getter_params()[1].trailing_or_middle;
-		std::string password = msg.getter_params()[2].trailing_or_middle;
-
-		int channelIndex = getChannel(this->_channels, channelName);
-		int userIndex = getUser(this->_users, channelName);
-
-		bool userExists = this->_channels[channelIndex].userExists(nickname);
-
-		Channel	*currentChannel = &this->_channels[channelIndex];
-		User	&currentUser = this->_users[userIndex];
-
-		// create channel if it doesn't exist yet
-		if (channelIndex == -1)
-		{
-			// return error - ERR_NOSUCHCHANNEL
-			Channel newChannel(channelName);
-			this->_channels.push_back(newChannel);
-			channelIndex = getChannel(this->_channels, channelName);
-		}
-		if (channelIndex != -1 && userExists)
-		{
-			if (currentChannel->_settings->inviteOnly) // check if user is invited
-			{
-				if (this->_channels[channelIndex].isInvited(nickname))
-				{
-					this->_channels[channelIndex].join(currentUser);
-					// return RPL_TOPIC
-				}
-				else
-				{
-					// return error - ERR_INVITEONLYCHAN
-				}
-			}
-			else if (currentChannel->_settings->password.length() > 0) // check if password for channel is correct
-			{
-				if (this->_channels[channelIndex]._settings->password == password)
-				{
-					this->_channels[channelIndex].join(currentUser);
-					// return RPL_TOPIC
-				}
-				else
-				{
-					// return error - ERR_BADCHANNELKEY
-				}
-			}
-			else if (!currentChannel->_settings->inviteOnly && currentChannel->_settings->password.length() != 0) // Everyone can join
-			{
-				this->_channels[channelIndex].join(currentUser);
-				// return RPL_TOPIC
-			}
-		}
-}
-
-void Server::Command_KICK(TranslateBNF msg,int iter)
+void	Server::parsing(std::string buffer, int user_id)
 {
-	(void)iter;
-		std::string channelName = msg.getter_params()[0].trailing_or_middle;
-		std::string nickname = msg.getter_params()[1].trailing_or_middle;
-		std::string nicknameToBeKicked = msg.getter_params()[1].trailing_or_middle;
-		std::string comment = msg.getter_params()[2].trailing_or_middle;
-
-		int channelIndex = getChannel(this->_channels, channelName);
-
-		bool userExists = this->_channels[channelIndex].userExists(nickname);
-		bool userToBeKickedExists = this->_channels[channelIndex].userExists(nicknameToBeKicked);
-
-		Channel	*currentChannel = &this->_channels[channelIndex];
-
-		if (channelIndex != -1 && userExists && userToBeKickedExists)
-		{
-			if (currentChannel->isAdmin(nickname)) // check if user that wants to kick has privileges
-			{
-				currentChannel->kick(nicknameToBeKicked);
-				if (comment.length() > 0)
-				{
-					// send message to client with [comment] variable
-				}
-				else
-				{
-					// send message to client without a comment
-				}
-			}
-			else
-			{
-				// return error - ERR_CHANOPRIVSNEEDED
-			}
-		}
-		else if (channelIndex != -1)
-		{
-			// return error - ERR_NOSUCHCHANNEL
-		}
-		else if (!userToBeKickedExists)
-		{
-			// return error - ERR_NOTONCHANNEL
-		}
-}
-
-	void	Server::Command_TOPIC(TranslateBNF mag, iter)
-		{
-
-		std::string channelName = msg.getter_params()[0].trailing_or_middle;
-		std::string nickname = msg.getter_params()[1].trailing_or_middle;
-		std::string topic = msg.getter_params()[2].trailing_or_middle;
-
-		int channelIndex = getChannel(this->_channels, channelName);
-
-		bool userExists = this->_channels[channelIndex].userExists(nickname);
-
-		Channel	*currentChannel = &this->_channels[channelIndex];
-
-		if (channelIndex != -1 && userExists)
-		{
-			if (topic.length() == 0)
-			{
-				if (currentChannel->getTopic().length() > 0)
-				{
-					// return - RPL_TOPIC
-				}
-				else
-				{
-					// return - RPL_NOTOPIC
-				}
-			}
-			else
-			{
-				if (currentChannel->isAdmin(nickname))
-				{
-					currentChannel->setTopic(nickname, topic);
-					// return - RPL_TOPIC
-				}
-				else
-				{
-					// return - ERR_CHANOPRIVSNEEDED
-				}
-			}
-		}
-		else if (!userExists)
-		{
-			// return error - ERR_NOTONCHANNEL
-		}
-		}
-
-void	Server::parsing(std::string buffer, int iter)
-{
-	// (void)iter;// just for ignoring Error flags for now
+	// (void)user_id;// just for ignoring Error flags for now
 	for (size_t i = 0; i < buffer.size(); i++)
 	{
 		std::cout << (int)buffer[i] << std::endl;
@@ -259,90 +111,61 @@ void	Server::parsing(std::string buffer, int iter)
 	{
 		//will be his own function
 		std::cout << "Cap send" << std::endl;
-		send(this->_fds[iter].fd,":irc.unknown.net CAP * LS :\13\10",30,0);// no capabilities
-		send(this->_fds[iter].fd,"PONG",4,0);// temp
+		send(this->_fds[user_id].fd,":irc.unknown.net CAP * LS :\13\10",30,0);// no capabilities
+		send(this->_fds[user_id].fd,"PONG",4,0);// temp
 	}
 	else  if (msg.getter_command() == "PING")
 	{
 		//will be his own function
 		TranslateBNF send_msg(msg.get_full_msg());
 		send_msg.setter_command("PONG");
-		send(this->_fds[iter].fd,send_msg.get_full_msg().c_str(),send_msg.get_full_msg().size(),0);
+		send(this->_fds[user_id].fd,send_msg.get_full_msg().c_str(),send_msg.get_full_msg().size(),0);
 	}
 	else if (msg.getter_command() == "PASS")
 	{
 		// std::cout << "password: "<< msg.getter_params()[0].trailing_or_middle << std::endl;
-		Command_PASS(msg.getter_params()[0].trailing_or_middle, iter);
+		Command_PASS(msg.getter_params()[0].trailing_or_middle, user_id);
 		// call PASS_func
 	}
-	if (this->_users[iter]._valid_password == false)//check here if passwort is vaild
+	if (this->_users[user_id]._valid_password == false)//check here if passwort is vaild
 	{
-		// send(this->_fds[iter].fd,)
+		// send(this->_fds[user_id].fd,)
 		return ;
 	}
 	// protection for everthing that need Password_valid
 	else if (msg.getter_command() == "NICK")
 	{
-		if (_users[iter]._valid_nickname == false && msg.getter_params()[0].trailing_or_middle.empty()){
-			_users[iter].setNickname(msg.getter_params()[0].trailing_or_middle);
-			_users[iter]._valid_nickname = true;
-		}
-		else {
-
-		}
-		//call Nick_func
-		std::cout << "nickname: "<< _users[iter].getNickname() << std::endl;
+		Command_NICK(msg, user_id);
 	}
 	// protection for everthing that need valid_nick
-	if (this->_users[iter]._valid_nickname == false)//check here if passwort is vaild
+	if (this->_users[user_id]._valid_nickname == false)//check here if passwort is vaild
 	{
-		// send(this->_fds[iter].fd,)
+		// send(this->_fds[user_id].fd,)
 		return ;
 	}
 	else if (msg.getter_command() == "JOIN")
 	{
-		Command_JOIN(msg ,iter);
+		Command_JOIN(msg ,user_id);
 	}
 	else if (msg.getter_command() == "KICK")
 	{
-		Command_KICK(msg,iter);
+		Command_KICK(msg,user_id);
 	}
 	else if (msg.getter_command() == "TOPIC")
 	{
-		Command_TOPIC(msg, iter);
+		Command_TOPIC(msg, user_id);
 	}
 	else if (msg.getter_command() == "PART")
 	{
-		std::string channelName = msg.getter_params()[0].trailing_or_middle;
-		std::string nickname = msg.getter_params()[1].trailing_or_middle;
-
-		int channelIndex = getChannel(this->_channels, channelName);
-		bool userExists = this->_channels[channelIndex].userExists(nickname);
-
-		Channel	*currentChannel = &this->_channels[channelIndex];
-
-		if (channelIndex != -1 && userExists)
-			currentChannel->part(nickname);
-		else if (channelName.length() == 0)
-		{
-			// return error - ERR_NEEDMOREPARAMS
-		}
-		else if (channelIndex == -1)
-		{
-			// return error - ERR_NOSUCHCHANNEL
-		}
-		else if (!userExists)
-		{
-			// return error - ERR_NOTONCHANNEL
-		}
+		Command_TOPIC(msg, user_id);
 	}
 	else if (msg.getter_command() == "MODE")
 	{
-
+		Command_MODE(msg, user_id);
 	}
 	else if (msg.getter_command() == "PRIVMSG")
 	{
-		//call PRVT_func
+		Command_P_MSG(msg, user_id);
 	}
 }
 
