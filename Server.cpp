@@ -328,17 +328,26 @@ void	Server::parsing(std::string buffer, int iter)
 	}
 }
 
+
 void Server::recvMsg(size_t i)
 {
 
 	char buffer[1024];
 	int valread;
+	memset(buffer, 0, 1024); //set the buffer to 0
 	valread = recv(_fds[i].fd, buffer, 1024, 0);
-	_users[i].msg.append(buffer);
-	if (valread == 0)
+	if (valread == 0)// check for error 
 	{
 		std::cout << "Connection Closed " << i << std::endl;
 		return ;
+	}
+	this->_users[i].insert_in_user_buffer(buffer);
+	while (1)
+	{
+		std::string command= this->_users[i].get_next_command();
+		if (command[0] == 0)
+			break;
+		std::cout << "new command"<< std::endl << command << std::endl;
 	}
 	// if (buffer[0] != 0)
 	// 	std::cout << "> " << buffer << std::endl;

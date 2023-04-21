@@ -19,6 +19,8 @@ class User : public pollfd
 		User();
 		// User(const User &a);
 		~User();
+		void				insert_in_user_buffer(std::string read_buffer);
+		std::string   		get_next_command( void );
 		User				&operator= (const User& a);
 		void				setNickname( const std::string &name);
 		const std::string	&getNickname( void );
