@@ -3,7 +3,7 @@
 #define	letter		"abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 #define	number		"0123456789"
 #define	special		"-[]\\`ˆ{}"
-#define	nonnonwhite	"\32\10\13\0"
+#define	nonnonwhite	"\n\r "
 //#define	non_empty	"\32\10\13\0" // first one cant be ':'
 //#define empty 		"\10\13\0"
 
@@ -48,7 +48,7 @@ void	TranslateBNF::deconstruct_prefix(std::string& msg,int& i)
 	if (msg[i] == '@')
 	{
 		i++;
-		while (tools::_nonnonwhite.find(msg[i]) == std::string::npos && msg[i] != 0 && msg[i] != ' ')
+		while (tools::_nonnonwhite.find(msg[i]) == std::string::npos && msg[i] != 0)
 		{
 			prefix.host.push_back(msg[i]);
 			i++;
@@ -120,7 +120,7 @@ void	TranslateBNF::deconstruct_msg (std::string msg)
 	deconstruct_command(msg , i);
 	while (msg[i] == ' ')
 		i++;
-	while(msg[i] != '\10' && msg[i+1] != '\13')
+	while(msg[i] != '\r' && msg[i+1] != '\n')
 	{
 		while (msg[i] == ' ')
 			i++;

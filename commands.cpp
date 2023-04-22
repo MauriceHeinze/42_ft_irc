@@ -15,6 +15,7 @@ void	Server::Command_PASS(TranslateBNF msg, int user_id)
 	}
 	else
 	{
+		std::cout << get_password().size() << " | " << str.size() << std::endl;
 		send_msg(":Server ERROR Password is false\r\n", user_id);
 		_users[user_id]._valid_password = false;
 	}

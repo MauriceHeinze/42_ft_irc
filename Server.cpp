@@ -66,13 +66,25 @@ void Server::startServer(){
 		for (size_t i = 0; i < _fds.size(); i++) {
 			if (_fds[i].revents & (POLLHUP | POLL_ERR | POLLNVAL))
 			{
+				std::vector<User>::iterator it;
 				close(_fds[i].fd);
+				std::cout << "here5" << std::endl;
 				std::cout << " Closing this fd = " <<_fds[i].fd << std::endl;
+				std::cout << "here6" << std::endl;
 				_fds.erase(_fds.begin() + i);
-				_fds.shrink_to_fit();
-				_users.erase(_users.begin() + i);
-				_users.shrink_to_fit();
+				std::cout << "here7" << std::endl;
+				// _fds.shrink_to_fit();
+				std::cout << "here8"  <<  std::endl;
+				it = _users.begin();
+				std::cout << "here_b" <<  std::endl;
+				it += i -1 ;
+				std::cout << "some "<< it->getUsername() << std::endl;
+				_users.erase(it);
+				std::cout << "here9" << std::endl;
+				// _users.shrink_to_fit();
+				std::cout << "here10" << std::endl;
 			}
+			std::cout << "here4" << std::endl;
 			if (_fds[i].revents & POLLIN) {
 				if (_fds[i].fd == _socket) {
 					acceptConnection();
@@ -83,6 +95,7 @@ void Server::startServer(){
 					recvMsg(i);
 				}
 			}
+			std::cout << "here3" << std::endl;
 		}
 	}
 	close( _socket);
@@ -90,6 +103,7 @@ void Server::startServer(){
 
 void Server::acceptConnection()
 {
+	std::cout << "here2" << std::endl;
 	sockaddr_in clientAddress;
 	socklen_t clientAddressSize = sizeof(clientAddress);
 	int clientSocket = accept(_socket, (sockaddr *)&clientAddress, &clientAddressSize);
@@ -108,7 +122,9 @@ void Server::acceptConnection()
 
 void	Server::parsing(std::string buffer, int user_id)
 {
+	std::cout << "here1" << std::endl;
 	TranslateBNF msg(buffer);
+
 	if (msg.getter_command() == "CAP")
 	{
 		Command_CAP(msg, user_id);
@@ -121,7 +137,7 @@ void	Server::parsing(std::string buffer, int user_id)
 	{
 		Command_PASS(msg, user_id);
 	}
-	if (this->_users[user_id]._valid_password == false)//check here if passwort is vaild
+	else if (this->_users[user_id]._valid_password == false)//check here if passwort is vaild
 	{
 		// send(this->_fds[user_id].fd,)
 		return ;
@@ -132,9 +148,10 @@ void	Server::parsing(std::string buffer, int user_id)
 		Command_NICK(msg, user_id);
 	}
 	// protection for everthing that need valid_nick
-	if (this->_users[user_id]._valid_nickname == false)//check here if passwort is vaild
+	else if (this->_users[user_id]._valid_nickname == false)//check here if passwort is vaild
 	{
 		// send(this->_fds[user_id].fd,)
+		send_msg(":Server Invalid Nickname", user_id);
 		return ;
 	}
 	else if (msg.getter_command() == "JOIN")
