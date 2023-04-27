@@ -40,7 +40,7 @@ int		getUser(std::vector<User> users, std::string nickname);
 #define RPL_UMODEIS(nickname, mode) "221 " nickname " " mode "\13\10" ;																// "<user mode string>"
 
 // JOIN
-#define ERR_INVITEONLYCHAN(nickname, channel) "473 " nickname " " channel " :Cannot join channel (+i)\13\10" ;						// "<channel> :Cannot join channel (+i)"
+#define ERR_INVITEONLYCHAN(nickname, channel) "473 " nickname " " channel " :Cannot join channel (+i)\r\n" ;						// "<channel> :Cannot join channel (+i)"
 #define ERR_CHANNELISFULL(nickname, channel) "471 " nickname " " channel " :Cannot join channel (+l)\13\10" ;							// "<channel> :Cannot join channel (+l)"
 #define RPL_TOPIC(nickname, channel, topic) "332 " nickname " " channel " :" topic "\13\10" ;											// "<channel> :<topic>"
 #define ERR_BANNEDFROMCHAN(nickname, channel) "474 " nickname " " channel " :Cannot join channel (+b)\13\10" ;						// "<channel> :Cannot join channel (+b)"

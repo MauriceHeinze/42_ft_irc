@@ -1,5 +1,9 @@
 #include "./Headers/Utils.hpp"
 
+#ifndef UINT_MAX
+ # define UINT_MAX 500
+#endif
+
 Channel::Channel(std::string name) :_name(name)
 {
 	_settings->inviteOnly = false;
@@ -48,7 +52,7 @@ void	Channel::part(std::string nickname)
 		if (_perm[i].name->getNickname() == nickname)
 		{
 			_perm.erase(_perm.begin() + i);
-			_perm.shrink_to_fit();
+			// _perm.shrink_to_fit();
 			return ;
 		}
 	}
@@ -63,7 +67,7 @@ void	Channel::kick(std::string nickname)
 		if (_perm[k].name->getNickname() == nickname)
 		{
 			_perm.erase(_perm.begin() + k);
-			_perm.shrink_to_fit();
+			// _perm.shrink_to_fit();
 			return ;
 		}
 	}

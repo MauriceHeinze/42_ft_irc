@@ -2,8 +2,11 @@
 // #include	<sstream>
 // #include	"./Headers/Commands.hpp"
 #include	"./Headers/Utils.hpp"
+#include	<stdlib.h>
 
 #define SEND_FLAGS 0
+
+#define out(x) std::cout << x << std::endl;
 
 void	Server::send_msg(std::string msg,int user_id)
 {
@@ -44,9 +47,6 @@ void Server::setSocket(){
 		throw(SocketListenFail());
 	pollfd fd = {_socket, POLLIN, 0};
 	_fds.push_back(fd);
-	// User first_one;
-	// first_one._pollfd->fd = fd.fd;
-	// _users.push_back(first_one);
 }
 
 void Server::startServer(){
@@ -64,29 +64,14 @@ void Server::startServer(){
 		if (pollVal == -1)
 			throw(PollFail());
 		for (size_t i = 0; i < _fds.size(); i++) {
-			if (_fds[i].revents & (POLLHUP | POLL_ERR | POLLNVAL))
+			if ( i && _fds[i].revents & (POLLHUP | POLLERR | POLLNVAL))
 			{
-				std::vector<User>::iterator it;
 				close(_fds[i].fd);
-				std::cout << "here5" << std::endl;
-				std::cout << " Closing this fd = " <<_fds[i].fd << std::endl;
-				std::cout << "here6" << std::endl;
 				_fds.erase(_fds.begin() + i);
-				std::cout << "here7" << std::endl;
-				// _fds.shrink_to_fit();
-				std::cout << "here8"  <<  std::endl;
-				it = _users.begin();
-				std::cout << "here_b" <<  std::endl;
-				it += i -1 ;
-				std::cout << "some "<< it->getUsername() << std::endl;
-				_users.erase(it);
-				std::cout << "here9" << std::endl;
-				// _users.shrink_to_fit();
-				std::cout << "here10" << std::endl;
+				_users.erase(_users.begin() - 1);
 			}
-			std::cout << "here4" << std::endl;
 			if (_fds[i].revents & POLLIN) {
-				if (_fds[i].fd == _socket) {
+				if (!i) {
 					acceptConnection();
 				}
 				else
@@ -95,7 +80,6 @@ void Server::startServer(){
 					recvMsg(i);
 				}
 			}
-			std::cout << "here3" << std::endl;
 		}
 	}
 	close( _socket);
@@ -103,7 +87,6 @@ void Server::startServer(){
 
 void Server::acceptConnection()
 {
-	std::cout << "here2" << std::endl;
 	sockaddr_in clientAddress;
 	socklen_t clientAddressSize = sizeof(clientAddress);
 	int clientSocket = accept(_socket, (sockaddr *)&clientAddress, &clientAddressSize);
@@ -120,11 +103,13 @@ void Server::acceptConnection()
 	send(clientSocket, msg.c_str(), msg.size(), 0);
 }
 
+
+
 void	Server::parsing(std::string buffer, int user_id)
 {
-	std::cout << "here1" << std::endl;
-	TranslateBNF msg(buffer);
+ 	TranslateBNF msg(buffer);
 
+	// out("After msg creation")
 	if (msg.getter_command() == "CAP")
 	{
 		Command_CAP(msg, user_id);
@@ -137,10 +122,10 @@ void	Server::parsing(std::string buffer, int user_id)
 	{
 		Command_PASS(msg, user_id);
 	}
-	else if (this->_users[user_id]._valid_password == false)//check here if passwort is vaild
+	else if (std::cout << "check pass" << std::endl || this->_users[user_id]._valid_password == false)//check here if passwort is vaild
 	{
 		// send(this->_fds[user_id].fd,)
-		return ;
+		// return ;
 	}
 	// protection for everthing that need Password_valid
 	else if (msg.getter_command() == "NICK")
@@ -148,8 +133,9 @@ void	Server::parsing(std::string buffer, int user_id)
 		Command_NICK(msg, user_id);
 	}
 	// protection for everthing that need valid_nick
-	else if (this->_users[user_id]._valid_nickname == false)//check here if passwort is vaild
+	else if (std::cout << "check  user" << std::endl || this->_users[user_id]._valid_nickname == false)//check here if passwort is vaild
 	{
+		
 		// send(this->_fds[user_id].fd,)
 		send_msg(":Server Invalid Nickname", user_id);
 		return ;
@@ -186,7 +172,7 @@ void Server::recvMsg(size_t user_id)
 
 	char buffer[1024];
 	int valread;
-	memset(buffer, 0, 1024); //set the buffer to 0
+	//memset(buffer, 0, 1024); //set the buffer to 0
 	valread = recv(_fds[user_id].fd, buffer, 1024, 0);
 
 

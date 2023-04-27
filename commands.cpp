@@ -23,6 +23,7 @@ void	Server::Command_PASS(TranslateBNF msg, int user_id)
 
 void Server::Command_JOIN(TranslateBNF msg ,int user_id)
 {
+	std::cout << "in  JOIN" << std::endl;
 	(void)user_id;
 	std::string channelName = msg.getter_params()[0].trailing_or_middle;
 	std::string nickname = msg.getter_params()[1].trailing_or_middle;
@@ -219,5 +220,5 @@ void	Server::Command_CAP(TranslateBNF msg, int user_id)
 {
 	(void)msg;
 	std::cout << "Cap send" << std::endl;
-	send_msg(":irc.unknown.net CAP * LS :\13\10", user_id);
+	send_msg(":irc.unknown.net CAP * LS :\r\n", user_id);
 }

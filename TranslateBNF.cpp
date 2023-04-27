@@ -112,8 +112,7 @@ void	TranslateBNF::deconstruct_msg (std::string msg)
 {
 	int	i = 0;
 	std::cout << msg << std::endl;
-	std::cout << msg.front()<<std::endl;
-	if (msg.front() == ':')
+		if (msg[0] == ':')
 	{
 		deconstruct_prefix(msg , i);
 	}
