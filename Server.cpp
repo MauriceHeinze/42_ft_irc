@@ -47,6 +47,8 @@ void Server::setSocket(){
 		throw(SocketListenFail());
 	pollfd fd = {_socket, POLLIN, 0};
 	_fds.push_back(fd);
+	User bot;
+	_users.push_back(bot);
 }
 
 void Server::startServer(){
@@ -64,18 +66,24 @@ void Server::startServer(){
 		if (pollVal == -1)
 			throw(PollFail());
 		for (size_t i = 0; i < _fds.size(); i++) {
+			std::cout << "for loop =" << i << std::endl;
 			if ( i && _fds[i].revents & (POLLHUP | POLLERR | POLLNVAL))
 			{
 				close(_fds[i].fd);
 				_fds.erase(_fds.begin() + i);
-				_users.erase(_users.begin() - 1);
+				_fds.shrink_to_fit();
+				_users.erase(_users.begin() + i);
+				// _users.shrink_to_fit();
+				out("delete")
+				out(i)
 			}
-			if (_fds[i].revents & POLLIN) {
-				if (!i) {
+			else if (_fds[i].revents & POLLIN) {
+				if (i == 0) {
 					acceptConnection();
 				}
 				else
 				{
+					out("--------------------------------------------------")
 					std::cout << "MSG recieve from socket " << i << std::endl;
 					recvMsg(i);
 				}
@@ -169,19 +177,21 @@ void	Server::parsing(std::string buffer, int user_id)
 
 void Server::recvMsg(size_t user_id)
 {
-
+	out("user id")
+	out(user_id)
 	char buffer[1024];
 	int valread;
 	//memset(buffer, 0, 1024); //set the buffer to 0
+	out("before recv")
 	valread = recv(_fds[user_id].fd, buffer, 1024, 0);
-
-
+	out("after recv")
 	if (valread == 0)// check for error 
 	{
 		std::cout << "Connection Closed " << user_id << std::endl;
 		return ;
 	}
 	this->_users[user_id].insert_in_user_buffer(buffer);
+	out("after insert_in_user_buffer")
 	while (1)
 	{
 		std::string command= this->_users[user_id].get_next_command();

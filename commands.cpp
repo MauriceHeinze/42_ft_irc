@@ -37,7 +37,7 @@ void Server::Command_JOIN(TranslateBNF msg ,int user_id)
 	// create channel if it doesn't exist yet
 	if (channelIndex == -1)
 	{
-		// return error - ERR_NOSUCHCHANNEL
+		this->send_msg(ERR_NOSUCHCHANNEL(nickname, currentChannel->getName()), user_id);
 		Channel newChannel(channelName);
 		this->_channels.push_back(newChannel);
 		channelIndex = getChannel(this->_channels, channelName);
@@ -49,11 +49,11 @@ void Server::Command_JOIN(TranslateBNF msg ,int user_id)
 			if (this->_channels[channelIndex].isInvited(nickname))
 			{
 				this->_channels[channelIndex].join(currentUser);
-				// return RPL_TOPIC
+				this->send_msg(RPL_TOPIC(nickname, currentChannel->getName(), currentChannel->getTopic()), user_id);
 			}
 			else
 			{
-				// return error - ERR_INVITEONLYCHAN
+				this->send_msg(ERR_INVITEONLYCHAN(nickname, currentChannel->getName()), user_id);
 			}
 		}
 		else if (currentChannel->_settings->password.length() > 0) // check if password for channel is correct
@@ -61,17 +61,15 @@ void Server::Command_JOIN(TranslateBNF msg ,int user_id)
 			if (this->_channels[channelIndex]._settings->password == password)
 			{
 				this->_channels[channelIndex].join(currentUser);
-				// return RPL_TOPIC
+				this->send_msg(RPL_TOPIC(nickname, currentChannel->getName(), currentChannel->getTopic()), user_id);
 			}
 			else
-			{
-				// return error - ERR_BADCHANNELKEY
-			}
+				this->send_msg(ERR_BADCHANNELKEY(nickname, channelName), user_id);
 		}
 		else if (!currentChannel->_settings->inviteOnly && currentChannel->_settings->password.length() != 0) // Everyone can join
 		{
 			this->_channels[channelIndex].join(currentUser);
-			// return RPL_TOPIC
+			this->send_msg(RPL_TOPIC(nickname, currentChannel->getName(), currentChannel->getTopic()), user_id);
 		}
 	}
 }
@@ -103,18 +101,14 @@ void Server::Command_KICK(TranslateBNF msg,int user_id)
 			}
 		}
 		else
-		{
-			// return error - ERR_CHANOPRIVSNEEDED
-		}
+			this->send_msg(ERR_CHANOPRIVSNEEDED(nickname, currentChannel->getName()), user_id);
 	}
 	else if (channelIndex != -1)
 	{
-		// return error - ERR_NOSUCHCHANNEL
+		this->send_msg(ERR_NOSUCHCHANNEL(nickname, currentChannel->getName()), user_id);
 	}
 	else if (!userToBeKickedExists)
-	{
-		// return error - ERR_NOTONCHANNEL
-	}
+		this->send_msg(ERR_NOTONCHANNEL(nickname, currentChannel->getName()), user_id);
 }
 
 void	Server::Command_TOPIC(TranslateBNF msg,int user_id)
@@ -132,31 +126,23 @@ void	Server::Command_TOPIC(TranslateBNF msg,int user_id)
 		if (topic.length() == 0)
 		{
 			if (currentChannel->getTopic().length() > 0)
-			{
-				// return - RPL_TOPIC
-			}
+				this->send_msg(RPL_TOPIC(nickname, currentChannel->getName(), currentChannel->getTopic()), user_id);
 			else
-			{
-				// return - RPL_NOTOPIC
-			}
+				this->send_msg(RPL_NOTOPIC(nickname, currentChannel->getName()), user_id);
 		}
 		else
 		{
 			if (currentChannel->isAdmin(nickname))
 			{
 				currentChannel->setTopic(nickname, topic);
-				// return - RPL_TOPIC
+				this->send_msg(RPL_TOPIC(nickname, currentChannel->getName(), currentChannel->getTopic()), user_id);
 			}
 			else
-			{
-				// return - ERR_CHANOPRIVSNEEDED
-			}
+				this->send_msg(ERR_CHANOPRIVSNEEDED(nickname, currentChannel->getName()), user_id);
 		}
 	}
 	else if (!userExists)
-	{
-		// return error - ERR_NOTONCHANNEL
-	}
+		this->send_msg(ERR_NOTONCHANNEL(nickname, currentChannel->getName()), user_id);
 }
 
 void Server::Command_NICK(TranslateBNF msg, int user_id)
@@ -183,17 +169,11 @@ void	Server::Command_PART(TranslateBNF msg, int user_id)
 	if (channelIndex != -1 && userExists)
 		currentChannel->part(nickname);
 	else if (channelName.length() == 0)
-	{
-		// return error - ERR_NEEDMOREPARAMS
-	}
+		this->send_msg(ERR_NEEDMOREPARAMS(nickname, msg.getter_command()), user_id);
 	else if (channelIndex == -1)
-	{
-		// return error - ERR_NOSUCHCHANNEL
-	}
+		this->send_msg(ERR_NOSUCHCHANNEL(nickname, currentChannel->getName()), user_id);
 	else if (!userExists)
-	{
-		// return error - ERR_NOTONCHANNEL
-	}
+		this->send_msg(ERR_NOTONCHANNEL(nickname, currentChannel->getName()), user_id);
 }
 
 void	Server::Command_P_MSG(TranslateBNF msg, int user_id)
