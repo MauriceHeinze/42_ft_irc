@@ -177,21 +177,16 @@ void	Server::parsing(std::string buffer, int user_id)
 
 void Server::recvMsg(size_t user_id)
 {
-	out("user id")
-	out(user_id)
-	char buffer[1024];
+	char buffer[1];
 	int valread;
-	//memset(buffer, 0, 1024); //set the buffer to 0
-	out("before recv")
+	memset(buffer, 0, 1024); //set the buffer to 0
 	valread = recv(_fds[user_id].fd, buffer, 1024, 0);
-	out("after recv")
 	if (valread == 0)// check for error 
 	{
 		std::cout << "Connection Closed " << user_id << std::endl;
 		return ;
 	}
 	this->_users[user_id].insert_in_user_buffer(buffer);
-	out("after insert_in_user_buffer")
 	while (1)
 	{
 		std::string command= this->_users[user_id].get_next_command();
