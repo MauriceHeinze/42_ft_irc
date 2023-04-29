@@ -25,8 +25,15 @@ int		getChannel(std::vector<Channel> channels, std::string channelName);
 int		getUser(std::vector<User> users, std::string nickname);
 
 //  NOTE USE THE  NICKNAME AFER THE NUMBER
+// PASS
+#define ERR_ALREADYREGISTRED "462 :You may not reregister\r\n"
+#define ERR_PASSWDMISMATCH "462 :Password incorrect\r\n"
+
+// NICK
+#define ERR_NICKNAMEINUSE(nickname) "433 " + nickname + " :Nickname is already in use\r\n"
+
 // MODES
-#define ERR_NEEDMOREPARAMS(nickname, command) "462 " + nickname + " " + command + " :Not enough parameters\r\n"						// "<command> :Not enough parameters"
+#define ERR_NEEDMOREPARAMS(nickname, command) "461 " + nickname + " " + command + " :Not enough parameters\r\n"						// "<command> :Not enough parameters"
 #define ERR_CHANOPRIVSNEEDED(nickname, channel) "482 " + nickname + " " + channel + " :You're not channel operator\r\n"					// "<channel> :You're not channel operator"
 #define ERR_NOTONCHANNEL(nickname, channel)  "442 " + nickname + " " + channel + " :You're not on that channel\r\n"						// "<channel> :You're not on that channel"
 #define RPL_BANLIST(nickname, channel) "367 " + nickname + " " + command + " " + banid "\r\n"												// "<channel> <banid>"

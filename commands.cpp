@@ -2,21 +2,28 @@
 
 void	Server::Command_PASS(TranslateBNF msg, int user_id)
 {
-	std::string str = msg.getter_params()[0].trailing_or_middle;
+	std::string str;
 	if ( _users[user_id]._valid_password == true )
 	{
-		send_msg(":Server ERROR Password already is correct\r\n", user_id);
+		send_msg(ERR_ALREADYREGISTRED, user_id);
 		return ;
 	}
-	else if (!str.empty() && get_password().compare(str) == 0)
+	if(msg.getter_params().size() > 0)
+		str = msg.getter_params()[0].trailing_or_middle;
+	else
 	{
-		send_msg(":Server INFO Password is correct\r\n", user_id);
+		send_msg(ERR_NEEDMOREPARAMS(this->_users[user_id].getNickname(), msg.getter_command()), user_id);
+		return ;
+	}
+	if (!str.empty() && get_password().compare(str) == 0)
+	{
+		send_msg("462 :password correct\r\n", user_id);
 		_users[user_id]._valid_password = true;
 	}
 	else
 	{
 		std::cout << get_password().size() << " | " << str.size() << std::endl;
-		send_msg(":Server ERROR Password is false\r\n", user_id);
+		send_msg(ERR_PASSWDMISMATCH, user_id);
 		_users[user_id]._valid_password = false;
 	}
 }
@@ -147,13 +154,18 @@ void	Server::Command_TOPIC(TranslateBNF msg,int user_id)
 
 void Server::Command_NICK(TranslateBNF msg, int user_id)
 {
-	(void)user_id;
-	if (_users[user_id]._valid_nickname == false && msg.getter_params()[0].trailing_or_middle.empty()){
-		_users[user_id].setNickname(msg.getter_params()[0].trailing_or_middle);
-		_users[user_id]._valid_nickname = true;
+	// (void)user_id;
+	if (msg.getter_params().size() > 0)
+	{
+		if (_users[user_id]._valid_nickname == false && !msg.getter_params()[0].trailing_or_middle.empty()){
+			_users[user_id].setNickname(msg.getter_params()[0].trailing_or_middle);
+			_users[user_id]._valid_nickname = true;
+		}
+		else if (isUser(_users, msg.getter_params()[0].trailing_or_middle))
+			send_msg(ERR_NICKNAMEINUSE(msg.getter_params()[0].trailing_or_middle), user_id);
 	}
-	else {
-	}
+	else
+		send_msg(ERR_NEEDMOREPARAMS(this->_users[user_id].getNickname(), msg.getter_command()), user_id);
 	//call Nick_func
 	std::cout << "nickname: "<< _users[user_id].getNickname() << std::endl;
 }
@@ -178,8 +190,24 @@ void	Server::Command_PART(TranslateBNF msg, int user_id)
 
 void	Server::Command_P_MSG(TranslateBNF msg, int user_id)
 {
-	(void)user_id;
-	(void)msg;
+	// (void)user_id;
+	// (void)msg;
+	if (msg.getter_params().size() > 0)
+	{
+		if (msg.getter_params()[0].trailing_or_middle.find("#") != std::string::npos){
+			// if (isChannel(_channels, msg.getter_params()[0].trailing_or_middle)){
+				send_msg(":" + _users[user_id].getNickname() + " PRIVMSG " + msg.getter_params()[0].trailing_or_middle + " :" + msg.getter_params()[1].trailing_or_middle + "\r\n", user_id);
+			// }
+			// else
+			// 	return;
+		}
+		else
+			send_msg(":" + _users[user_id].getNickname() + " PRIVMSG " + msg.getter_params()[0].trailing_or_middle + " :" + msg.getter_params()[1].trailing_or_middle + "\r\n", user_id);
+
+
+	}
+	else
+		send_msg(ERR_NEEDMOREPARAMS(this->_users[user_id].getNickname(), msg.getter_command()), user_id);
 }
 
 void	Server::Command_MODE(TranslateBNF msg, int user_id)

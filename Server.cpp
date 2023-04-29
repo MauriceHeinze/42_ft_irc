@@ -130,10 +130,10 @@ void	Server::parsing(std::string buffer, int user_id)
 	{
 		Command_PASS(msg, user_id);
 	}
-	else if (std::cout << "check pass" << std::endl || this->_users[user_id]._valid_password == false)//check here if passwort is vaild
+	else if (this->_users[user_id]._valid_password == false)//check here if passwort is vaild
 	{
 		// send(this->_fds[user_id].fd,)
-		// return ;
+		return ;
 	}
 	// protection for everthing that need Password_valid
 	else if (msg.getter_command() == "NICK")
@@ -141,7 +141,7 @@ void	Server::parsing(std::string buffer, int user_id)
 		Command_NICK(msg, user_id);
 	}
 	// protection for everthing that need valid_nick
-	else if (std::cout << "check  user" << std::endl || this->_users[user_id]._valid_nickname == false)//check here if passwort is vaild
+	else if (this->_users[user_id]._valid_nickname == false)//check here if passwort is vaild
 	{
 		
 		// send(this->_fds[user_id].fd,)
@@ -177,7 +177,7 @@ void	Server::parsing(std::string buffer, int user_id)
 
 void Server::recvMsg(size_t user_id)
 {
-	char buffer[1];
+	char buffer[1024];
 	int valread;
 	memset(buffer, 0, 1024); //set the buffer to 0
 	valread = recv(_fds[user_id].fd, buffer, 1024, 0);

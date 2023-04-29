@@ -6,6 +6,8 @@
 #include	"Utils.hpp"
 #include	"TranslateBNF.hpp"
 
+
+#define out(x) std::cout << x << std::endl;
 class Server
 {
 	public:
