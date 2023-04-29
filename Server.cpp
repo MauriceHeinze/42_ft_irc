@@ -179,6 +179,10 @@ void	Server::parsing(std::string buffer, int user_id)
 	{
 		Command_P_MSG(msg, user_id);
 	}
+	else
+	{
+		out("no Command found")
+	}
 }
 
 
