@@ -136,16 +136,14 @@ void	Server::parsing(std::string buffer, int user_id)
 	{
 		Command_NICK(msg, user_id);
 	}
-	else if (std::cout << "check pass" << std::endl && this->_users[user_id]._valid_password == false)//check here if passwort is vaild
+	else if (this->_users[user_id]._valid_password == false)//check here if passwort is vaild
 	{
-		out("\e[0;31merror no pass\e[0m")
-		this->send_msg(":Server Error Need correct Password\r\n",user_id);
-		// send(this->_fds[user_id].fd,) 
-		// return ;
+		// send(this->_fds[user_id].fd,)
+		return ;
 	}
 	// protection for everthing that need Password_valid
 	// protection for everthing that need valid_nick
-	else if ((std::cout << "check  user" << std::endl) && this->_users[user_id]._valid_nickname == false)//check here if passwort is vaild
+	else if (this->_users[user_id]._valid_nickname == false)//check here if passwort is vaild
 	{
 		
 		// send(this->_fds[user_id].fd,)
