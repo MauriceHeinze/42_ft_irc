@@ -6,7 +6,7 @@
 
 #define SEND_FLAGS 0
 
-#define out(x) std::cout << x << std::endl;
+
 
 void	Server::send_msg(std::string msg,int user_id)
 {
@@ -56,7 +56,7 @@ void Server::startServer(){
 		setSocket();
 	}
 	catch(std::exception& e) {
-		std::cerr << e.what() << '\n';
+		std::cerr << e.what() << std::endl;
 		return ;
 	}
 
@@ -71,9 +71,7 @@ void Server::startServer(){
 			{
 				close(_fds[i].fd);
 				_fds.erase(_fds.begin() + i);
-				_fds.shrink_to_fit();
 				_users.erase(_users.begin() + i);
-				// _users.shrink_to_fit();
 				out("delete")
 				out(i)
 			}
@@ -126,9 +124,17 @@ void	Server::parsing(std::string buffer, int user_id)
 	{
 		Command_PING(msg, user_id);
 	}
+	else if (msg.getter_command() == "USER")
+	{
+		Command_USER(msg, user_id);
+	}
 	else if (msg.getter_command() == "PASS")
 	{
 		Command_PASS(msg, user_id);
+	}
+	else if (msg.getter_command() == "NICK")
+	{
+		Command_NICK(msg, user_id);
 	}
 	else if (this->_users[user_id]._valid_password == false)//check here if passwort is vaild
 	{
@@ -136,15 +142,14 @@ void	Server::parsing(std::string buffer, int user_id)
 		return ;
 	}
 	// protection for everthing that need Password_valid
-	else if (msg.getter_command() == "NICK")
-	{
-		Command_NICK(msg, user_id);
-	}
 	// protection for everthing that need valid_nick
 	else if (this->_users[user_id]._valid_nickname == false)//check here if passwort is vaild
 	{
 		
 		// send(this->_fds[user_id].fd,)
+		out("Nickname")
+		out(this->_users[user_id].getNickname())
+		out("\e[0;31merror invalid Nick\e[0m")
 		send_msg(":Server Invalid Nickname", user_id);
 		return ;
 	}
