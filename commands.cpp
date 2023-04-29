@@ -21,10 +21,34 @@ void	Server::Command_PASS(TranslateBNF msg, int user_id)
 	}
 }
 
+void Server::Command_USER(TranslateBNF msg ,int user_id)
+{
+	out("in command_USER")
+	(void)msg;
+	(void)user_id;
+}
+//:irc.example.com 353 your_nick #channel_name :@user1 +user2 user3
+#define USER_LIST(nickname,channel,user1,user2) "353 " + nickname +" " + channel + " :" + user1 + " " + user2 + "test_fail" + "\r\n" 
+#define RPL_ENDOFNAMES(nickname, channel) "366 " + nickname + " " + channel + "\r\n"
 void Server::Command_JOIN(TranslateBNF msg ,int user_id)
 {
 	std::cout << "in  JOIN" << std::endl;
 	(void)user_id;
+	{
+		std::string channel("abc");
+		std::string nickname("lkrabbe");
+		std::string topic("default");
+		std::string user1("user_alpha");
+		std::string user2("user_better");
+		this->send_msg(":irc.unknown.com 332 lkrabbe #abc :default\r\n",user_id);
+		// this->send_msg(RPL_TOPIC(nickname, channel, topic), user_id);
+		// this->send_msg(USER_LIST(nickname, channel, user1, user2),user_id);
+		// this->send_msg(":irc.example.com 353 lkrabbe :abc user1 user2 user3\r\n",user_id);
+		// this->send_msg((":irc.example.com 353  #abc :@lkrabbe +user2 user3\r\n"),user_id);
+		// this->send_msg((":server_name 366 your_nick #abc :End of /NAMES list\r\n"),user_id);
+		this->send_msg(RPL_ENDOFNAMES(nickname, channel),user_id);
+	}
+	return;
 	std::string channelName = msg.getter_params()[0].trailing_or_middle;
 	std::string nickname = msg.getter_params()[1].trailing_or_middle;
 	std::string password = msg.getter_params()[2].trailing_or_middle;
@@ -63,8 +87,8 @@ void Server::Command_JOIN(TranslateBNF msg ,int user_id)
 				this->_channels[channelIndex].join(currentUser);
 				this->send_msg(RPL_TOPIC(nickname, currentChannel->getName(), currentChannel->getTopic()), user_id);
 			}
-			else
-				this->send_msg(ERR_BADCHANNELKEY(nickname, channelName), user_id);
+			// else
+			// 	this->send_msg(ERR_BADCHANNELKEY(nickname, channelName), user_id);
 		}
 		else if (!currentChannel->_settings->inviteOnly && currentChannel->_settings->password.length() != 0) // Everyone can join
 		{
@@ -76,7 +100,7 @@ void Server::Command_JOIN(TranslateBNF msg ,int user_id)
 
 void Server::Command_KICK(TranslateBNF msg,int user_id)
 {
-	(void)user_id;
+
 	std::string channelName = msg.getter_params()[0].trailing_or_middle;
 	std::string nickname = msg.getter_params()[1].trailing_or_middle;
 	std::string nicknameToBeKicked = msg.getter_params()[1].trailing_or_middle;
@@ -147,15 +171,13 @@ void	Server::Command_TOPIC(TranslateBNF msg,int user_id)
 
 void Server::Command_NICK(TranslateBNF msg, int user_id)
 {
-	(void)user_id;
-	if (_users[user_id]._valid_nickname == false && msg.getter_params()[0].trailing_or_middle.empty()){
+	if (msg.getter_params().size() > 0){
 		_users[user_id].setNickname(msg.getter_params()[0].trailing_or_middle);
 		_users[user_id]._valid_nickname = true;
 	}
 	else {
+		this->send_msg(ERR_NONICKNAMEGIVEN(),user_id);
 	}
-	//call Nick_func
-	std::cout << "nickname: "<< _users[user_id].getNickname() << std::endl;
 }
 
 void	Server::Command_PART(TranslateBNF msg, int user_id)

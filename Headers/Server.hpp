@@ -3,6 +3,7 @@
 
 #include	"Utils.hpp"
 #include	"TranslateBNF.hpp"
+#define out(x) std::cout << x << std::endl;
 
 
 class Server
@@ -52,6 +53,7 @@ class Server
 		};
 	private:
 		void	Command_PASS( TranslateBNF msg, int user_id);
+		void	Command_USER( TranslateBNF msg, int user_id);
 		void	Command_JOIN( TranslateBNF msg, int user_id);
 		void	Command_KICK( TranslateBNF msg, int user_id);
 		void	Command_TOPIC(TranslateBNF msg, int user_id);

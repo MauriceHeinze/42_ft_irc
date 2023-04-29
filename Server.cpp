@@ -7,7 +7,6 @@
 #define SEND_FLAGS 0
 
 
-#define out(x) std::cout << x << std::endl;
 
 void	Server::send_msg(std::string msg,int user_id)
 {
@@ -125,25 +124,34 @@ void	Server::parsing(std::string buffer, int user_id)
 	{
 		Command_PING(msg, user_id);
 	}
+	else if (msg.getter_command() == "USER")
+	{
+		Command_USER(msg, user_id);
+	}
 	else if (msg.getter_command() == "PASS")
 	{
 		Command_PASS(msg, user_id);
 	}
-	else if (std::cout << "check pass" << std::endl || this->_users[user_id]._valid_password == false)//check here if passwort is vaild
-	{
-		// send(this->_fds[user_id].fd,) 
-		// return ;
-	}
-	// protection for everthing that need Password_valid
 	else if (msg.getter_command() == "NICK")
 	{
 		Command_NICK(msg, user_id);
 	}
+	else if (std::cout << "check pass" << std::endl && this->_users[user_id]._valid_password == false)//check here if passwort is vaild
+	{
+		out("\e[0;31merror no pass\e[0m")
+		this->send_msg(":Server Error Need correct Password\r\n",user_id);
+		// send(this->_fds[user_id].fd,) 
+		// return ;
+	}
+	// protection for everthing that need Password_valid
 	// protection for everthing that need valid_nick
-	else if (std::cout << "check  user" << std::endl || this->_users[user_id]._valid_nickname == false)//check here if passwort is vaild
+	else if ((std::cout << "check  user" << std::endl) && this->_users[user_id]._valid_nickname == false)//check here if passwort is vaild
 	{
 		
 		// send(this->_fds[user_id].fd,)
+		out("Nickname")
+		out(this->_users[user_id].getNickname())
+		out("\e[0;31merror invalid Nick\e[0m")
 		send_msg(":Server Invalid Nickname", user_id);
 		return ;
 	}
@@ -176,7 +184,7 @@ void	Server::parsing(std::string buffer, int user_id)
 
 void Server::recvMsg(size_t user_id)
 {
-	char buffer[1];
+	char buffer[1024];
 	int valread;
 	memset(buffer, 0, 1024); //set the buffer to 0
 	valread = recv(_fds[user_id].fd, buffer, 1024, 0);

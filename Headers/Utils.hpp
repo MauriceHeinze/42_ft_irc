@@ -44,7 +44,7 @@ int		getUser(std::vector<User> users, std::string nickname);
 #define ERR_CHANNELISFULL(nickname, channel) "471 " + nickname + " " + channel + " :Cannot join channel (+l)\r\n"							// "<channel> :Cannot join channel (+l)"
 #define RPL_TOPIC(nickname, channel, topic) "332 " + nickname + " " + channel + " :" + topic + "\r\n" 											// "<channel> :<topic>"
 #define ERR_BANNEDFROMCHAN(nickname, channel) "474 " + nickname + " " + channel + " :Cannot join channel (+b)\r\n"						// "<channel> :Cannot join channel (+b)"
-#define ERR_BADCHANNELKEY(nickname, channel) "475 " + nickname + " " + channel + " :Cannot join channel (+k)\r\n"							// "<channel> :Cannot join channel (+k)"
+#define ERR_BADCHANNELKEY(nickname, channel) "475 " nickname " " channel " :Cannot join channel (+k)\r\n"							// "<channel> :Cannot join channel (+k)"
 
 // PRIVATE MESSAGE
 #define ERR_NORECIPIENT(nickname, command) "411 " + nickname + " :No recipient given (" + command + ")\r\n" 								// ":No recipient given (<command>)"
@@ -57,11 +57,19 @@ int		getUser(std::vector<User> users, std::string nickname);
 
 // TOPIC
 #define RPL_NOTOPIC(nickname, channel) "331 " + nickname + " " + channel + " :No topic is set\r\n"										// "<channel> :No topic is set"
-// #define ERR_CHANOPRIVSNEEDED(nickname, channel) "482 " + nickname + " " + channel " :You're not channel operator\r\n"					// "<channel> :You're not channel operator"
+#define ERR_CHANOPRIVSNEEDED(nickname, channel) "482 " + nickname + " " + channel + " :You're not channel operator\r\n"					// "<channel> :You're not channel operator"
 
 // INVITE
 #define RPL_INVITING(nickname, channel) "341 " + channel + " " + nickname + "\r\n"														// "<channel> <nick>"
 #define ERR_NOSUCHNICK(nickname) "401 " + nickname + " :No such nick/channel\r\n"														// "<nickname> :No such nick/channel"
 #define ERR_USERONCHANNEL(nickname, channel) "443 " + nickname + " " + channel + " :is already on channel\r\n"							// "<user> <channel> :is already on channel"
+
+//   NICK
+#define ERR_NONICKNAMEGIVEN() "431 :No nickname given\r\n"
+#define ERR_NICKNAMEINUSE(nickname) "433" + nickname + ":No nickname given\r\n"
+#define ERR_NICKCOLLISION(nickname) "436" + nickname + ":Nickname collision KILL\r\n"
+#define ERR_ERRONEUSNICKNAME(nickname) "432" + nickname + ":Erroneus nickname\r\n"
+
+
 
 #endif
