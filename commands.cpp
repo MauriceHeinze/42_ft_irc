@@ -30,10 +30,21 @@ void	Server::Command_PASS(TranslateBNF msg, int user_id)
 
 void Server::Command_USER(TranslateBNF msg ,int user_id)
 {
-	out("in command_USER")
-	(void)msg;
-	(void)user_id;
+	// (void)user_id;
+	if (msg.getter_params().size() > 0)
+	{
+		if (!msg.getter_params()[0].trailing_or_middle.empty()){
+			_users[user_id].setUsername(msg.getter_params()[0].trailing_or_middle);
+		}
+		else if (isUser(_users, msg.getter_params()[0].trailing_or_middle))
+			send_msg(ERR_ALREADYREGISTRED, user_id);
+	}
+	else
+		this->send_msg(ERR_NEEDMOREPARAMS((std::string)"*", (std::string)"USER"),user_id);
+	//call Nick_func
+	std::cout << "nickname: "<< _users[user_id].getNickname() << std::endl;
 }
+
 //:irc.example.com 353 your_nick #channel_name :@user1 +user2 user3
 #define USER_LIST(nickname,channel,user1,user2) "353 " + nickname +" " + channel + " :" + user1 + " " + user2 + "test_fail" + "\r\n"
 #define RPL_ENDOFNAMES(nickname, channel) "366 " + nickname + " " + channel + "\r\n"
