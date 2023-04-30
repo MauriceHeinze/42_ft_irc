@@ -82,6 +82,8 @@ void Server::Command_USER(TranslateBNF msg ,int user_id)
 		//to all channel members
 		this->send_msg(":lkrabbe JOIN :abc\r\n",user_id);
 	}
+	else if (rpl_msg == rpl_no_rpl)
+		return;
 	else
 		out("error missing !!!!(use_old_channel)")
 	//send list of user and topics if succesfull
@@ -122,7 +124,7 @@ void Server::Command_JOIN(TranslateBNF msg ,int user_id)
 	else
 		channel_password = "";
 	//looks if the channel already is created
-	int channel_id = getChannel(_channels, channel);
+	int channel_id = this->find_Channel(channel);
 	out(channel_id)
 	if (channel_id != -1)
 	{
@@ -142,7 +144,7 @@ void Server::Command_KICK(TranslateBNF msg,int user_id)
 	std::string nickname = msg.getter_params()[1].trailing_or_middle;
 	std::string nicknameToBeKicked = msg.getter_params()[1].trailing_or_middle;
 	std::string comment = msg.getter_params()[2].trailing_or_middle;
-	int channelIndex = getChannel(this->_channels, channelName);
+	int channelIndex = this->find_Channel(channelName);
 	bool userExists = this->_channels[channelIndex].userExists(nickname);
 	bool userToBeKickedExists = this->_channels[channelIndex].userExists(nicknameToBeKicked);
 	Channel	*currentChannel = &this->_channels[channelIndex];
@@ -178,7 +180,7 @@ void	Server::Command_TOPIC(TranslateBNF msg,int user_id)
 	std::string channelName = msg.getter_params()[0].trailing_or_middle;
 	std::string nickname = msg.getter_params()[1].trailing_or_middle;
 	std::string topic = msg.getter_params()[2].trailing_or_middle;
-	int channelIndex = getChannel(this->_channels, channelName);
+	int channelIndex = this->find_Channel(channelName);
 	bool userExists = this->_channels[channelIndex].userExists(nickname);
 	Channel	*currentChannel = &this->_channels[channelIndex];
 
@@ -229,7 +231,7 @@ void	Server::Command_PART(TranslateBNF msg, int user_id)
 	(void)user_id;
 	std::string channelName = msg.getter_params()[0].trailing_or_middle;
 	std::string nickname = msg.getter_params()[1].trailing_or_middle;
-	int channelIndex = getChannel(this->_channels, channelName);
+	int channelIndex = this->find_Channel(channelName);
 	bool userExists = this->_channels[channelIndex].userExists(nickname);
 	Channel	*currentChannel = &this->_channels[channelIndex];
 	if (channelIndex != -1 && userExists)

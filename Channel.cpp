@@ -38,11 +38,14 @@ Channel::~Channel()
 
 }
 
-Channel& Channel::operator= (const Channel &a)
+Channel& Channel::operator= (const Channel &other)
 {
-	if (this != &a)
-		return *this;
-	return (*(this));
+	this->_name = other._name;
+	this->_topic = other._topic;
+	this->_perm = other._perm;
+	this->_invited = other._invited;
+	this->_settings = other._settings;
+	return(*this);
 }
 
 void	Channel::join(User &userRef)
@@ -143,6 +146,9 @@ std::string	Channel::getTopic( void )
 
 std::string	Channel::getName( void )
 {
+	out("getName")
+	out(this->_name)
+	out("----")
 	return (this->_name);
 }
 

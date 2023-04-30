@@ -28,10 +28,10 @@ typedef enum e_rpl{
 
 
 
-bool	isChannel(std::vector<Channel> channels, std::string channelName);
+bool	isChannel(std::vector<Channel>& channels, std::string channelName);
 bool	isUser(std::vector<User> users, std::string nickname);
 
-int		getChannel(std::vector<Channel> channels, std::string channelName);
+// int		getChannel(std::vector<Channel> channels, std::string channelName);
 int		getUser(std::vector<User> users, std::string nickname);
 
 //  NOTE USE THE  NICKNAME AFER THE NUMBER

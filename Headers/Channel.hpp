@@ -26,18 +26,17 @@ struct channelSettings{
 class Channel
 {
 	private:
-		std::string	_topic;
-		std::vector<permissions> _perm;
-		std::vector<std::string> _invited;
-		const std::string	_name;
+		std::string					_topic;
+		std::vector<permissions> 	_perm;
+		std::vector<std::string> 	_invited;
+		std::string					_name;
 	public:
-		channelSettings	_settings;
+		channelSettings				_settings;
 		Channel(std::string name);
 		Channel(std::string name, std::string password);
 		Channel(const Channel &a);
 		~Channel();
 		Channel &operator= (const Channel& a);
-
 		void		setTopic( std::string nickname, std::string topic );
 		std::string	getTopic( void );
 		std::string	getName( void );
@@ -56,7 +55,6 @@ class Channel
 		bool		isAllowedToSpeak(std::string nickname);
 		bool		checkLimit();
 		bool		userExists(std::string nickname);
-
 };
 
 #endif

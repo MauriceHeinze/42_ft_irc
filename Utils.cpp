@@ -20,15 +20,15 @@ bool	isUser(std::vector<User> users, std::string channelName)
 	return (false);
 }
 
-int	getChannel(std::vector<Channel> channels, std::string channelName)
+int	Server::find_Channel(std::string channelName)
 {
 	out("???????")
-	out(channels.size())
-	for (size_t i = 0; i < channels.size(); i++)
+	out(_channels.size())
+	for (size_t i = 0; i < _channels.size(); i++)
 	{
 		out(i)
-		out(channels[i].getName())
-		if (channels[i].getName() == channelName)
+		out(_channels[i].getName())
+		if (_channels[i].getName() == channelName)
 			return (i);
 	}
 	return (-1);
