@@ -54,6 +54,10 @@ class Server
 			}
 		};
 	private:
+		//Channel related
+		void	create_new_channel(std::string new_channel, int user_id, std::string channel_password);
+		void	use_old_channel(int channel_id, int user_id, std::string channel_password);
+		//commands
 		void	Command_PASS( TranslateBNF msg, int user_id);
 		void	Command_USER( TranslateBNF msg, int user_id);
 		void	Command_JOIN( TranslateBNF msg, int user_id);

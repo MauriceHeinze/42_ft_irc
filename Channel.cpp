@@ -6,14 +6,26 @@
 
 Channel::Channel(std::string name) :_name(name)
 {
-	_settings->inviteOnly = false;
-	_settings->moderated = false;
-	_settings->msgFromOutside = true;
-	_settings->password = "";
-	_settings->privateChannel = false;
-	_settings->secretChannel = false;
-	_settings->topicOperatorOnly = false;
-	_settings->userLimit = UINT_MAX;
+	_settings.inviteOnly = false;
+	_settings.moderated = false;
+	_settings.msgFromOutside = true;
+	_settings.password = "";
+	_settings.privateChannel = false;
+	_settings.secretChannel = false;
+	_settings.topicOperatorOnly = false;
+	_settings.userLimit = UINT_MAX;
+}
+
+Channel::Channel(std::string name, std::string password) :_name(name)
+{
+	_settings.inviteOnly = false;
+	_settings.moderated = false;
+	_settings.msgFromOutside = true;
+	_settings.password = password;
+	_settings.privateChannel = false;
+	_settings.secretChannel = false;
+	_settings.topicOperatorOnly = false;
+	_settings.userLimit = UINT_MAX;
 }
 
 Channel::Channel(const Channel &a)
@@ -40,7 +52,7 @@ void	Channel::join(User &userRef)
 }
 
 bool	Channel::checkLimit(){
-	if (_perm.size() < _settings->userLimit)
+	if (_perm.size() < _settings.userLimit)
 		return true;
 	return false;
 }
@@ -115,7 +127,7 @@ void	Channel::invite(std::string nickname)
 
 void	Channel::setTopic( std::string nickname, std::string topic )
 {
-	if (_settings->topicOperatorOnly)
+	if (_settings.topicOperatorOnly)
 	{
 		if (isAdmin(nickname))
 			this->_topic = topic;

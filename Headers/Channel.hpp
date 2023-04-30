@@ -5,10 +5,10 @@
 #include "Utils.hpp"
 
 struct permissions{
-	bool	isAdmin;
-	bool	isVoice;
-	bool	isAllowedToSpeak;
-	User	*name;
+		bool	isAdmin;
+		bool	isVoice;
+		bool	isAllowedToSpeak;
+		User	*name;
 };
 
 struct channelSettings{
@@ -29,13 +29,13 @@ class Channel
 		std::vector<permissions> _perm;
 		std::vector<std::string> _invited;
 		const std::string	_name;
-		// std::vector<User> *_allServerUsers;
 	public:
+		channelSettings	_settings;
 		Channel(std::string name);
+		Channel(std::string name, std::string password);
 		Channel(const Channel &a);
 		~Channel();
 		Channel &operator= (const Channel& a);
-		channelSettings	*_settings;
 
 		void		setTopic( std::string nickname, std::string topic );
 		std::string	getTopic( void );
