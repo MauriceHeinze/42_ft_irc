@@ -41,7 +41,7 @@ class Channel
 		void		setTopic( std::string nickname, std::string topic );
 		std::string	getTopic( void );
 		std::string	getName( void );
-
+		void		send_to_all(std::string msg);
 		int			add_new_user(User& user, std::string channel_password);// user& , return error/ string/code
 		void		join(User &userRef);
 		void		part(std::string nickname);

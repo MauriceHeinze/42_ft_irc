@@ -48,33 +48,42 @@ void Server::Command_USER(TranslateBNF msg ,int user_id)
 //:irc.example.com 353 your_nick #channel_name :@user1 +user2 user3
 #define USER_LIST(nickname,channel,user1,user2) "353 " + nickname +" " + channel + " :" + user1 + " " + user2 + "test_fail" + "\r\n"
 #define RPL_ENDOFNAMES(nickname, channel) "366 " + nickname + " " + channel + "\r\n"
-
+#define RPL_JOIN(nickname, channel) ":" + nickname + " JOIN :" + channel + "\r\n"
 //new channel
  void Server::create_new_channel(std::string new_channel ,int user_id, std::string channel_password)
 {
 	(void)user_id;
-	//check for valid channel name
-
+	//!check for valid channel name
+	
 	//create the new channel
 	Channel Channel(new_channel, channel_password);
 	this->_channels.push_back(Channel);
+	//!give first user adminrights
 	//send list of user and topics if succesfull
+	this->send_msg(RPL_JOIN(_users[user_id].getNickname(), new_channel), user_id);
+	out("in new")
 }
+
 
 //old channel
  void Server::use_old_channel(int channel_id, int user_id, std::string channel_password)
 {
+	//joining inside our channel class
 	int rpl_msg = _channels[channel_id].add_new_user(_users[user_id], channel_password);
-
-	out(rpl_msg)
-	if (rpl_msg == rpl_default)
+	
+	// for reply 
+	if (rpl_msg == rpl_ERR_BADCHANNELKEY)
+		this->send_msg(ERR_BADCHANNELKEY(_users[user_id].getNickname(), _channels[channel_id].getName()), user_id);
+	else if (rpl_msg == rpl_ERR_INVITEONLYCHAN)
+		this->send_msg(ERR_INVITEONLYCHAN(_users[user_id].getNickname(), _channels[channel_id].getName()), user_id);
+	else if (rpl_msg == rpl_default)
 	{
-		// list of name + topics
+		out("Nice")
+		//to all channel members
+		this->send_msg(":lkrabbe JOIN :abc\r\n",user_id);
 	}
 	else
-	{
-		//error msg rpl
-	}
+		out("error missing !!!!(use_old_channel)")
 	//send list of user and topics if succesfull
 }
 
@@ -95,18 +104,21 @@ void Server::Command_JOIN(TranslateBNF msg ,int user_id)
 	std::vector<s_param> params = msg.getter_params();
 	std::string channel_password;
 	std::string channel;
+	out("in join")
 	//input protection in case to many or to little params
 	if (params.size() > 2 || params.size() == 0)
+	{
 		this->send_msg("Error in JOIN , needs to replaced\r\n",user_id);
+		return;
+	}
 	if (params.size() > 0)
 		channel = params[0].trailing_or_middle; // testing
 	if (params.size()> 1)
-		channel_password = msg.getter_params()[1].trailing_or_middle;
-	return;
+		channel_password = params[1].trailing_or_middle;
+	else
+		channel_password = "";
 	//looks if the channel already is created
-	//difrent case if a password is included
 	int channel_id = getChannel(_channels, channel);
-
 	if (channel_id != -1)
 	{
 		use_old_channel(channel_id, user_id, channel_password);
@@ -116,17 +128,6 @@ void Server::Command_JOIN(TranslateBNF msg ,int user_id)
 		create_new_channel(channel ,user_id, channel_password);
 	}
 	return;
-
-	// Channel	*currentChannel = &this->_channels[channelIndex];
-
-	// create channel if it doesn't exist yet
-	// if (channelIndex == -1)
-	// {
-	// 	//this->send_msg(ERR_NOSUCHCHANNEL(nickname, currentChannel->getName()), user_id);
-
-	// 	return
-	// }
-	
 }
 
 void Server::Command_KICK(TranslateBNF msg,int user_id)

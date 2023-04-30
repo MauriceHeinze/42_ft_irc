@@ -11,12 +11,12 @@ class User : public pollfd
 		std::string	fullName;
 		std::string	nickname;
 	public:
-		pollfd*		_pollfd;
+		const int			_fd;//aka socket
 		bool		_valid_password;
 		bool		_valid_nickname;
 		std::string			msg; // buffer to store message content until \r\n is received // check recv function options for buffer
-		User( std::string username);
-		User();
+		User( std::string username,int fd);
+		User(int fd);
 		// User(const User &a);
 		~User();
 		void				insert_in_user_buffer(std::string read_buffer);

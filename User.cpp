@@ -1,14 +1,13 @@
 #include "./Headers/Utils.hpp"
 
-User::User( std::string username ) : username(username)
+User::User( std::string username, int fd) : username(username) , _fd(fd)
 {
 	_valid_password = false;
 	_valid_nickname = false;
 }
 
-User::User()
+User::User( int fd ) :_fd(fd)
 {
-	username = "no_name";
 	_valid_password = false;
 	_valid_nickname = false;
 }

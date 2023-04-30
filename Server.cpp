@@ -47,7 +47,7 @@ void Server::setSocket(){
 		throw(SocketListenFail());
 	pollfd fd = {_socket, POLLIN, 0};
 	_fds.push_back(fd);
-	User bot;
+	User bot(_socket);
 	_users.push_back(bot);
 }
 
@@ -103,8 +103,9 @@ void Server::acceptConnection()
 		std::cout << "Client connected!" << "using the fd =" << clientSocket <<std::endl;
 	pollfd new_fd = {clientSocket, POLLIN, 0};
 	_fds.push_back(new_fd);
-	User new_user;
+	User new_user(clientSocket);
 	_users.push_back(new_user);
+	//! Need better opening
 	const std::string msg = ":Server opening :Hallo, was geht\r\n";
 	send(clientSocket, msg.c_str(), msg.size(), 0);
 }
