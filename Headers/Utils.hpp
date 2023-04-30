@@ -48,7 +48,7 @@ int		getUser(std::vector<User> users, std::string nickname);
 #define ERR_CHANNELISFULL(nickname, channel) "471 " + nickname + " " + channel + " :Cannot join channel (+l)\r\n"							// "<channel> :Cannot join channel (+l)"
 #define RPL_TOPIC(nickname, channel, topic) "332 " + nickname + " " + channel + " :" + topic + "\r\n" 											// "<channel> :<topic>"
 #define ERR_BANNEDFROMCHAN(nickname, channel) "474 " + nickname + " " + channel + " :Cannot join channel (+b)\r\n"						// "<channel> :Cannot join channel (+b)"
-#define ERR_BADCHANNELKEY(nickname, channel) "475 " nickname " " channel " :Cannot join channel (+k)\r\n"							// "<channel> :Cannot join channel (+k)"
+#define ERR_BADCHANNELKEY(nickname, channel) "475 " + nickname  + " " + channel + " :Cannot join channel (+k)\r\n"							// "<channel> :Cannot join channel (+k)"
 
 // PRIVATE MESSAGE
 #define ERR_NORECIPIENT(nickname, command) "411 " + nickname + " :No recipient given (" + command + ")\r\n" 								// ":No recipient given (<command>)"

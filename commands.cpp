@@ -37,32 +37,57 @@ void Server::Command_USER(TranslateBNF msg ,int user_id)
 //:irc.example.com 353 your_nick #channel_name :@user1 +user2 user3
 #define USER_LIST(nickname,channel,user1,user2) "353 " + nickname +" " + channel + " :" + user1 + " " + user2 + "test_fail" + "\r\n" 
 #define RPL_ENDOFNAMES(nickname, channel) "366 " + nickname + " " + channel + "\r\n"
+
+//new channel
+static void create_new_channel()
+{
+
+}
+
+//old channel
+
+static void use_old_channel()
+{
+
+}
+
+
 void Server::Command_JOIN(TranslateBNF msg ,int user_id)
 {
-	std::cout << "in  JOIN" << std::endl;
+	if (msg.getter_params().size)
+	std::string channel("abc"); // testing
+	std::string nickname = _users[user_id].getNickname();
 	(void)user_id;
 	{
-		std::string channel("abc");
-		std::string nickname("lkrabbe");
 		std::string topic("default");
 		std::string user1("user_alpha");
 		std::string user2("user_better");
-		this->send_msg(":lkrabbe! JOIN :#abc\r\n",user_id);
-		this->send_msg(":irc.unknown.com 332 lkrabbe #abc :default\r\n",user_id);
+		this->send_msg(":lkrabbe! JOIN :abc\r\n",user_id);
+		this->send_msg(":irc.unknown.com 332 lkrabbe abc :default\r\n",user_id);
 		// this->send_msg(RPL_TOPIC(nickname, channel, topic), user_id);
 		// this->send_msg(USER_LIST(nickname, channel, user1, user2),user_id);
-		this->send_msg(":irc.example.com 353 #abc : user1 user2 user3\r\n",user_id);
+		this->send_msg(":irc.example.com 353 " + + "lkrabbe = abc : user1 user2 user3 @lkrabbe\r\n",user_id);
 		// this->send_msg((":irc.example.com 353  #abc :@lkrabbe +user2 user3\r\n"),user_id);
 		// this->send_msg((":server_name 366 your_nick #abc :End of /NAMES list\r\n"),user_id);
 		this->send_msg(RPL_ENDOFNAMES(nickname, channel),user_id);
 	}
 	return;
-	std::string channelName = msg.getter_params()[0].trailing_or_middle;
-	std::string nickname = msg.getter_params()[1].trailing_or_middle;
+	//looks if the channel already
+	for(size_t iter= 0; iter < _channels.size();iter++)
+	{
+		if (_channels[iter].getName() == channel)
+		{
+			use_old_channel();
+			return ;
+		}
+	}
+	create_new_channel();
+	return;
+
+	std::string channelName = msg.getter_params()[0].getrailing_or_middle;
 	std::string password = msg.getter_params()[2].trailing_or_middle;
 	int channelIndex = getChannel(this->_channels, channelName);
 	int userIndex = getUser(this->_users, channelName);
-	bool userExists = this->_channels[channelIndex].userExists(nickname);
 	Channel	*currentChannel = &this->_channels[channelIndex];
 	User	&currentUser = this->_users[userIndex];
 
@@ -74,6 +99,7 @@ void Server::Command_JOIN(TranslateBNF msg ,int user_id)
 		this->_channels.push_back(newChannel);
 		channelIndex = getChannel(this->_channels, channelName);
 	}
+	bool userExists = this->_channels[channelIndex].userExists(nickname);
 	if (channelIndex != -1 && userExists)
 	{
 		if (currentChannel->_settings->inviteOnly) // check if user is invited
