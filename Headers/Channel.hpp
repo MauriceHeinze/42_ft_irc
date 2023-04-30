@@ -3,6 +3,7 @@
 # define CHANNEL_HPP
 
 #include "Utils.hpp"
+#include "User.hpp"
 
 struct permissions{
 		bool	isAdmin;
@@ -41,13 +42,13 @@ class Channel
 		std::string	getTopic( void );
 		std::string	getName( void );
 
+		int			add_new_user(User& user, std::string channel_password);// user& , return error/ string/code
 		void		join(User &userRef);
 		void		part(std::string nickname);
 		void		kick(std::string nickname);
 		void		oper(std::string nickname);
 		void		mode(std::string nickname);
 		void		invite(std::string nickname);
-
 		bool		isInvited(std::string nickname);
 		bool		isAdmin(std::string nickname);
 		bool		isUser(std::string nickname);

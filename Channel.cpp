@@ -190,6 +190,30 @@ bool	Channel::isVoice(std::string nickname){
 	return false;
 }
 
+				// this->send_msg(RPL_TOPIC(nickname, Channel.getName(), Channel.getTopic()), user_id);
+				// this->send_msg(ERR_INVITEONLYCHAN(nickname, Channel.getName()), user_id);
+				// this->send_msg(ERR_BADCHANNELKEY(nickname, Channel.getName()), user_id);
+				// this->send_msg(RPL_TOPIC(nickname, Channel.getName(), Channel.getTopic()), user_id);
+			// this->send_msg(RPL_TOPIC(nickname, Channel.getName(), Channel.getTopic()), user_id);
+int	Channel::add_new_user(User& user, std::string used_password)// user& , return error/ string/code
+{
+	if ( this->userExists(user.getNickname()))
+	{
+		if (this->_settings.inviteOnly && this->isInvited(user.getNickname()) == false) // check if user is invited
+		{
+			return (rpl_ERR_INVITEONLYCHAN);
+		}
+		if (this->_settings.password.length() > 0 && this->_settings.password != used_password) // check if password for channel is correct
+		{
+			return (rpl_ERR_BADCHANNELKEY);
+		}
+		this->join(user);
+		return(rpl_default);
+	}
+	return (-1);
+}
+
+
 bool	Channel::isAllowedToSpeak(std::string nickname){
 	for(int i = 0; _perm.size(); i++)
 	{

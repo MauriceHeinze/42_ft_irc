@@ -64,41 +64,16 @@ void Server::Command_USER(TranslateBNF msg ,int user_id)
 //old channel
  void Server::use_old_channel(int channel_id, int user_id, std::string channel_password)
 {
-	(void)channel_id;
-	(void)user_id;
-	(void)channel_password;
-	std::string nickname = _users[user_id].getNickname();
-	Channel& Channel = this->_channels[channel_id];
-	//looks for conflics 
-	if ( Channel.userExists(nickname))
+	int rpl_msg = _channels[channel_id].add_new_user(_users[user_id], channel_password);
+
+	out(rpl_msg)
+	if (rpl_msg == rpl_default)
 	{
-		if (Channel._settings.inviteOnly) // check if user is invited
-		{
-			if (Channel.isInvited(nickname))
-			{
-				Channel.join(_users[user_id]);
-				this->send_msg(RPL_TOPIC(nickname, Channel.getName(), Channel.getTopic()), user_id);
-			}
-			else
-			{
-				this->send_msg(ERR_INVITEONLYCHAN(nickname, Channel.getName()), user_id);
-			}
-		}
-		else if (Channel._settings.password.length() > 0) // check if password for channel is correct
-		{
-			if (Channel._settings.password == channel_password)
-			{
-				Channel.join(_users[user_id]);
-				this->send_msg(RPL_TOPIC(nickname, Channel.getName(), Channel.getTopic()), user_id);
-			}
-			else
-				this->send_msg(ERR_BADCHANNELKEY(nickname, Channel.getName()), user_id);
-		}
-		else if (!Channel._settings.inviteOnly && Channel._settings.password.length() != 0) // Everyone can join
-		{
-			Channel.join(_users[user_id]);
-			this->send_msg(RPL_TOPIC(nickname, Channel.getName(), Channel.getTopic()), user_id);
-		}
+		// list of name + topics
+	}
+	else
+	{
+		//error msg rpl
 	}
 	//send list of user and topics if succesfull
 }

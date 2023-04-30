@@ -17,6 +17,16 @@
 #include "Server.hpp"
 #include "TranslateBNF.hpp"
 
+// used for some returns
+typedef enum e_rpl{
+	rpl_no_rpl = -1,
+	rpl_default = 0,
+	rpl_RPL_TOPIC = 332,
+	rpl_ERR_INVITEONLYCHAN = 473,
+	rpl_ERR_BADCHANNELKEY = 475,
+}t_rpl;
+
+
 
 bool	isChannel(std::vector<Channel> channels, std::string channelName);
 bool	isUser(std::vector<User> users, std::string nickname);
