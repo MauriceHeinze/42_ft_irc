@@ -35,7 +35,7 @@ void Server::Command_USER(TranslateBNF msg ,int user_id)
 	(void)user_id;
 }
 //:irc.example.com 353 your_nick #channel_name :@user1 +user2 user3
-#define USER_LIST(nickname,channel,user1,user2) "353 " + nickname +" " + channel + " :" + user1 + " " + user2 + "test_fail" + "\r\n" 
+#define USER_LIST(nickname,channel,user1,user2) "353 " + nickname +" " + channel + " :" + user1 + " " + user2 + "test_fail" + "\r\n"
 #define RPL_ENDOFNAMES(nickname, channel) "366 " + nickname + " " + channel + "\r\n"
 void Server::Command_JOIN(TranslateBNF msg ,int user_id)
 {
@@ -182,7 +182,7 @@ void	Server::Command_NICK(TranslateBNF msg, int user_id)
 	// (void)user_id;
 	if (msg.getter_params().size() > 0)
 	{
-		if (_users[user_id]._valid_nickname == false && !msg.getter_params()[0].trailing_or_middle.empty()){
+		if (!msg.getter_params()[0].trailing_or_middle.empty()){
 			_users[user_id].setNickname(msg.getter_params()[0].trailing_or_middle);
 			_users[user_id]._valid_nickname = true;
 		}
