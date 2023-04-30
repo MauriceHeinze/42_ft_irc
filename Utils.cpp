@@ -22,8 +22,12 @@ bool	isUser(std::vector<User> users, std::string channelName)
 
 int	getChannel(std::vector<Channel> channels, std::string channelName)
 {
+	out("???????")
+	out(channels.size())
 	for (size_t i = 0; i < channels.size(); i++)
 	{
+		out(i)
+		out(channels[i].getName())
 		if (channels[i].getName() == channelName)
 			return (i);
 	}

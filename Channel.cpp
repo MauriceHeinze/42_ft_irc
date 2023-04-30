@@ -180,7 +180,8 @@ bool	Channel::isUser(std::string nickname){
 bool	Channel::isVoice(std::string nickname){
 	for(int i = 0; _perm.size(); i++)
 		{
-			if (_perm[i].name->getNickname() == nickname){
+			if (_perm[i].name->getNickname() == nickname)
+			{
 				if (_perm[i].isVoice == true)
 					return true;
 				else
@@ -190,9 +191,6 @@ bool	Channel::isVoice(std::string nickname){
 	return false;
 }
 
-				// this->send_msg(ERR_INVITEONLYCHAN(nickname, Channel.getName()), user_id);
-				// this->send_msg(ERR_BADCHANNELKEY(nickname, Channel.getName()), user_id);
-				// this->send_msg(RPL_TOPIC(nickname, Channel.getName(), Channel.getTopic()), user_id);
 int	Channel::add_new_user(User& user, std::string used_password)// user& , return error/ string/code
 {
 	if ( this->userExists(user.getNickname()))

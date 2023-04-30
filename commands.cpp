@@ -52,7 +52,6 @@ void Server::Command_USER(TranslateBNF msg ,int user_id)
 //new channel
  void Server::create_new_channel(std::string new_channel ,int user_id, std::string channel_password)
 {
-	(void)user_id;
 	//!check for valid channel name
 	
 	//create the new channel
@@ -62,6 +61,7 @@ void Server::Command_USER(TranslateBNF msg ,int user_id)
 	//send list of user and topics if succesfull
 	this->send_msg(RPL_JOIN(_users[user_id].getNickname(), new_channel), user_id);
 	out("in new")
+	out(Channel.getName())
 }
 
 
@@ -112,13 +112,18 @@ void Server::Command_JOIN(TranslateBNF msg ,int user_id)
 		return;
 	}
 	if (params.size() > 0)
+	{
 		channel = params[0].trailing_or_middle; // testing
+		if (channel[0] != '#')// not sure about thus one
+			channel = "#" + channel;
+	}
 	if (params.size()> 1)
 		channel_password = params[1].trailing_or_middle;
 	else
 		channel_password = "";
 	//looks if the channel already is created
 	int channel_id = getChannel(_channels, channel);
+	out(channel_id)
 	if (channel_id != -1)
 	{
 		use_old_channel(channel_id, user_id, channel_password);
