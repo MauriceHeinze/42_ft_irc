@@ -34,20 +34,25 @@ class Channel
 		channelSettings				_settings;
 		Channel(std::string name);
 		Channel(std::string name, std::string password);
+		Channel(std::string name, std::string password, User& first_user);
 		Channel(const Channel &a);
 		~Channel();
 		Channel &operator= (const Channel& a);
+		//getter and setter
 		void		setTopic( std::string nickname, std::string topic );
 		std::string	getTopic( void );
 		std::string	getName( void );
+		//Utiels
 		void		send_to_all(std::string msg);
-		int			add_new_user(User& user, std::string channel_password);// user& , return error/ string/code
+		//Channel commands
 		void		join(User &userRef);
+		int			add_new_user(User& user, std::string channel_password);// user& , return error/ string/code
 		void		part(std::string nickname);
 		void		kick(std::string nickname);
 		void		oper(std::string nickname);
 		void		mode(std::string nickname);
 		void		invite(std::string nickname);
+		//check Channel settings
 		bool		isInvited(std::string nickname);
 		bool		isAdmin(std::string nickname);
 		bool		isUser(std::string nickname);

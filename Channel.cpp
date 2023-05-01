@@ -4,6 +4,8 @@
  # define UINT_MAX 500
 #endif
 
+#define SEND_FLAGS 0
+
 Channel::Channel(std::string name) :_name(name)
 {
 	_settings.inviteOnly = false;
@@ -28,6 +30,22 @@ Channel::Channel(std::string name, std::string password) :_name(name)
 	_settings.userLimit = UINT_MAX;
 }
 
+Channel::Channel(std::string name, std::string password, User& first_user) :_name(name)
+{
+	_settings.inviteOnly = false;
+	_settings.moderated = false;
+	_settings.msgFromOutside = true;
+	_settings.password = password;
+	_settings.privateChannel = false;
+	_settings.secretChannel = false;
+	_settings.topicOperatorOnly = false;
+	_settings.userLimit = UINT_MAX;
+	out("before")
+	this->add_new_user(first_user, "");
+	this->_perm[0].isAdmin = true;
+	out("after")
+}
+
 Channel::Channel(const Channel &a)
 {
 	*this = a;
@@ -50,8 +68,10 @@ Channel& Channel::operator= (const Channel &other)
 
 void	Channel::join(User &userRef)
 {
+	out("in join????")
 	permissions perm = {false, false, true, &userRef};
 	_perm.push_back(perm);
+	out(_perm.size())
 }
 
 bool	Channel::checkLimit(){
@@ -197,25 +217,26 @@ bool	Channel::isVoice(std::string nickname){
 	return false;
 }
 
+// Try to add User to the Channel and returns a reply code if failed or not
 int	Channel::add_new_user(User& user, std::string used_password)// user& , return error/ string/code
 {
 	if ( this->userExists(user.getNickname()))
 	{
-		if (this->_settings.inviteOnly && this->isInvited(user.getNickname()) == false) // check if user is invited
+		// check if user needs/is invited
+		if (this->_settings.inviteOnly && this->isInvited(user.getNickname()) == false) 
 		{
 			return (rpl_ERR_INVITEONLYCHAN);
 		}
-		if (this->_settings.password.length() > 0 && this->_settings.password != used_password) // check if password for channel is correct
+		// check if password for channel is correct/required
+		if (this->_settings.password.length() > 0 && this->_settings.password != used_password)
 		{
 			return (rpl_ERR_BADCHANNELKEY);
 		}
 		this->join(user);
-		return(rpl_default);
+		return (rpl_default);
 	}
 	return (-1);
 }
-
-
 
 bool	Channel::isAllowedToSpeak(std::string nickname){
 	for(int i = 0; _perm.size(); i++)
@@ -237,4 +258,16 @@ bool	Channel::userExists(std::string nickname){
 				return true;
 	}
 	return false;
+}
+
+void	Channel::send_to_all(std::string msg)
+{
+	out("perm size")
+	out(_perm.size())
+	for (size_t i = 0; i < _perm.size(); i++)
+	{
+		out("user >>")
+		out(_perm[i].name->getNickname())
+		send(_perm[i].name->fd, msg.c_str(), msg.size(), SEND_FLAGS);
+	}
 }

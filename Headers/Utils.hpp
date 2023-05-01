@@ -86,4 +86,9 @@ int		getUser(std::vector<User> users, std::string nickname);
 
 
 
+// Not Sorted yet
+#define USER_LIST(nickname,channel,user1,user2) "353 " + nickname +" " + channel + " :" + user1 + " " + user2 + "test_fail" + "\r\n"
+#define RPL_ENDOFNAMES(nickname, channel) "366 " + nickname + " " + channel + "\r\n"
+#define RPL_JOIN(nickname, channel) ":" + nickname + " JOIN :" + channel + "\r\n"
+
 #endif

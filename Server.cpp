@@ -181,6 +181,7 @@ void	Server::parsing(std::string buffer, int user_id)
 	else
 	{
 		out("no Command found")
+		//!needs Return a Error rpl
 	}
 }
 

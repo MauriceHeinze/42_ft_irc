@@ -46,21 +46,19 @@ void Server::Command_USER(TranslateBNF msg ,int user_id)
 }
 
 //:irc.example.com 353 your_nick #channel_name :@user1 +user2 user3
-#define USER_LIST(nickname,channel,user1,user2) "353 " + nickname +" " + channel + " :" + user1 + " " + user2 + "test_fail" + "\r\n"
-#define RPL_ENDOFNAMES(nickname, channel) "366 " + nickname + " " + channel + "\r\n"
-#define RPL_JOIN(nickname, channel) ":" + nickname + " JOIN :" + channel + "\r\n"
+
 //new channel
  void Server::create_new_channel(std::string new_channel ,int user_id, std::string channel_password)
 {
 	//!check for valid channel name
 	
 	//create the new channel
-	Channel Channel(new_channel, channel_password);
-	this->_channels.push_back(Channel);
-	//!give first user adminrights
+	Channel Channel(new_channel, channel_password, _users[user_id]);
+	//!give first user admin rights
 	//send list of user and topics if succesfull
 	this->send_msg(RPL_JOIN(_users[user_id].getNickname(), new_channel), user_id);
-	out("in new")
+	out("this msg")
+	out(RPL_JOIN(_users[user_id].getNickname(), new_channel))
 	out(Channel.getName())
 }
 
@@ -68,6 +66,7 @@ void Server::Command_USER(TranslateBNF msg ,int user_id)
 //old channel
  void Server::use_old_channel(int channel_id, int user_id, std::string channel_password)
 {
+	out("in old")
 	//joining inside our channel class
 	int rpl_msg = _channels[channel_id].add_new_user(_users[user_id], channel_password);
 	
@@ -78,9 +77,9 @@ void Server::Command_USER(TranslateBNF msg ,int user_id)
 		this->send_msg(ERR_INVITEONLYCHAN(_users[user_id].getNickname(), _channels[channel_id].getName()), user_id);
 	else if (rpl_msg == rpl_default)
 	{
-		out("Nice")
+		out("send Channel msg")
 		//to all channel members
-		this->send_msg(":lkrabbe JOIN :abc\r\n",user_id);
+		this->_channels[channel_id].send_to_all(RPL_JOIN(_users[user_id].getNickname(), _channels[channel_id].getName()));
 	}
 	else if (rpl_msg == rpl_no_rpl)
 		return;
@@ -248,9 +247,18 @@ void	Server::Command_P_MSG(TranslateBNF msg, int user_id)
 {
 	if (msg.getter_params().size() > 0)
 	{
-		if (msg.getter_params()[0].trailing_or_middle.find("#") != std::string::npos){
+		std::string	target = msg.getter_params()[0].trailing_or_middle;
+		if (msg.getter_params()[0].trailing_or_middle[0] == '#'){
+			int i = this->find_Channel(target);
+			if (i == -1)
+				this->send_msg(ERR_NOSUCHCHANNEL(_users[user_id].getNickname(),target),user_id);
+			else 
+			{
+				out("send to all members")
+				this->_channels[i].send_to_all(":lkrabbe PRIVTMSG: #abc Hello\r\n");// need a send_to_with exception from sender id
+			}
 			// if (isChannel(_channels, msg.getter_params()[0].trailing_or_middle)){
-				send_msg(":" + _users[user_id].getNickname() + " PRIVMSG " + msg.getter_params()[0].trailing_or_middle + " :" + msg.getter_params()[1].trailing_or_middle + "\r\n", user_id);
+				// send_msg(":" + _users[user_id].getNickname() + " PRIVMSG " + msg.getter_params()[0].trailing_or_middle + " :" + msg.getter_params()[1].trailing_or_middle + "\r\n", user_id);
 			// }
 			// else
 			// 	return;
