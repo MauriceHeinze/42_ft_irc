@@ -308,12 +308,21 @@ void	Server::Command_MODE(TranslateBNF msg, int user_id)
 	bool setting = false;
 
 	// setze variables
-	std::string channelName = msg.getter_params()[0].trailing_or_middle;
+	std::string nickname = this->_users[user_id].getNickname();
+	std::string channelName;
 	std::string flags = msg.getter_params()[1].trailing_or_middle;
 	std::string argument = msg.getter_params()[2].trailing_or_middle;
+	int channelIndex;
+	Channel	*currentChannel;
 
-	int channelIndex = this->find_Channel(channelName);
-	Channel	*currentChannel = &this->_channels[channelIndex];
+	if (msg.getter_params()[0].trailing_or_middle.length() == 0)
+	{
+		channelName = msg.getter_params()[0].trailing_or_middle;
+		channelIndex = this->find_Channel(channelName);
+		currentChannel = &this->_channels[channelIndex];
+	}
+	else
+		send_msg(ERR_NEEDMOREPARAMS(nickname, (std::string)"MODE"), user_id);
 
 	size_t i = 0;
 	// erster String ist Channel oder User
@@ -340,7 +349,8 @@ void	Server::Command_MODE(TranslateBNF msg, int user_id)
 			}
 			else if (flags[i] == 'o') // o: Give/take channel operator privilege
 			{
-				currentChannel->_settings.privateChannel = setting;
+				if (currentChannel->isUser(argument))
+					currentChannel->oper(argument);
 			}
 			else if (flags[i] == 'l') // l: Set/remove the user limit to channel
 			{
@@ -349,6 +359,8 @@ void	Server::Command_MODE(TranslateBNF msg, int user_id)
 				else
 					currentChannel->_settings.userLimit = std::stoi(argument);
 			}
+			else if (flags[i] != '+' && flags[i] != '-')
+				send_msg(ERR_NEEDMOREPARAMS(nickname, (std::string)"MODE"), user_id);
 			i++;
 		}
 	}
