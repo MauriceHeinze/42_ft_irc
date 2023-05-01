@@ -53,7 +53,7 @@ void Server::Command_USER(TranslateBNF msg ,int user_id)
  void Server::create_new_channel(std::string new_channel ,int user_id, std::string channel_password)
 {
 	//!check for valid channel name
-	
+
 	//create the new channel
 	Channel Channel(new_channel, channel_password);
 	this->_channels.push_back(Channel);
@@ -70,8 +70,8 @@ void Server::Command_USER(TranslateBNF msg ,int user_id)
 {
 	//joining inside our channel class
 	int rpl_msg = _channels[channel_id].add_new_user(_users[user_id], channel_password);
-	
-	// for reply 
+
+	// for reply
 	if (rpl_msg == rpl_ERR_BADCHANNELKEY)
 		this->send_msg(ERR_BADCHANNELKEY(_users[user_id].getNickname(), _channels[channel_id].getName()), user_id);
 	else if (rpl_msg == rpl_ERR_INVITEONLYCHAN)
@@ -280,12 +280,6 @@ void	Server::Command_P_MSG(TranslateBNF msg, int user_id)
 		send_msg(ERR_NEEDMOREPARAMS(this->_users[user_id].getNickname(), msg.getter_command()), user_id);
 }
 
-void	Server::Command_MODE(TranslateBNF msg, int user_id)
-{
-	(void)user_id;
-	(void)msg;
-}
-
 void	Server::Command_PING(TranslateBNF msg, int user_id)
 {
 	TranslateBNF send_msg(msg.get_full_msg());
@@ -299,4 +293,63 @@ void	Server::Command_CAP(TranslateBNF msg, int user_id)
 	(void)msg;
 	std::cout << "Cap send" << std::endl;
 	send_msg(":irc.unknown.net CAP * LS :\r\n", user_id);
+}
+
+void	Server::Command_MODE(TranslateBNF msg, int user_id)
+{
+	(void)user_id;
+	(void)msg;
+
+	// examples:
+	// MODE #Finnish +o Kilroy
+	// MODE #Finnish +im
+
+	// flag die sagt, ob Einstellungen gerade deaktiviert oder aktiviert werden
+	bool setting = false;
+
+	// setze variables
+	std::string channelName = msg.getter_params()[0].trailing_or_middle;
+	std::string flags = msg.getter_params()[1].trailing_or_middle;
+	std::string argument = msg.getter_params()[2].trailing_or_middle;
+
+	int channelIndex = this->find_Channel(channelName);
+	Channel	*currentChannel = &this->_channels[channelIndex];
+
+	size_t i = 0;
+	// erster String ist Channel oder User
+	if (channelName[0] == '#')
+	{
+		while (i != flags.length())
+		{
+			// check if upcoming flags are activating or deactivating
+			if (flags[i] == '+')
+				setting = true;
+			else if (flags[i] == '-')
+				setting = false;
+
+			if (flags[i] == 'i') // i: Set/remove Invite-only channel
+				currentChannel->_settings.privateChannel = setting;
+			else if (flags[i] == 't') // t: Set/remove the restrictions of the TOPIC command to channel operators
+				currentChannel->_settings.topicOperatorOnly = setting;
+			else if (flags[i] == 'k') // k: Set/remove the channel key (password)
+			{
+				if (setting == true)
+					currentChannel->_settings.password = argument;
+				else
+					currentChannel->_settings.password = "";
+			}
+			else if (flags[i] == 'o') // o: Give/take channel operator privilege
+			{
+				currentChannel->_settings.privateChannel = setting;
+			}
+			else if (flags[i] == 'l') // l: Set/remove the user limit to channel
+			{
+				if (setting == true)
+					currentChannel->_settings.userLimit = INT_MAX;
+				else
+					currentChannel->_settings.userLimit = std::stoi(argument);
+			}
+			i++;
+		}
+	}
 }
