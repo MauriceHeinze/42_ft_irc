@@ -137,6 +137,22 @@ void Server::Command_JOIN(TranslateBNF msg ,int user_id)
 	return;
 }
 
+void Server::Command_WHO(TranslateBNF msg, int user_id)
+{
+	if (msg.getter_params().size() > 0)
+	{
+		std::string channelName = msg.getter_params()[0].trailing_or_middle;
+		if (isChannel(_channels, channelName))
+		{
+			send_msg(RPL_WHOREPLY(_users[user_id].getNickname(), channelName, "kvirc", "127.0.0.1", "blublub", _users[user_id].getNickname(),"0" , "lgollong"), user_id);
+			send_msg(RPL_ENDOFWHO(channelName), user_id);
+		}
+		else
+			send_msg(ERR_NOSUCHSERVER(_users[user_id].getNickname(), channelName), user_id);
+	}
+
+}
+
 void Server::Command_KICK(TranslateBNF msg,int user_id)
 {
 

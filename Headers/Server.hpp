@@ -62,6 +62,7 @@ class Server
 		void	Command_PASS( TranslateBNF msg, int user_id);
 		void	Command_USER( TranslateBNF msg, int user_id);
 		void	Command_JOIN( TranslateBNF msg, int user_id);
+		void	Command_WHO(  TranslateBNF msg, int user_id);
 		void	Command_KICK( TranslateBNF msg, int user_id);
 		void	Command_TOPIC(TranslateBNF msg, int user_id);
 		void	Command_NICK( TranslateBNF msg, int user_id);

@@ -1,6 +1,6 @@
 #include "./Headers/Utils.hpp"
 
-bool	isChannel(std::vector<Channel> channels, std::string channelName)
+bool	isChannel(std::vector<Channel> &channels, std::string channelName)
 {
 	for (size_t i = 0; i < channels.size(); i++)
 	{
