@@ -158,6 +158,10 @@ void	Server::parsing(std::string buffer, int user_id)
 	{
 		Command_JOIN(msg ,user_id);
 	}
+	else if (msg.getter_command() == "WHO")
+	{
+		Command_WHO(msg, user_id);
+	}
 	else if (msg.getter_command() == "KICK")
 	{
 		Command_KICK(msg,user_id);

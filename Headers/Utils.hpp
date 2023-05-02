@@ -39,6 +39,10 @@ int		getUser(std::vector<User> users, std::string nickname);
 #define ERR_ALREADYREGISTRED "462 :You may not reregister\r\n"
 #define ERR_PASSWDMISMATCH "462 :Password incorrect\r\n"
 
+// WHO
+#define RPL_WHOREPLY(nickname, channel, user, host, server, nick, hopcount, realname) "352 " + nickname + " " + channel + " " + user + " " + host + " " + server + " " + nick + " <H|G>[*][@|+] :" + hopcount + " " + realname + "\r\n"
+#define RPL_ENDOFWHO(name) "315 " + name + " :End of /WHO list\r\n"
+
 // MODES
 #define ERR_NEEDMOREPARAMS(nickname, command) "461 " + nickname + " " + command + " :Not enough parameters\r\n"						// "<command> :Not enough parameters"
 #define ERR_CHANOPRIVSNEEDED(nickname, channel) "482 " + nickname + " " + channel + " :You're not channel operator\r\n"					// "<channel> :You're not channel operator"
@@ -52,6 +56,7 @@ int		getUser(std::vector<User> users, std::string nickname);
 #define RPL_ENDOFBANLIST(nickname, channel) "368 " + nickname + " " + channel + " :End of channel ban list\r\n";							// "<channel> :End of channel ban list"
 #define ERR_NOSUCHCHANNEL(nickname, channelWithPrefix) "403 " + nickname + " " + channelWithPrefix + " :No such channel\r\n"				// "<channel name> :No such channel"
 #define RPL_UMODEIS(nickname, mode) "221 " + nickname + " " + mode + "\r\n"																// "<user mode string>"
+#define ERR_NOSUCHSERVER(nickname, serverName) "402 " + nickname + " " + serverName + " :No such server\r\n"
 
 // JOIN
 #define ERR_INVITEONLYCHAN(nickname, channel) "473 " + nickname + " " + channel + " :Cannot join channel (+i)\r\n"						// "<channel> :Cannot join channel (+i)"
