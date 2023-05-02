@@ -10,6 +10,7 @@
 
 void	Server::send_msg(std::string msg,int user_id)
 {
+	out("\e[31m" + msg + "\e[0m")
 	send(this->_fds[user_id].fd,msg.c_str(),msg.size(), SEND_FLAGS);
 }
 

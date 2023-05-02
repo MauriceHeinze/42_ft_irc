@@ -56,10 +56,9 @@ void Server::Command_USER(TranslateBNF msg ,int user_id)
 	Channel Channel(new_channel, channel_password, _users[user_id]);
 	//!give first user admin rights
 	//send list of user and topics if succesfull
+	_channels.push_back(Channel);
 	this->send_msg(RPL_JOIN(_users[user_id].getNickname(), new_channel), user_id);
-	out("this msg")
 	out(RPL_JOIN(_users[user_id].getNickname(), new_channel))
-	out(Channel.getName())
 }
 
 
@@ -138,10 +137,13 @@ void Server::Command_JOIN(TranslateBNF msg ,int user_id)
 
 void Server::Command_WHO(TranslateBNF msg, int user_id)
 {
+	out("send who")
 	if (msg.getter_params().size() > 0)
 	{
 		std::string channelName = msg.getter_params()[0].trailing_or_middle;
-		if (isChannel(_channels, channelName))
+		out(channelName)
+		out(find_Channel(channelName))
+		if (find_Channel(channelName) != -1)
 		{
 			send_msg(RPL_WHOREPLY(_users[user_id].getNickname(), channelName, "kvirc", "127.0.0.1", "blublub", _users[user_id].getNickname(),"0" , "lgollong"), user_id);
 			send_msg(RPL_ENDOFWHO(channelName), user_id);
@@ -305,6 +307,7 @@ void	Server::Command_CAP(TranslateBNF msg, int user_id)
 
 void	Server::Command_MODE(TranslateBNF msg, int user_id)
 {
+	return;
 	(void)user_id;
 	(void)msg;
 

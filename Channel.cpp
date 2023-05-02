@@ -8,6 +8,7 @@
 
 Channel::Channel(std::string name) :_name(name)
 {
+	out(name + " Channel created")
 	_settings.inviteOnly = false;
 	_settings.moderated = false;
 	_settings.msgFromOutside = true;
@@ -20,6 +21,7 @@ Channel::Channel(std::string name) :_name(name)
 
 Channel::Channel(std::string name, std::string password) :_name(name)
 {
+	out(name + " Channel created")
 	_settings.inviteOnly = false;
 	_settings.moderated = false;
 	_settings.msgFromOutside = true;
@@ -32,6 +34,7 @@ Channel::Channel(std::string name, std::string password) :_name(name)
 
 Channel::Channel(std::string name, std::string password, User& first_user) :_name(name)
 {
+	out(name + " Channel created")
 	_settings.inviteOnly = false;
 	_settings.moderated = false;
 	_settings.msgFromOutside = true;
@@ -41,7 +44,9 @@ Channel::Channel(std::string name, std::string password, User& first_user) :_nam
 	_settings.topicOperatorOnly = false;
 	_settings.userLimit = UINT_MAX;
 	out("before")
+	out(_perm.size())
 	this->add_new_user(first_user, "");
+	out(_perm.size())
 	this->_perm[0].isAdmin = true;
 	out("after")
 }
@@ -220,7 +225,7 @@ bool	Channel::isVoice(std::string nickname){
 // Try to add User to the Channel and returns a reply code if failed or not
 int	Channel::add_new_user(User& user, std::string used_password)// user& , return error/ string/code
 {
-	if ( this->userExists(user.getNickname()))
+	if ( this->userExists(user.getNickname()) == false)
 	{
 		// check if user needs/is invited
 		if (this->_settings.inviteOnly && this->isInvited(user.getNickname()) == false) 

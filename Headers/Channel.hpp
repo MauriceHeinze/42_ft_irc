@@ -27,8 +27,8 @@ class Channel
 {
 	private:
 		std::string					_topic;
-		std::vector<permissions> 	_perm;
-		std::vector<std::string> 	_invited;
+		std::vector<permissions> 	_perm;//? better as <user>
+		std::vector<std::string> 	_invited;//? better as <user>
 		std::string					_name;
 	public:
 		channelSettings				_settings;
