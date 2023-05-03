@@ -171,10 +171,10 @@ void	Server::parsing(std::string buffer, int user_id)
 	{
 		Command_TOPIC(msg, user_id);
 	}
-	else if (msg.getter_command() == "PART")
-	{
-		Command_TOPIC(msg, user_id);
-	}
+	// else if (msg.getter_command() == "PART")
+	// {
+	// 	Command_TOPIC(msg, user_id);
+	// }
 	else if (msg.getter_command() == "MODE")
 	{
 		Command_MODE(msg, user_id);
@@ -182,6 +182,10 @@ void	Server::parsing(std::string buffer, int user_id)
 	else if (msg.getter_command() == "PRIVMSG")
 	{
 		Command_P_MSG(msg, user_id);
+	}
+	else if (msg.getter_command() == "INVITE")
+	{
+		Command_INVITE(msg, user_id);
 	}
 	else
 	{
