@@ -79,7 +79,7 @@ int		getUser(std::vector<User> users, std::string nickname);
 #define ERR_CHANOPRIVSNEEDED(nickname, channel) "482 " + nickname + " " + channel + " :You're not channel operator\r\n"					// "<channel> :You're not channel operator"
 
 // INVITE
-#define RPL_INVITING(nickname, channel) "341 " + channel + " " + nickname + "\r\n"														// "<channel> <nick>"
+#define RPL_INVITING(nickname, invNick, channel) "341 " + nickname + " " + invNick + " " + channel + "\r\n"														// "<channel> <nick>"
 #define ERR_NOSUCHNICK(nickname) "401 " + nickname + " :No such nick/channel\r\n"														// "<nickname> :No such nick/channel"
 #define ERR_USERONCHANNEL(nickname, channel) "443 " + nickname + " " + channel + " :is already on channel\r\n"							// "<user> <channel> :is already on channel"
 

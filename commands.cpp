@@ -192,36 +192,41 @@ void Server::Command_KICK(TranslateBNF msg,int user_id)
 
 void	Server::Command_TOPIC(TranslateBNF msg,int user_id)
 {
-	(void)user_id;
-	std::string channelName = msg.getter_params()[0].trailing_or_middle;
-	std::string nickname = msg.getter_params()[1].trailing_or_middle;
-	std::string topic = msg.getter_params()[2].trailing_or_middle;
-	int channelIndex = this->find_Channel(channelName);
-	bool userExists = this->_channels[channelIndex].userExists(nickname);
-	Channel	*currentChannel = &this->_channels[channelIndex];
-
-	if (channelIndex != -1 && userExists)
+	if (msg.getter_params().size() > 0)
 	{
-		if (topic.length() == 0)
+		std::string channelName = msg.getter_params()[0].trailing_or_middle;
+		if (channelName.find("#") == std::string::npos)
+			channelName = "#" + channelName;
+		int channelIndex = this->find_Channel(channelName);
+		std::string nickname = _users[user_id].getNickname();
+		bool userExists = isUser(_users, nickname);//this->_channels[channelIndex].userExists(nickname);
+		std::string topic = msg.getter_params()[1].trailing_or_middle;
+		Channel	*currentChannel = &this->_channels[channelIndex];
+		if (channelIndex != -1 && userExists)
 		{
-			if (currentChannel->getTopic().length() > 0)
-				this->send_msg(RPL_TOPIC(nickname, currentChannel->getName(), currentChannel->getTopic()), user_id);
-			else
-				this->send_msg(RPL_NOTOPIC(nickname, currentChannel->getName()), user_id);
-		}
-		else
-		{
-			if (currentChannel->isAdmin(nickname))
+			if (topic.length() == 0)
 			{
-				currentChannel->setTopic(nickname, topic);
-				this->send_msg(RPL_TOPIC(nickname, currentChannel->getName(), currentChannel->getTopic()), user_id);
+				if (currentChannel->getTopic().length() > 0)
+					this->send_msg(RPL_TOPIC(nickname, channelName, currentChannel->getTopic()), user_id);
+				else
+					this->send_msg(RPL_NOTOPIC(nickname, channelName), user_id);
 			}
 			else
-				this->send_msg(ERR_CHANOPRIVSNEEDED(nickname, currentChannel->getName()), user_id);
+			{
+				if (currentChannel->isAdmin(nickname))
+				{
+					currentChannel->setTopic(nickname, topic);
+					this->send_msg(RPL_TOPIC(nickname, channelName, currentChannel->getTopic()), user_id);
+				}
+				else
+					this->send_msg(ERR_CHANOPRIVSNEEDED(nickname, channelName), user_id);
+			}
 		}
+		else if (!userExists)
+			this->send_msg(ERR_NOTONCHANNEL(nickname, channelName), user_id);
+		else if (channelIndex == -1)
+			this->send_msg(ERR_NOSUCHCHANNEL(nickname, channelName), user_id);
 	}
-	else if (!userExists)
-		this->send_msg(ERR_NOTONCHANNEL(nickname, currentChannel->getName()), user_id);
 }
 
 void	Server::Command_NICK(TranslateBNF msg, int user_id)
@@ -374,5 +379,26 @@ void	Server::Command_MODE(TranslateBNF msg, int user_id)
 				send_msg(ERR_NEEDMOREPARAMS(nickname, (std::string)"MODE"), user_id);
 			i++;
 		}
+	}
+}
+// Formatierung der msg ( chat gpt sagt <invted user> <channel> | rfc seite sagt <channel> <invited user>)
+void Server::Command_INVITE(TranslateBNF msg, int user_id)
+{
+	if (msg.getter_params().size() > 1)
+	{
+		out("the sizzzeeeeee")
+		out(_users.size())
+		out(_users[user_id].getNickname())
+		std::string nickname = _users[user_id].getNickname();
+		std::string channelName = msg.getter_params()[1].trailing_or_middle;
+		// int channel = find_Channel(channelName);
+		std::string invNick = msg.getter_params()[0].trailing_or_middle;
+		out(invNick)
+		bool user = isUser(_users, invNick);
+		out(user);
+		if (user)
+			send_msg(RPL_INVITING(_users[user_id].getNickname(), invNick , channelName), user_id);
+		else
+			send_msg(ERR_NOSUCHNICK(invNick), user_id);
 	}
 }
