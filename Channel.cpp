@@ -225,8 +225,12 @@ bool	Channel::isVoice(std::string nickname){
 // Try to add User to the Channel and returns a reply code if failed or not
 int	Channel::add_new_user(User& user, std::string used_password)// user& , return error/ string/code
 {
+	out("add_new_user")
+	out(this->userExists(user.getNickname()))
+	out("pls")
 	if ( this->userExists(user.getNickname()) == false)
 	{
+		out("after check")
 		// check if user needs/is invited
 		if (this->_settings.inviteOnly && this->isInvited(user.getNickname()) == false) 
 		{
@@ -241,6 +245,7 @@ int	Channel::add_new_user(User& user, std::string used_password)// user& , retur
 		return (rpl_default);
 	}
 	return (-1);
+	out("failed check")
 }
 
 bool	Channel::isAllowedToSpeak(std::string nickname){

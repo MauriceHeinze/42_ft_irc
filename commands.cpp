@@ -65,10 +65,8 @@ void Server::Command_USER(TranslateBNF msg ,int user_id)
 //old channel
  void Server::use_old_channel(int channel_id, int user_id, std::string channel_password)
 {
-	out("in old")
 	//joining inside our channel class
 	int rpl_msg = _channels[channel_id].add_new_user(_users[user_id], channel_password);
-
 	// for reply
 	if (rpl_msg == rpl_ERR_BADCHANNELKEY)
 		this->send_msg(ERR_BADCHANNELKEY(_users[user_id].getNickname(), _channels[channel_id].getName()), user_id);
@@ -76,7 +74,7 @@ void Server::Command_USER(TranslateBNF msg ,int user_id)
 		this->send_msg(ERR_INVITEONLYCHAN(_users[user_id].getNickname(), _channels[channel_id].getName()), user_id);
 	else if (rpl_msg == rpl_default)
 	{
-		out("send Channel msg")
+		//out("send Channel msg")
 		//to all channel members
 		this->_channels[channel_id].send_to_all(RPL_JOIN(_users[user_id].getNickname(), _channels[channel_id].getName()));
 	}
@@ -104,7 +102,7 @@ void Server::Command_JOIN(TranslateBNF msg ,int user_id)
 	std::vector<s_param> params = msg.getter_params();
 	std::string channel_password;
 	std::string channel;
-	out("in join")
+	// out("in join")
 	//input protection in case to many or to little params
 	if (params.size() > 2 || params.size() == 0)
 	{
@@ -266,6 +264,8 @@ void	Server::Command_PART(TranslateBNF msg, int user_id)
 		this->send_msg(ERR_NOTONCHANNEL(nickname, currentChannel->getName()), user_id);
 }
 
+#define r
+
 void	Server::Command_P_MSG(TranslateBNF msg, int user_id)
 {
 	if (msg.getter_params().size() > 0)
@@ -277,8 +277,7 @@ void	Server::Command_P_MSG(TranslateBNF msg, int user_id)
 				this->send_msg(ERR_NOSUCHCHANNEL(_users[user_id].getNickname(),target),user_id);
 			else 
 			{
-				out("send to all members")
-				this->_channels[i].send_to_all(":lkrabbe PRIVTMSG: #abc Hello\r\n");// need a send_to_with exception from sender id
+				this->_channels[i].send_to_all(" ",user_id);// need a send_to_with exception from sender id
 			}
 			// if (isChannel(_channels, msg.getter_params()[0].trailing_or_middle)){
 				// send_msg(":" + _users[user_id].getNickname() + " PRIVMSG " + msg.getter_params()[0].trailing_or_middle + " :" + msg.getter_params()[1].trailing_or_middle + "\r\n", user_id);
