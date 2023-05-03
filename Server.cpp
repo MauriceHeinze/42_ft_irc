@@ -52,6 +52,14 @@ void Server::setSocket(){
 	_users.push_back(bot);
 }
 
+
+void	Server::delete_user(int user_id)
+{
+	close(this->_fds[user_id].fd);
+	this->_fds.erase(this->_fds.begin() + user_id);
+	this->_users.erase(this->_users.begin() + user_id);
+}
+
 void Server::startServer(){
 	try {
 		setSocket();
@@ -69,14 +77,9 @@ void Server::startServer(){
 		for (size_t i = 0; i < _fds.size(); i++) {
 			std::cout << "for loop =" << i << std::endl;
 			if ( i && _fds[i].revents & (POLLHUP | POLLERR | POLLNVAL))
+				delete_user(i);
+			else if (_fds[i].revents & POLLIN)
 			{
-				close(_fds[i].fd);
-				_fds.erase(_fds.begin() + i);
-				_users.erase(_users.begin() + i);
-				out("delete")
-				out(i)
-			}
-			else if (_fds[i].revents & POLLIN) {
 				if (i == 0) {
 					acceptConnection();
 				}

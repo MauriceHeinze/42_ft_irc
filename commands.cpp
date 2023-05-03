@@ -124,6 +124,7 @@ void Server::Command_JOIN(TranslateBNF msg ,int user_id)
 	out(channel_id)
 	if (channel_id != -1)
 	{
+		out("use old channel")
 		use_old_channel(channel_id, user_id, channel_password);
 	}
 	else
