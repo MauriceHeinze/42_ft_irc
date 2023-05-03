@@ -44,6 +44,7 @@ class Channel
 		std::string	getName( void );
 		//Utiels
 		void		send_to_all(std::string msg);
+		void		send_to_all(std::string msg, int not_this_fd);
 		//Channel commands
 		void		join(User &userRef);
 		int			add_new_user(User& user, std::string channel_password);// user& , return error/ string/code

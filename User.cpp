@@ -47,9 +47,14 @@ std::string	User::get_next_command( void )
 	return (command);
 }
 
-User& User::operator= (const User& a)
+User& User::operator= (const User& other)
 {
-	(void)a;
+	this->username = other.username;
+	this->fullName = other.fullName;
+	this->nickname = other.nickname;
+	this->_valid_nickname = other._valid_nickname;
+	this->_valid_password = other._valid_password;
+	this->msg = other.msg;
 	return (*(this));
 }
 

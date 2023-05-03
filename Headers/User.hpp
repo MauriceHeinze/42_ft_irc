@@ -4,16 +4,16 @@
 
 #include "Utils.hpp"
 
-class User : public pollfd
+class User 
 {
 	private:
-		std::string	username;
-		std::string	fullName;
-		std::string	nickname;
+		std::string			username;
+		std::string			fullName;
+		std::string			nickname;
 	public:
 		const int			_fd;//aka socket
-		bool		_valid_password;
-		bool		_valid_nickname;
+		bool				_valid_password;
+		bool				_valid_nickname;
 		std::string			msg; // buffer to store message content until \r\n is received // check recv function options for buffer
 		User( std::string username,int fd);
 		User(int fd);

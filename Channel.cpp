@@ -267,12 +267,15 @@ bool	Channel::userExists(std::string nickname){
 
 void	Channel::send_to_all(std::string msg)
 {
-	out("perm size")
-	out(_perm.size())
+	for (size_t i = 0; i < _perm.size(); i++)
+		send(_perm[i].name->_fd, msg.c_str(), msg.size(), SEND_FLAGS);
+}
+
+void	Channel::send_to_all(std::string msg, int not_this_fd)
+{
 	for (size_t i = 0; i < _perm.size(); i++)
 	{
-		out("user >>")
-		out(_perm[i].name->getNickname())
-		send(_perm[i].name->fd, msg.c_str(), msg.size(), SEND_FLAGS);
+		if (_perm[i].name->_fd != not_this_fd)
+			send(_perm[i].name->_fd, msg.c_str(), msg.size(), SEND_FLAGS);
 	}
 }
