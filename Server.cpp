@@ -52,12 +52,16 @@ void Server::setSocket(){
 	_users.push_back(bot);
 }
 
-
 void	Server::delete_user(int user_id)
 {
 	close(this->_fds[user_id].fd);
 	this->_fds.erase(this->_fds.begin() + user_id);
 	this->_users.erase(this->_users.begin() + user_id);
+	for (size_t i = 0; i < _channels.size(); i++)
+	{
+		_channels.leave_user();
+	}
+	
 }
 
 void Server::startServer(){
@@ -70,7 +74,7 @@ void Server::startServer(){
 	}
 
 	while (1) {
-		int pollVal = poll(_fds.data(), _fds.size(), 5000);
+		int pollVal = poll(_fds.data(), _fds.size(), 20000);
 		std::cout << "current connections " << _fds.size() - 1 << std::endl;
 		if (pollVal == -1)
 			throw(PollFail());
@@ -110,8 +114,7 @@ void Server::acceptConnection()
 	User new_user(clientSocket);
 	_users.push_back(new_user);
 	//! Need better opening
-	const std::string msg = ":Server opening :Hallo, was geht\r\n";
-	send(clientSocket, msg.c_str(), msg.size(), 0);
+	send_msg(":Server opening :Hallo, was geht\r\n",clientSocket);
 }
 
 
