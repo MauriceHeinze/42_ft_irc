@@ -89,7 +89,7 @@ void	Channel::part(std::string nickname)
 {
 	for (size_t i = 0; i < _perm.size(); i++)
 	{
-		if (_perm[i].name->getNickname() == nickname)
+		if (_perm[i].user->getNickname() == nickname)
 		{
 			_perm.erase(_perm.begin() + i);
 			// _perm.shrink_to_fit();
@@ -99,15 +99,28 @@ void	Channel::part(std::string nickname)
 	throw("User not found in this channel");
 }
 
+void	Channel::leave_user(User& user)
+{
+	for (size_t i = 0; i < _perm.size(); i++)
+	{
+		if (&user == _perm[i].user)
+		{
+			_perm.erase(_perm.begin() + i);
+			//send part msg reason disconecet
+			break;
+		}
+	}
+	
+}
+
 void	Channel::kick(std::string nickname)
 {
 	// check for user to kick
 	for (size_t k = 0; k < _perm.size(); k++)
 	{
-		if (_perm[k].name->getNickname() == nickname)
+		if (_perm[k].user->getNickname() == nickname)
 		{
 			_perm.erase(_perm.begin() + k);
-			// _perm.shrink_to_fit();
 			return ;
 		}
 	}
@@ -119,7 +132,7 @@ void	Channel::oper(std::string nickname)
 	// check for user to promote to operator
 	for (size_t k = 0; k < _perm.size(); k++)
 	{
-		if (_perm[k].name->getNickname() == nickname)
+		if (_perm[k].user->getNickname() == nickname)
 		{
 			_perm[k].isAdmin = true;
 			_perm[k].isVoice = true;
@@ -134,7 +147,7 @@ void	Channel::invite(std::string nickname)
 	// check if user joined already
 	for (size_t i = 0; i < _perm.size(); i++)
 	{
-		if (_perm[i].name->getNickname() == nickname)
+		if (_perm[i].user->getNickname() == nickname)
 		{
 			throw("User is already member of channel");
 			return ;
@@ -171,9 +184,6 @@ std::string	Channel::getTopic( void )
 
 std::string	Channel::getName( void )
 {
-	out("getName")
-	out(this->_name)
-	out("----")
 	return (this->_name);
 }
 
@@ -189,7 +199,7 @@ bool	Channel::isInvited(std::string nickname){
 bool	Channel::isAdmin(std::string nickname){
 	for(int i = 0; _perm.size(); i++)
 	{
-		if (_perm[i].name->getNickname() == nickname){
+		if (_perm[i].user->getNickname() == nickname){
 			if (_perm[i].isAdmin == true)
 				return true;
 			else
@@ -202,7 +212,7 @@ bool	Channel::isAdmin(std::string nickname){
 bool	Channel::isUser(std::string nickname){
 	for(int i = 0; _perm.size(); i++)
 	{
-		if (_perm[i].name->getNickname() == nickname)
+		if (_perm[i].user->getNickname() == nickname)
 			return true;
 	}
 	return false;
@@ -211,7 +221,7 @@ bool	Channel::isUser(std::string nickname){
 bool	Channel::isVoice(std::string nickname){
 	for(int i = 0; _perm.size(); i++)
 		{
-			if (_perm[i].name->getNickname() == nickname)
+			if (_perm[i].user->getNickname() == nickname)
 			{
 				if (_perm[i].isVoice == true)
 					return true;
@@ -251,7 +261,7 @@ int	Channel::add_new_user(User& user, std::string used_password)// user& , retur
 bool	Channel::isAllowedToSpeak(std::string nickname){
 	for(int i = 0; _perm.size(); i++)
 	{
-		if (_perm[i].name->getNickname() == nickname){
+		if (_perm[i].user->getNickname() == nickname){
 			if (_perm[i].isAllowedToSpeak == true)
 				return true;
 			else
@@ -264,7 +274,7 @@ bool	Channel::isAllowedToSpeak(std::string nickname){
 bool	Channel::userExists(std::string nickname){
 	for(size_t i = 0; i < _perm.size(); i++)
 	{
-		if (_perm[i].name->getNickname() == nickname)
+		if (_perm[i].user->getNickname() == nickname)
 				return true;
 	}
 	return false;
@@ -273,14 +283,14 @@ bool	Channel::userExists(std::string nickname){
 void	Channel::send_to_all(std::string msg)
 {
 	for (size_t i = 0; i < _perm.size(); i++)
-		send(_perm[i].name->_fd, msg.c_str(), msg.size(), SEND_FLAGS);
+		send(_perm[i].user->_fd, msg.c_str(), msg.size(), SEND_FLAGS);
 }
 
 void	Channel::send_to_all(std::string msg, int not_this_fd)
 {
 	for (size_t i = 0; i < _perm.size(); i++)
 	{
-		if (_perm[i].name->_fd != not_this_fd)
-			send(_perm[i].name->_fd, msg.c_str(), msg.size(), SEND_FLAGS);
+		if (_perm[i].user->_fd != not_this_fd)
+			send(_perm[i].user->_fd, msg.c_str(), msg.size(), SEND_FLAGS);
 	}
 }

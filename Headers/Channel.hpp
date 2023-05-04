@@ -9,7 +9,7 @@ struct permissions{
 		bool	isAdmin;
 		bool	isVoice;
 		bool	isAllowedToSpeak;
-		User	*name;
+		User	*user;
 };
 
 struct channelSettings{
@@ -27,7 +27,7 @@ class Channel
 {
 	private:
 		std::string					_topic;
-		std::vector<permissions> 	_perm;//? better as <user>
+		std::vector<permissions> 	_perm;
 		std::vector<std::string> 	_invited;//? better as <user>
 		std::string					_name;
 	public:
@@ -45,7 +45,7 @@ class Channel
 		//Utiels
 		void		send_to_all(std::string msg);
 		void		send_to_all(std::string msg, int not_this_fd);
-		void		leave_user();
+		void		leave_user(User& user);
 		//Channel commands
 		void		join(User &userRef);
 		int			add_new_user(User& user, std::string channel_password);// user& , return error/ string/code
@@ -55,7 +55,7 @@ class Channel
 		void		mode(std::string nickname);
 		void		invite(std::string nickname);
 		//check Channel settings
-		bool		isInvited(std::string nickname);
+		bool		isInvited(std::string nickname);// use user instead of string saves you the getter of the nickname all the time 
 		bool		isAdmin(std::string nickname);
 		bool		isUser(std::string nickname);
 		bool		isVoice(std::string nickname);

@@ -265,8 +265,6 @@ void	Server::Command_PART(TranslateBNF msg, int user_id)
 		this->send_msg(ERR_NOTONCHANNEL(nickname, currentChannel->getName()), user_id);
 }
 
-#define r
-
 void	Server::Command_P_MSG(TranslateBNF msg, int user_id)
 {
 	if (msg.getter_params().size() > 0)
@@ -288,8 +286,6 @@ void	Server::Command_P_MSG(TranslateBNF msg, int user_id)
 		}
 		else
 			send_msg(":" + _users[user_id].getNickname() + " PRIVMSG " + msg.getter_params()[0].trailing_or_middle + " :" + msg.getter_params()[1].trailing_or_middle + "\r\n", user_id);
-
-
 	}
 	else
 		send_msg(ERR_NEEDMOREPARAMS(this->_users[user_id].getNickname(), msg.getter_command()), user_id);

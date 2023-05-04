@@ -54,14 +54,13 @@ void Server::setSocket(){
 
 void	Server::delete_user(int user_id)
 {
+	for (size_t i = 0; i < _channels.size(); i++)
+	{
+		_channels[i].leave_user(_users[user_id]);
+	}
 	close(this->_fds[user_id].fd);
 	this->_fds.erase(this->_fds.begin() + user_id);
 	this->_users.erase(this->_users.begin() + user_id);
-	for (size_t i = 0; i < _channels.size(); i++)
-	{
-		_channels.leave_user();
-	}
-	
 }
 
 void Server::startServer(){
