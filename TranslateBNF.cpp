@@ -284,3 +284,9 @@ std::string	TranslateBNF::get_full_msg( void )
 	msg.append("\10\13");
 	return(msg);
 }
+
+void	TranslateBNF::add_param(std::string msg, bool trailing)
+{
+	struct s_param param = {trailing, msg};
+	this->params.push_back(param);
+}

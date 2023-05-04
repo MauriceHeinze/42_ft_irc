@@ -1,9 +1,9 @@
 #pragma once
 #ifndef CHANNEL_HPP
 # define CHANNEL_HPP
+#include "User.hpp"
 
 #include "Utils.hpp"
-#include "User.hpp"
 
 struct permissions{
 		bool	isAdmin;
@@ -31,7 +31,7 @@ class Channel
 		std::vector<std::string> 	_invited;//? better as <user>
 		std::string					_name;
 	public:
-		channelSettings				_settings;
+		channelSettings				_settings;//!should be in privat
 		Channel(std::string name);
 		Channel(std::string name, std::string password);
 		Channel(std::string name, std::string password, User& first_user);
@@ -45,7 +45,8 @@ class Channel
 		//Utiels
 		void		send_to_all(std::string msg);
 		void		send_to_all(std::string msg, int not_this_fd);
-		void		leave_user(User& user);
+		void		leave_user(User* user, std::string msg);
+		std::string	get_user_list( void );
 		//Channel commands
 		void		join(User &userRef);
 		int			add_new_user(User& user, std::string channel_password);// user& , return error/ string/code
@@ -57,11 +58,12 @@ class Channel
 		//check Channel settings
 		bool		isInvited(std::string nickname);// use user instead of string saves you the getter of the nickname all the time 
 		bool		isAdmin(std::string nickname);
-		bool		isUser(std::string nickname);
 		bool		isVoice(std::string nickname);
 		bool		isAllowedToSpeak(std::string nickname);
 		bool		checkLimit();
-		bool		userExists(std::string nickname);
+		size_t		find_user_in_channel(User* user);
+		// bool		isUser(std::string nickname);
+		// bool		userExists(std::string nickname);
 };
 
 #endif

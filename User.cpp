@@ -88,27 +88,10 @@ const std::string& User::getFullname( void )
 	return (this->fullName);
 }
 
-void	User::add_Channel_link(Channel* Channel_ptr)
-{
-	this->connected_channel.push_back(Channel_ptr);
-}
-
-void	User::remove_Channel_link(Channel* Channel_ptr)
-{
-	for (size_t i = 0; i < this->connected_channel.size(); i++)
-	{
-		if (Channel_ptr == connected_channel[i])
-		{
-			connected_channel.erase(connected_channel.begin() + i);
-			return ;
-		}
-	}
-}
-
-void	User::send_msg_to_Channels(std::string msg)
-{
-	for (size_t i = 0; i < connected_channel.size(); i++)
-	{
-		connected_channel[i]->send_to_all(msg);
-	}
-}
+// void	User::send_msg_to_Channels(std::string msg)
+// {
+// 	for (size_t i = 0; i < connected_channel.size(); i++)
+// 	{
+// 		connected_channel[i]->send_to_all(msg);
+// 	}
+// }

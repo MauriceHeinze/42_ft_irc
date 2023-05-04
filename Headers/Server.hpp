@@ -1,9 +1,11 @@
 #ifndef SERVER_HPP
 # define SERVER_HPP
 
+#define out(x) std::cout << x << std::endl;
+#include	<stdint.h>
+#define USER_NOT_FOUND SIZE_T_MAX
 #include	"Utils.hpp"
 #include	"TranslateBNF.hpp"
-#define out(x) std::cout << x << std::endl;
 
 class Server
 {
@@ -57,6 +59,7 @@ class Server
 		int		find_Channel(std::string channelName);
 		//User related
 		void	delete_user(int user_id);
+		void	remove_user_from_all_channels(std::string msg, int user_id);
 		//commands
 		void	Command_PASS( TranslateBNF msg, int user_id);
 		void	Command_USER( TranslateBNF msg, int user_id);

@@ -3,7 +3,7 @@
 # define CLASS_User
 
 #include 	"Utils.hpp"
-#include	"Channel.hpp"
+// #include	"Channel.hpp"
 
 class User 
 {
@@ -11,7 +11,7 @@ class User
 		std::string				username;
 		std::string				fullName;
 		std::string				nickname;
-		std::vector<void*>	connected_channel; 
+		// std::vector 	connected_channel; 
 	public:
 		const int			_fd;//aka socket
 		bool				_valid_password;
@@ -21,9 +21,9 @@ class User
 		User(int fd);
 		// User(const User &a);
 		//Channel related
-		void				add_Channel_link(Channel* Channel_ptr);
-		void				remove_Channel_link(Channel* Channel_ptr);
-		void				send_msg_to_Channels(std::string msg);
+		// void				add_Channel_link(Channel* Channel_ptr);
+		// void				remove_Channel_link(Channel* Channel_ptr);
+		// void				send_msg_to_Channels(std::string msg);
 		~User();
 		void				insert_in_user_buffer(std::string read_buffer);
 		std::string   		get_next_command( void );

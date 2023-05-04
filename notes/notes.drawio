@@ -1,6 +1,6 @@
 <mxfile host="65bd71144e">
     <diagram id="wGuppr9kJ32sMvLZwhZV" name="Page-1">
-        <mxGraphModel dx="3022" dy="1862" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+        <mxGraphModel dx="2996" dy="2029" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -38,7 +38,10 @@
                 <mxCell id="17" value="512 char limit for msg&lt;br&gt;-you can only type. 401 chars in a msg" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
                     <mxGeometry x="65" y="520" width="350" height="60" as="geometry"/>
                 </mxCell>
-                <mxCell id="40" value="" style="edgeStyle=none;html=1;" edge="1" parent="1" source="20" target="22">
+                <mxCell id="40" value="" style="edgeStyle=none;html=1;" parent="1" source="20" target="22" edge="1">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="41" value="" style="edgeStyle=none;html=1;" edge="1" parent="1" source="20" target="22">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
                 <mxCell id="20" value="&lt;a href=&quot;https://www.rfc-editor.org/rfc/rfc1459#section-4.2.3.1&quot;&gt;IRC_DOC&lt;/a&gt;" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">

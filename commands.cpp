@@ -57,8 +57,7 @@ void Server::Command_USER(TranslateBNF msg ,int user_id)
 	//!give first user admin rights
 	//send list of user and topics if succesfull
 	_channels.push_back(Channel);
-	this->send_msg(RPL_JOIN(_users[user_id].getNickname(), new_channel), user_id);
-	out(RPL_JOIN(_users[user_id].getNickname(), new_channel))
+	_channels.back().send_to_all(RPL_JOIN(_users[user_id].getNickname(), new_channel));
 }
 
 
@@ -74,15 +73,17 @@ void Server::Command_USER(TranslateBNF msg ,int user_id)
 		this->send_msg(ERR_INVITEONLYCHAN(_users[user_id].getNickname(), _channels[channel_id].getName()), user_id);
 	else if (rpl_msg == rpl_default)
 	{
-		//out("send Channel msg")
-		//to all channel members
 		this->_channels[channel_id].send_to_all(RPL_JOIN(_users[user_id].getNickname(), _channels[channel_id].getName()));
+		this->send_msg(RPL_NAMREPLY(_users[user_id].getNickname(),_channels[channel_id].getName(),_channels[channel_id].get_user_list()),user_id);
+		this->send_msg(RPL_ENDOFNAMES(_users[user_id].getNickname(),_channels[channel_id].getName()),user_id);
 	}
 	else if (rpl_msg == rpl_no_rpl)
 		return;
 	else
+	{
 		out("error missing !!!!(use_old_channel)")
-	//send list of user and topics if succesfull
+		return;
+	}
 }
 
 //std::string topic("default");
@@ -155,39 +156,40 @@ void Server::Command_WHO(TranslateBNF msg, int user_id)
 
 void Server::Command_KICK(TranslateBNF msg,int user_id)
 {
+	(void)user_id;
+	(void)msg;
+	// std::string channelName = msg.getter_params()[0].trailing_or_middle;
+	// std::string nickname = msg.getter_params()[1].trailing_or_middle;
+	// std::string nicknameToBeKicked = msg.getter_params()[1].trailing_or_middle;
+	// std::string comment = msg.getter_params()[2].trailing_or_middle;
+	// int channelIndex = this->find_Channel(channelName);
+	// bool userExists = this->_channels[channelIndex].find_user_in_channel(&_users[user_id]);
+	// bool userToBeKickedExists = this->_channels[channelIndex].userExists(nicknameToBeKicked);
+	// Channel	*currentChannel = &this->_channels[channelIndex];
 
-	std::string channelName = msg.getter_params()[0].trailing_or_middle;
-	std::string nickname = msg.getter_params()[1].trailing_or_middle;
-	std::string nicknameToBeKicked = msg.getter_params()[1].trailing_or_middle;
-	std::string comment = msg.getter_params()[2].trailing_or_middle;
-	int channelIndex = this->find_Channel(channelName);
-	bool userExists = this->_channels[channelIndex].userExists(nickname);
-	bool userToBeKickedExists = this->_channels[channelIndex].userExists(nicknameToBeKicked);
-	Channel	*currentChannel = &this->_channels[channelIndex];
-
-	if (channelIndex != -1 && userExists && userToBeKickedExists)
-	{
-		if (currentChannel->isAdmin(nickname)) // check if user that wants to kick has privileges
-		{
-			currentChannel->kick(nicknameToBeKicked);
-			if (comment.length() > 0)
-			{
-				// send message to client with [comment] variable
-			}
-			else
-			{
-				// send message to client without a comment
-			}
-		}
-		else
-			this->send_msg(ERR_CHANOPRIVSNEEDED(nickname, currentChannel->getName()), user_id);
-	}
-	else if (channelIndex != -1)
-	{
-		this->send_msg(ERR_NOSUCHCHANNEL(nickname, currentChannel->getName()), user_id);
-	}
-	else if (!userToBeKickedExists)
-		this->send_msg(ERR_NOTONCHANNEL(nickname, currentChannel->getName()), user_id);
+	// if (channelIndex != -1 && userExists && userToBeKickedExists)
+	// {
+	// 	if (currentChannel->isAdmin(nickname)) // check if user that wants to kick has privileges
+	// 	{
+	// 		currentChannel->kick(nicknameToBeKicked);
+	// 		if (comment.length() > 0)
+	// 		{
+	// 			// send message to client with [comment] variable
+	// 		}
+	// 		else
+	// 		{
+	// 			// send message to client without a comment
+	// 		}
+	// 	}
+	// 	else
+	// 		this->send_msg(ERR_CHANOPRIVSNEEDED(nickname, currentChannel->getName()), user_id);
+	// }
+	// else if (channelIndex != -1)
+	// {
+	// 	this->send_msg(ERR_NOSUCHCHANNEL(nickname, currentChannel->getName()), user_id);
+	// }
+	// else if (!userToBeKickedExists)
+	// 	this->send_msg(ERR_NOTONCHANNEL(nickname, currentChannel->getName()), user_id);
 }
 
 void	Server::Command_TOPIC(TranslateBNF msg,int user_id)
@@ -250,19 +252,20 @@ void	Server::Command_NICK(TranslateBNF msg, int user_id)
 void	Server::Command_PART(TranslateBNF msg, int user_id)
 {
 	(void)user_id;
-	std::string channelName = msg.getter_params()[0].trailing_or_middle;
-	std::string nickname = msg.getter_params()[1].trailing_or_middle;
-	int channelIndex = this->find_Channel(channelName);
-	bool userExists = this->_channels[channelIndex].userExists(nickname);
-	Channel	*currentChannel = &this->_channels[channelIndex];
-	if (channelIndex != -1 && userExists)
-		currentChannel->part(nickname);
-	else if (channelName.length() == 0)
-		this->send_msg(ERR_NEEDMOREPARAMS(nickname, msg.getter_command()), user_id);
-	else if (channelIndex == -1)
-		this->send_msg(ERR_NOSUCHCHANNEL(nickname, currentChannel->getName()), user_id);
-	else if (!userExists)
-		this->send_msg(ERR_NOTONCHANNEL(nickname, currentChannel->getName()), user_id);
+	(void)msg;
+	// std::string channelName = msg.getter_params()[0].trailing_or_middle;
+	// std::string nickname = msg.getter_params()[1].trailing_or_middle;
+	// int channelIndex = this->find_Channel(channelName);
+	// bool userExists = this->_channels[channelIndex].userExists(nickname);
+	// Channel	*currentChannel = &this->_channels[channelIndex];
+	// if (channelIndex != -1 && userExists)
+	// 	currentChannel->part(nickname);
+	// else if (channelName.length() == 0)
+	// 	this->send_msg(ERR_NEEDMOREPARAMS(nickname, msg.getter_command()), user_id);
+	// else if (channelIndex == -1)
+	// 	this->send_msg(ERR_NOSUCHCHANNEL(nickname, currentChannel->getName()), user_id);
+	// else if (!userExists)
+	// 	this->send_msg(ERR_NOTONCHANNEL(nickname, currentChannel->getName()), user_id);
 }
 
 void	Server::Command_P_MSG(TranslateBNF msg, int user_id)
@@ -291,12 +294,13 @@ void	Server::Command_P_MSG(TranslateBNF msg, int user_id)
 		send_msg(ERR_NEEDMOREPARAMS(this->_users[user_id].getNickname(), msg.getter_command()), user_id);
 }
 
+#define rpl_PONG(msg) "PONG" + msg + "\r\n"
+
 void	Server::Command_PING(TranslateBNF msg, int user_id)
 {
-	TranslateBNF send_msg(msg.get_full_msg());
-	send_msg.setter_command("PONG");
-	// send_msg("PONG\13\10", user_id);
-	send(this->_fds[user_id].fd,send_msg.get_full_msg().c_str(),send_msg.get_full_msg().size(),0);
+	(void) msg;
+	std::string text(" params ");
+	send_msg(rpl_PONG(text), user_id);
 }
 
 void	Server::Command_CAP(TranslateBNF msg, int user_id)
@@ -361,8 +365,8 @@ void	Server::Command_MODE(TranslateBNF msg, int user_id)
 			}
 			else if (flags[i] == 'o') // o: Give/take channel operator privilege
 			{
-				if (currentChannel->isUser(argument))
-					currentChannel->oper(argument);
+				// if (currentChannel->find(argument))
+				// 	currentChannel->oper(argument);
 			}
 			else if (flags[i] == 'l') // l: Set/remove the user limit to channel
 			{
@@ -382,9 +386,6 @@ void Server::Command_INVITE(TranslateBNF msg, int user_id)
 {
 	if (msg.getter_params().size() > 1)
 	{
-		out("the sizzzeeeeee")
-		out(_users.size())
-		out(_users[user_id].getNickname())
 		std::string nickname = _users[user_id].getNickname();
 		std::string channelName = msg.getter_params()[1].trailing_or_middle;
 		// int channel = find_Channel(channelName);

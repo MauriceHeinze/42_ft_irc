@@ -56,7 +56,7 @@ void	Server::delete_user(int user_id)
 {
 	for (size_t i = 0; i < _channels.size(); i++)
 	{
-		_channels[i].leave_user(_users[user_id]);
+		//_channels[i].leave_user(&_users[user_id], "User got diconnected");
 	}
 	close(this->_fds[user_id].fd);
 	this->_fds.erase(this->_fds.begin() + user_id);
@@ -73,23 +73,28 @@ void Server::startServer(){
 	}
 
 	while (1) {
-		int pollVal = poll(_fds.data(), _fds.size(), 20000);
+		int pollVal = poll(_fds.data(), _fds.size(), 5000);
 		std::cout << "current connections " << _fds.size() - 1 << std::endl;
 		if (pollVal == -1)
 			throw(PollFail());
-		for (size_t i = 0; i < _fds.size(); i++) {
-			std::cout << "for loop =" << i << std::endl;
+		for (size_t i = 0; i < _fds.size(); i++) 
+		{
+			out(i)
 			if ( i && _fds[i].revents & (POLLHUP | POLLERR | POLLNVAL))
+			{
 				delete_user(i);
+			}
 			else if (_fds[i].revents & POLLIN)
 			{
-				if (i == 0) {
+				if (i == 0)
+				{
+					out("acceptConnection")
 					acceptConnection();
+					out("END")
 				}
 				else
 				{
-					out("--------------------------------------------------")
-					std::cout << "MSG recieve from socket " << i << std::endl;
+					out("recvMsg")
 					recvMsg(i);
 				}
 			}
@@ -113,7 +118,7 @@ void Server::acceptConnection()
 	User new_user(clientSocket);
 	_users.push_back(new_user);
 	//! Need better opening
-	send_msg(":Server opening :Hallo, was geht\r\n",clientSocket);
+	// send_msg(":Server opening :Hallo, was geht\r\n",clientSocket);
 }
 
 
@@ -226,4 +231,25 @@ void Server::recvMsg(size_t user_id)
 std::string	Server::get_password( void )
 {
 	return(_password);
+}
+
+
+//in case for diconnect
+/**
+ * @brief iterate throu all channels and remove the user if he was inside one, also sends all other users a msg that someone left
+ * @param msg the msg that the other users resieve
+ * @param user_id the fd/Socket/user that left the channel
+ * 
+ */
+void	Server::remove_user_from_all_channels(std::string msg, int user_id)
+{
+	for (size_t i = 0; i < this->_channels.size() ; i++)
+	{
+		size_t user_in_channel = _channels[i].find_user_in_channel(&_users[user_id]);
+		if (user_in_channel != USER_NOT_FOUND)
+		{
+			this->_channels[i].leave_user(&_users[user_id], msg);
+		}
+	}
+	
 }

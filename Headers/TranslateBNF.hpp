@@ -30,9 +30,9 @@ struct s_param{
 //<message>  ::= [':' <prefix> <SPACE> ] <command> <params> <crlf>
 class TranslateBNF
 {
-			s_prefix				prefix;//optional
-			s_command				command;
-			std::vector<s_param>	params;
+		s_prefix				prefix;//optional
+		s_command				command;
+		std::vector<s_param>	params;
 		//'/10''/13' aka crlf
 		void					deconstruct_params( std::string& ,int& );
 		void					deconstruct_msg( std::string );
@@ -47,6 +47,7 @@ class TranslateBNF
 		void					setter_command( std::string command );
 		void					setter_num( std::string num );
 		void					setter_params( std::vector<s_param> params );
+		void					add_param(std::string msg, bool trailing);
 		std::vector<s_param>	getter_params( void );
 		std::string				getter_num( void );
 		std::string				getter_command( void );
