@@ -280,7 +280,7 @@ void	Server::Command_P_MSG(TranslateBNF msg, int user_id)
 			int i = this->find_Channel(target);
 			if (i == -1)
 				this->send_msg(ERR_NOSUCHCHANNEL(_users[user_id].getNickname(),target),user_id);
-			else 
+			else
 			{
 				this->_channels[i].send_to_all(" ",user_id);// need a send_to_with exception from sender id
 			}
@@ -315,35 +315,24 @@ void	Server::Command_CAP(TranslateBNF msg, int user_id)
 
 void	Server::Command_MODE(TranslateBNF msg, int user_id)
 {
-	return;
-	(void)user_id;
-	(void)msg;
-
 	// examples:
 	// MODE #Finnish +o Kilroy
 	// MODE #Finnish +im
 
-	// flag die sagt, ob Einstellungen gerade deaktiviert oder aktiviert werden
-	bool setting = false;
-
 	// setze variables
 	std::string nickname = this->_users[user_id].getNickname();
-	std::string channelName;
-	std::string flags = msg.getter_params()[1].trailing_or_middle;
-	std::string argument = msg.getter_params()[2].trailing_or_middle;
-	int channelIndex;
-	Channel	*currentChannel;
-
-	if (msg.getter_params()[0].trailing_or_middle.length() == 0)
-	{
-		channelName = msg.getter_params()[0].trailing_or_middle;
-		channelIndex = this->find_Channel(channelName);
-		currentChannel = &this->_channels[channelIndex];
-	}
-	else
+	// check if enough params are available
+	if (msg.getter_params().size() < 3 || msg.getter_params()[0].trailing_or_middle.length() != 0)
 		send_msg(ERR_NEEDMOREPARAMS(nickname, (std::string)"MODE"), user_id);
 
-	size_t i = 0;
+	size_t		i = 0;
+	bool		setting = false; // needed to set settings
+	std::string	flags = msg.getter_params()[1].trailing_or_middle;
+	std::string	argument = msg.getter_params()[2].trailing_or_middle;
+	std::string	channelName = msg.getter_params()[0].trailing_or_middle;
+	int			channelIndex = this->find_Channel(channelName);
+	Channel		*currentChannel = &this->_channels[channelIndex];
+
 	// erster String ist Channel oder User
 	if (channelName[0] == '#')
 	{
@@ -355,34 +344,43 @@ void	Server::Command_MODE(TranslateBNF msg, int user_id)
 			else if (flags[i] == '-')
 				setting = false;
 
-			if (flags[i] == 'i') // i: Set/remove Invite-only channel
-				currentChannel->_settings.privateChannel = setting;
-			else if (flags[i] == 't') // t: Set/remove the restrictions of the TOPIC command to channel operators
-				currentChannel->_settings.topicOperatorOnly = setting;
-			else if (flags[i] == 'k') // k: Set/remove the channel key (password)
+			// if isAdmin
+			if (currentChannel->isAdmin(nickname))
 			{
-				if (setting == true)
-					currentChannel->_settings.password = argument;
-				else
-					currentChannel->_settings.password = "";
+				if (flags[i] == 'i') // i: Set/remove Invite-only channel
+					currentChannel->_settings.privateChannel = setting;
+				else if (flags[i] == 't') // t: Set/remove the restrictions of the TOPIC command to channel operators
+					currentChannel->_settings.topicOperatorOnly = setting;
+				else if (flags[i] == 'k') // k: Set/remove the channel key (password)
+				{
+					if (setting == true)
+						currentChannel->_settings.password = argument;
+					else
+						currentChannel->_settings.password = "";
+				}
+				else if (flags[i] == 'l') // l: Set/remove the user limit to channel
+				{
+					if (setting == true)
+						currentChannel->_settings.userLimit = INT_MAX;
+					else
+						currentChannel->_settings.userLimit = std::stoi(argument);
+				}
+				else if (flags[i] == 'o') // o: Give/take channel operator privilege
+				{
+					if (this->_channels[channelIndex].userExists(argument))
+						currentChannel->oper(argument);
+					else
+						send_msg(ERR_USERONCHANNEL(nickname, argument), user_id);
+				}
+				else if (flags[i] != '+' && flags[i] != '-')
+					send_msg(ERR_UNKNOWNMODE(nickname, flags[i]), user_id);
 			}
-			else if (flags[i] == 'o') // o: Give/take channel operator privilege
-			{
-				// if (currentChannel->find(argument))
-				// 	currentChannel->oper(argument);
-			}
-			else if (flags[i] == 'l') // l: Set/remove the user limit to channel
-			{
-				if (setting == true)
-					currentChannel->_settings.userLimit = INT_MAX;
-				else
-					currentChannel->_settings.userLimit = std::stoi(argument);
-			}
-			else if (flags[i] != '+' && flags[i] != '-')
-				send_msg(ERR_NEEDMOREPARAMS(nickname, (std::string)"MODE"), user_id);
+			else
+				send_msg(ERR_CHANOPRIVSNEEDED(nickname, channelName), user_id);
 			i++;
 		}
 	}
+	// add user stuff
 }
 // Formatierung der msg ( chat gpt sagt <invted user> <channel> | rfc seite sagt <channel> <invited user>)
 void Server::Command_INVITE(TranslateBNF msg, int user_id)
@@ -397,7 +395,7 @@ void Server::Command_INVITE(TranslateBNF msg, int user_id)
 		bool user = isUser(_users, invNick);
 		out(user);
 		if (user)
-			send_msg(RPL_INVITING(_users[user_id].getNickname(), invNick , channelName), user_id);
+			send_msg(RPL_INVITING(_users[user_id].getNickname(), invNick, channelName), user_id);
 		else
 			send_msg(ERR_NOSUCHNICK(invNick), user_id);
 	}

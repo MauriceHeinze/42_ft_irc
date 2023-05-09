@@ -56,14 +56,14 @@ class Channel
 		void		mode(std::string nickname);
 		void		invite(std::string nickname);
 		//check Channel settings
-		bool		isInvited(std::string nickname);// use user instead of string saves you the getter of the nickname all the time 
+		bool		isInvited(std::string nickname);// use user instead of string saves you the getter of the nickname all the time
 		bool		isAdmin(std::string nickname);
 		bool		isVoice(std::string nickname);
 		bool		isAllowedToSpeak(std::string nickname);
 		bool		checkLimit();
 		size_t		find_user_in_channel(User* user);
 		// bool		isUser(std::string nickname);
-		// bool		userExists(std::string nickname);
+		bool		userExists(std::string nickname);
 };
 
 #endif

@@ -210,22 +210,14 @@ bool	Channel::isAdmin(std::string nickname){
 	return false;
 }
 
-// bool	Channel::userExists(std::string nickname){
-// 	for(int i = 0; _perm.size(); i++)
-// 	{
-// 		if (_perm[i].user->getNickname() == nickname)
-// 				return true;
-// 	}
-// 	return false;
-// }
-// bool	Channel::(std::string nickname){
-// 	for(int i = 0; _perm.size(); i++)
-// 	{
-// 		if (_perm[i].user->getNickname() == nickname)
-// 			return true;
-// 	}
-// 	return false;
-// }
+bool	Channel::userExists(std::string nickname){
+	for(size_t i = 0; i < _perm.size(); i++)
+	{
+		if (_perm[i].user->getNickname() == nickname)
+				return true;
+	}
+	return false;
+}
 
 size_t	Channel::find_user_in_channel(User* user)
 {
