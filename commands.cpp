@@ -60,6 +60,8 @@ void Server::Command_USER(TranslateBNF msg ,int user_id)
 	_channels.back().send_to_all(RPL_JOIN(_users[user_id].getNickname(), new_channel));
 }
 
+//(SERVER_NAME " 353 " + request.get_user()->get_nickname() + " = " + channel.getName() + " :" + info, request.get_user()->get_fd()
+#define RPL_TEST(nickname,channel,User_list) ":irc.server.com 353 "+ nickname + " = " + channel + " " + User_list + "\r\n"
 
 //old channel
  void Server::use_old_channel(int channel_id, int user_id, std::string channel_password)
@@ -74,7 +76,8 @@ void Server::Command_USER(TranslateBNF msg ,int user_id)
 	else if (rpl_msg == rpl_default)
 	{
 		this->_channels[channel_id].send_to_all(RPL_JOIN(_users[user_id].getNickname(), _channels[channel_id].getName()));
-		this->send_msg(RPL_NAMREPLY(_users[user_id].getNickname(),_channels[channel_id].getName(),_channels[channel_id].get_user_list()),user_id);
+		//this->send_msg(RPL_NAMREPLY(_users[user_id].getNickname(),_channels[channel_id].getName(),_channels[channel_id].get_user_list()),user_id);
+		this->send_msg(RPL_TEST(_users[user_id].getNickname(),_channels[channel_id].getName(),_channels[channel_id].get_user_list()),user_id);
 		this->send_msg(RPL_ENDOFNAMES(_users[user_id].getNickname(),_channels[channel_id].getName()),user_id);
 	}
 	else if (rpl_msg == rpl_no_rpl)
