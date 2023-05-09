@@ -333,7 +333,6 @@ void	Server::Command_MODE(TranslateBNF msg, int user_id)
 	int			channelIndex = this->find_Channel(channelName);
 	Channel		*currentChannel = &this->_channels[channelIndex];
 
-	// erster String ist Channel oder User
 	if (channelName[0] == '#')
 	{
 		while (i != flags.length())
@@ -344,7 +343,6 @@ void	Server::Command_MODE(TranslateBNF msg, int user_id)
 			else if (flags[i] == '-')
 				setting = false;
 
-			// if isAdmin
 			if (currentChannel->isAdmin(nickname))
 			{
 				if (flags[i] == 'i') // i: Set/remove Invite-only channel
@@ -358,19 +356,19 @@ void	Server::Command_MODE(TranslateBNF msg, int user_id)
 					else
 						currentChannel->_settings.password = "";
 				}
-				else if (flags[i] == 'l') // l: Set/remove the user limit to channel
-				{
-					if (setting == true)
-						currentChannel->_settings.userLimit = INT_MAX;
-					else
-						currentChannel->_settings.userLimit = std::stoi(argument);
-				}
 				else if (flags[i] == 'o') // o: Give/take channel operator privilege
 				{
 					if (this->_channels[channelIndex].userExists(argument))
 						currentChannel->oper(argument);
 					else
 						send_msg(ERR_USERONCHANNEL(nickname, argument), user_id);
+				}
+				else if (flags[i] == 'l') // l: Set/remove the user limit to channel
+				{
+					if (setting == true)
+						currentChannel->_settings.userLimit = INT_MAX;
+					else
+						currentChannel->_settings.userLimit = std::stoi(argument);
 				}
 				else if (flags[i] != '+' && flags[i] != '-')
 					send_msg(ERR_UNKNOWNMODE(nickname, flags[i]), user_id);
@@ -380,7 +378,8 @@ void	Server::Command_MODE(TranslateBNF msg, int user_id)
 			i++;
 		}
 	}
-	// add user stuff
+	else
+		send_msg(ERR_NOSUCHCHANNEL(nickname, channelName), user_id);
 }
 // Formatierung der msg ( chat gpt sagt <invted user> <channel> | rfc seite sagt <channel> <invited user>)
 void Server::Command_INVITE(TranslateBNF msg, int user_id)
