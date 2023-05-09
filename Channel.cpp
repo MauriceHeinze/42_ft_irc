@@ -238,6 +238,8 @@ size_t	Channel::find_user_in_channel(User* user)
 }
 
 bool	Channel::isVoice(std::string nickname){
+	
+
 	for(int i = 0; _perm.size(); i++)
 		{
 			if (_perm[i].user->getNickname() == nickname)
