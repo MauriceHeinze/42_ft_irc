@@ -84,7 +84,7 @@ int		getUser(std::vector<User> users, std::string nickname);
 #define ERR_USERONCHANNEL(nickname, channel) "443 " + nickname + " " + channel + " :is already on channel\r\n"							// "<user> <channel> :is already on channel"
 
 //   NICK
-#define ERR_NONICKNAMEGIVEN() "431 :No nickname given\r\n"
+#define ERR_NONICKNAMEGIVEN() ":irc.server.com 431 :No nickname given\r\n"
 #define ERR_NICKNAMEINUSE(nickname) "433" + nickname + ":No nickname given\r\n"
 #define ERR_NICKCOLLISION(nickname) "436" + nickname + ":Nickname collision KILL\r\n"
 #define ERR_ERRONEUSNICKNAME(nickname) "432" + nickname + ":Erroneus nickname\r\n"

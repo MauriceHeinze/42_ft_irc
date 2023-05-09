@@ -43,12 +43,8 @@ Channel::Channel(std::string name, std::string password, User& first_user) :_nam
 	_settings.secretChannel = false;
 	_settings.topicOperatorOnly = false;
 	_settings.userLimit = UINT_MAX;
-	out("before")
-	out(_perm.size())
 	this->add_new_user(first_user, "");
-	out(_perm.size())
 	this->_perm[0].isAdmin = true;
-	out("after")
 }
 
 Channel::Channel(const Channel &a)
@@ -73,10 +69,12 @@ Channel& Channel::operator= (const Channel &other)
 
 void	Channel::join(User &userRef)
 {
-	out("in join????")
-	permissions perm = {false, false, true, &userRef};
+	permissions perm;
+	perm.isAdmin = false;
+	perm.isVoice = false;
+	perm.isAllowedToSpeak = true;
+	perm.user = &userRef;
 	_perm.push_back(perm);
-	out(_perm.size())
 }
 
 bool	Channel::checkLimit(){
@@ -92,7 +90,6 @@ void	Channel::part(std::string nickname)
 		if (_perm[i].user->getNickname() == nickname)
 		{
 			_perm.erase(_perm.begin() + i);
-			// _perm.shrink_to_fit();
 			return ;
 		}
 	}
@@ -272,7 +269,6 @@ int	Channel::add_new_user(User& user, std::string used_password)// user& , retur
 		return (rpl_default);
 	}
 	return (-1);
-	out("failed check")
 }
 
 bool	Channel::isAllowedToSpeak(std::string nickname){

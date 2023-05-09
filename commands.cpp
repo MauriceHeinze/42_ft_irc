@@ -236,20 +236,18 @@ void	Server::Command_TOPIC(TranslateBNF msg,int user_id)
 
 void	Server::Command_NICK(TranslateBNF msg, int user_id)
 {
-	// (void)user_id;
 	if (msg.getter_params().size() > 0)
 	{
-		if (!msg.getter_params()[0].trailing_or_middle.empty()){
+		if (isUser(_users, msg.getter_params()[0].trailing_or_middle))
+			send_msg(ERR_NICKNAMEINUSE(msg.getter_params()[0].trailing_or_middle), user_id);
+		else if (!msg.getter_params()[0].trailing_or_middle.empty()){
 			_users[user_id].setNickname(msg.getter_params()[0].trailing_or_middle);
 			_users[user_id]._valid_nickname = true;
 		}
-		else if (isUser(_users, msg.getter_params()[0].trailing_or_middle))
-			send_msg(ERR_NICKNAMEINUSE(msg.getter_params()[0].trailing_or_middle), user_id);
 	}
 	else
 		this->send_msg(ERR_NONICKNAMEGIVEN(),user_id);
 	//call Nick_func
-	std::cout << "nickname: "<< _users[user_id].getNickname() << std::endl;
 }
 
 void	Server::Command_PART(TranslateBNF msg, int user_id)
@@ -341,7 +339,7 @@ void	Server::Command_MODE(TranslateBNF msg, int user_id)
 		currentChannel = &this->_channels[channelIndex];
 	}
 	else
-		send_msg(ERR_NEEDMOREPARAMS(nickname, (std::string)"MODE"), user_id);
+		send_msg(ERR_NEEDMOREPARAMS(this->_users[user_id].getNickname(), (std::string)"MODE"), user_id);
 
 	size_t i = 0;
 	// erster String ist Channel oder User
@@ -354,7 +352,6 @@ void	Server::Command_MODE(TranslateBNF msg, int user_id)
 				setting = true;
 			else if (flags[i] == '-')
 				setting = false;
-
 			if (flags[i] == 'i') // i: Set/remove Invite-only channel
 				currentChannel->_settings.privateChannel = setting;
 			else if (flags[i] == 't') // t: Set/remove the restrictions of the TOPIC command to channel operators
