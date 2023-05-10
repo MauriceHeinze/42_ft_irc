@@ -330,6 +330,12 @@ void	Server::Command_MODE(TranslateBNF msg, int user_id)
 		return ;
 	}
 
+	std::cout << "first arg: " << msg.getter_params()[0].trailing_or_middle << std::endl;
+	if (msg.getter_params().size() > 1)
+		std::cout << "second arg: " << msg.getter_params()[1].trailing_or_middle << std::endl;
+	if (msg.getter_params().size() > 2)
+		std::cout << "third arg: " << msg.getter_params()[2].trailing_or_middle << std::endl;
+
 	size_t		i = 0;
 	bool		setting = false; // needed to set settings
 	std::string	flags = msg.getter_params()[1].trailing_or_middle;
@@ -350,12 +356,20 @@ void	Server::Command_MODE(TranslateBNF msg, int user_id)
 
 			if (currentChannel->isAdmin(nickname))
 			{
+				std::cout << "IS ADMIN! " << std::endl;
 				if (flags[i] == 'i') // i: Set/remove Invite-only channel
+				{
 					currentChannel->_settings.privateChannel = setting;
+					std::cout << "// i: Set/remove Invite-only channel" << std::endl;
+				}
 				else if (flags[i] == 't') // t: Set/remove the restrictions of the TOPIC command to channel operators
+				{
+					std::cout << "// t: Set/remove the restrictions of the TOPIC command to channel operators" << std::endl;
 					currentChannel->_settings.topicOperatorOnly = setting;
+				}
 				else if (flags[i] == 'k') // k: Set/remove the channel key (password)
 				{
+					std::cout << "// k: Set/remove the channel key (password)" << std::endl;
 					if (setting == true)
 						currentChannel->_settings.password = argument;
 					else
@@ -363,6 +377,7 @@ void	Server::Command_MODE(TranslateBNF msg, int user_id)
 				}
 				else if (flags[i] == 'o') // o: Give/take channel operator privilege
 				{
+					std::cout << "// o: Give/take channel operator privilege" << std::endl;
 					if (this->_channels[channelIndex].userExists(argument))
 						currentChannel->oper(argument);
 					else
@@ -370,10 +385,19 @@ void	Server::Command_MODE(TranslateBNF msg, int user_id)
 				}
 				else if (flags[i] == 'l') // l: Set/remove the user limit to channel
 				{
-					if (setting == true)
+					if (setting == false)
 						currentChannel->_settings.userLimit = INT_MAX;
 					else
-						currentChannel->_settings.userLimit = std::stoi(argument);
+					{
+						try {
+							currentChannel->_settings.userLimit = std::stoi(argument); }
+						catch (const std::out_of_range& e) {
+							currentChannel->_settings.userLimit = INT_MAX; }
+					}
+				}
+				else if (flags[i] == 'b') // o: Give/take channel operator privilege
+				{
+					(void)flags[i];
 				}
 				else if (flags[i] != '+' && flags[i] != '-')
 					send_msg(ERR_UNKNOWNMODE(nickname, flags[i]), user_id);

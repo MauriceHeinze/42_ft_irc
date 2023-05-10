@@ -189,7 +189,7 @@ std::string	Channel::getName( void )
 }
 
 bool	Channel::isInvited(std::string nickname){
-	for(int i = 0; _invited.size(); i++)
+	for(size_t i = 0; i < _invited.size(); i++)
 	{
 		if (_invited[i] == nickname)
 			return true;
@@ -198,7 +198,7 @@ bool	Channel::isInvited(std::string nickname){
 }
 
 bool	Channel::isAdmin(std::string nickname){
-	for(int i = 0; _perm.size(); i++)
+	for(size_t i = 0; i < _perm.size(); i++)
 	{
 		if (_perm[i].user->getNickname() == nickname){
 			if (_perm[i].isAdmin == true)
@@ -231,9 +231,6 @@ size_t	Channel::find_user_in_channel(User* user)
 
 bool	Channel::isVoice(std::string nickname){
 	for(size_t i = 0; i < _perm.size(); i++)
-
-
-	for(int i = 0; _perm.size(); i++)
 		{
 			if (_perm[i].user->getNickname() == nickname)
 			{
