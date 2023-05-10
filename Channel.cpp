@@ -210,6 +210,34 @@ bool	Channel::isAdmin(std::string nickname){
 	return false;
 }
 
+// i: Set/remove Invite-only channel
+// · t: Set/remove the restrictions of the TOPIC command to channel
+// operators
+// · k: Set/remove the channel key (password)
+// · o: Give/take channel operator privilege
+// 5
+// ft_irc Internet Relay Chat
+// · l: Set/remove the user limit to channel
+
+std::string	Channel::getSettings(void) {
+	std::string	settings = "";
+
+	if (_settings.userLimit < INT_MAX || _settings.inviteOnly || _settings.topicOperatorOnly
+		|| _settings.password.length() > 0 || _settings.moderated || _settings.userLimit)
+		settings.append("+");
+	if (_settings.inviteOnly)
+		settings.append("i");
+	if (_settings.topicOperatorOnly)
+		settings.append("t");
+	if (_settings.password.length() > 0)
+		settings.append("k");
+	if (_settings.moderated)
+		settings.append("o");
+	if (_settings.userLimit < INT_MAX)
+		settings.append("l");
+	return (settings);
+}
+
 bool	Channel::userExists(std::string nickname){
 	for(size_t i = 0; i < _perm.size(); i++)
 	{

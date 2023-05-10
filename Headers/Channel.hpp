@@ -64,6 +64,7 @@ class Channel
 		size_t		find_user_in_channel(User* user);
 		// bool		isUser(std::string nickname);
 		bool		userExists(std::string nickname);
+		std::string	getSettings(void);
 };
 
 #endif

@@ -316,10 +316,25 @@ void	Server::Command_CAP(TranslateBNF msg, int user_id)
 void	Server::Command_MODE(TranslateBNF msg, int user_id)
 {
 	std::string nickname = this->_users[user_id].getNickname();
+	std::string	channelName = msg.getter_params()[0].trailing_or_middle;
+	int			channelIndex = this->find_Channel(channelName);
+	Channel		*currentChannel = &this->_channels[channelIndex];
 	// check if enough params are available
+	if (channelIndex == -1)
+	{
+		send_msg(ERR_NOSUCHCHANNEL(nickname, channelName), user_id);
+		return ;
+	}
+	// if (msg.getter_params().size() < 1) // you should return current settings at this point
+	// 	return ;
 	if (msg.getter_params().size() < 1) // you should return current settings at this point
 	{
-		send_msg(ERR_NEEDMOREPARAMS(nickname, (std::string)"MODE"), user_id);
+		std::cout << "JUST MODE" << std::endl;
+		if (channelIndex != -1)
+		{
+			std::cout << "Channel exists" << std::endl;
+			send_msg(RPL_CHANNELMODEIS(nickname, channelName, "MODE", currentChannel->getSettings()), user_id);
+		}
 		return ;
 	}
 
@@ -327,15 +342,7 @@ void	Server::Command_MODE(TranslateBNF msg, int user_id)
 	bool		setting = false; // needed to set settings
 	std::string	flags = msg.getter_params()[1].trailing_or_middle;
 	std::string	argument = msg.getter_params()[2].trailing_or_middle;
-	std::string	channelName = msg.getter_params()[0].trailing_or_middle;
-	int			channelIndex = this->find_Channel(channelName);
-	Channel		*currentChannel = &this->_channels[channelIndex];
 
-	if (channelIndex == -1)
-	{
-		send_msg(ERR_NOSUCHCHANNEL(nickname, channelName), user_id);
-		return ;
-	}
 
 	if (channelName[0] == '#')
 	{
