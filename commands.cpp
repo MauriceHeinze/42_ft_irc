@@ -282,7 +282,7 @@ void	Server::Command_P_MSG(TranslateBNF msg, int user_id)
 				this->send_msg(ERR_NOSUCHCHANNEL(_users[user_id].getNickname(),target),user_id);
 			else
 			{
-				this->_channels[i].send_to_all(" ",user_id);// need a send_to_with exception from sender id
+				this->_channels[i].send_to_not_all(" ",user_id);// need a send_to_with exception from sender id
 			}
 			// if (isChannel(_channels, msg.getter_params()[0].trailing_or_middle)){
 				// send_msg(":" + _users[user_id].getNickname() + " PRIVMSG " + msg.getter_params()[0].trailing_or_middle + " :" + msg.getter_params()[1].trailing_or_middle + "\r\n", user_id);

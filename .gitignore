@@ -1,5 +1,7 @@
 .vscode
 *.o
+*.deps
+*.d
 notes/*.pdf
 ./ircserv
 ./a.out

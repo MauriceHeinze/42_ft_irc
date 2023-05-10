@@ -45,7 +45,7 @@ Channel::Channel(std::string name, std::string password, User& first_user) :_nam
 	_settings.userLimit = UINT_MAX;
 	out("before")
 	out(_perm.size())
-	this->add_new_user(first_user, "");
+	this->add_new_user(first_user, password);
 	out(_perm.size())
 	this->_perm[0].isAdmin = true;
 	out("after")
@@ -314,7 +314,7 @@ void	Channel::send_to_all(std::string msg)
 		send(_perm[i].user->_fd, msg.c_str(), msg.size(), SEND_FLAGS);
 }
 
-void	Channel::send_to_all(std::string msg, int not_this_fd)
+void	Channel::send_to_not_all(std::string msg, int not_this_fd)
 {
 	out("\e[31m" + msg + "\e[0m")
 	for (size_t i = 0; i < _perm.size(); i++)
