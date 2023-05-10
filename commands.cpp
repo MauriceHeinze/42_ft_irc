@@ -322,8 +322,13 @@ void	Server::Command_MODE(TranslateBNF msg, int user_id)
 	// setze variables
 	std::string nickname = this->_users[user_id].getNickname();
 	// check if enough params are available
-	if (msg.getter_params().size() < 3 || msg.getter_params()[0].trailing_or_middle.length() != 0)
+	// std::vector<s_param> arguments = msg.getter_params();
+	// std::cout << "RESULT: " << arguments.size() << std::endl;
+	if (msg.getter_params().size() < 1)
+	{
 		send_msg(ERR_NEEDMOREPARAMS(nickname, (std::string)"MODE"), user_id);
+		return ;
+	}
 
 	size_t		i = 0;
 	bool		setting = false; // needed to set settings
