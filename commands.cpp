@@ -344,6 +344,12 @@ void	Server::Command_MODE(TranslateBNF msg, int user_id)
 	int			channelIndex = this->find_Channel(channelName);
 	Channel		*currentChannel = &this->_channels[channelIndex];
 
+	if (channelIndex == -1)
+	{
+		send_msg(ERR_NOSUCHCHANNEL(nickname, channelName), user_id);
+		return ;
+	}
+
 	if (channelName[0] == '#')
 	{
 		while (i != flags.length())
@@ -356,24 +362,19 @@ void	Server::Command_MODE(TranslateBNF msg, int user_id)
 
 			if (currentChannel->isAdmin(nickname))
 			{
-				std::cout << "IS ADMIN! " << std::endl;
 				if (flags[i] == 'i') // i: Set/remove Invite-only channel
-				{
 					currentChannel->_settings.privateChannel = setting;
-					std::cout << "// i: Set/remove Invite-only channel" << std::endl;
-				}
 				else if (flags[i] == 't') // t: Set/remove the restrictions of the TOPIC command to channel operators
-				{
-					std::cout << "// t: Set/remove the restrictions of the TOPIC command to channel operators" << std::endl;
 					currentChannel->_settings.topicOperatorOnly = setting;
-				}
 				else if (flags[i] == 'k') // k: Set/remove the channel key (password)
 				{
 					std::cout << "// k: Set/remove the channel key (password)" << std::endl;
+					std::cout << "// Current password: " << currentChannel->_settings.password  << std::endl;
 					if (setting == true)
 						currentChannel->_settings.password = argument;
 					else
 						currentChannel->_settings.password = "";
+					std::cout << "// New password: " << currentChannel->_settings.password  << std::endl;
 				}
 				else if (flags[i] == 'o') // o: Give/take channel operator privilege
 				{
@@ -395,10 +396,8 @@ void	Server::Command_MODE(TranslateBNF msg, int user_id)
 							currentChannel->_settings.userLimit = INT_MAX; }
 					}
 				}
-				else if (flags[i] == 'b') // o: Give/take channel operator privilege
-				{
+				else if (flags[i] == 'b') // just for KVIRC
 					(void)flags[i];
-				}
 				else if (flags[i] != '+' && flags[i] != '-')
 					send_msg(ERR_UNKNOWNMODE(nickname, flags[i]), user_id);
 			}
