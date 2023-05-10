@@ -315,26 +315,13 @@ void	Server::Command_CAP(TranslateBNF msg, int user_id)
 
 void	Server::Command_MODE(TranslateBNF msg, int user_id)
 {
-	// examples:
-	// MODE #Finnish +o Kilroy
-	// MODE #Finnish +im
-
-	// setze variables
 	std::string nickname = this->_users[user_id].getNickname();
 	// check if enough params are available
-	// std::vector<s_param> arguments = msg.getter_params();
-	// std::cout << "RESULT: " << arguments.size() << std::endl;
-	if (msg.getter_params().size() < 1)
+	if (msg.getter_params().size() < 1) // you should return current settings at this point
 	{
 		send_msg(ERR_NEEDMOREPARAMS(nickname, (std::string)"MODE"), user_id);
 		return ;
 	}
-
-	std::cout << "first arg: " << msg.getter_params()[0].trailing_or_middle << std::endl;
-	if (msg.getter_params().size() > 1)
-		std::cout << "second arg: " << msg.getter_params()[1].trailing_or_middle << std::endl;
-	if (msg.getter_params().size() > 2)
-		std::cout << "third arg: " << msg.getter_params()[2].trailing_or_middle << std::endl;
 
 	size_t		i = 0;
 	bool		setting = false; // needed to set settings
@@ -368,13 +355,10 @@ void	Server::Command_MODE(TranslateBNF msg, int user_id)
 					currentChannel->_settings.topicOperatorOnly = setting;
 				else if (flags[i] == 'k') // k: Set/remove the channel key (password)
 				{
-					std::cout << "// k: Set/remove the channel key (password)" << std::endl;
-					std::cout << "// Current password: " << currentChannel->_settings.password  << std::endl;
 					if (setting == true)
 						currentChannel->_settings.password = argument;
 					else
 						currentChannel->_settings.password = "";
-					std::cout << "// New password: " << currentChannel->_settings.password  << std::endl;
 				}
 				else if (flags[i] == 'o') // o: Give/take channel operator privilege
 				{
@@ -382,7 +366,7 @@ void	Server::Command_MODE(TranslateBNF msg, int user_id)
 					if (this->_channels[channelIndex].userExists(argument))
 						currentChannel->oper(argument);
 					else
-						send_msg(ERR_USERONCHANNEL(nickname, argument), user_id);
+						send_msg(ERR_NOTONCHANNEL(nickname, argument), user_id);
 				}
 				else if (flags[i] == 'l') // l: Set/remove the user limit to channel
 				{
