@@ -96,7 +96,9 @@ void	Channel::part(std::string nickname)
 	throw("User not found in this channel");
 }
 
-void	Channel::leave_user(User* user ,std::string msg)
+
+//removes a user and give a user admin rights if no admin are left
+int	Channel::leave_user(User* user ,std::string msg)
 {
 	(void)msg;
 	for (size_t i = 0; i < _perm.size(); i++)
@@ -108,7 +110,18 @@ void	Channel::leave_user(User* user ,std::string msg)
 			break;
 		}
 	}
-	
+
+	bool found_Admin = false;
+	for (size_t i = 0; i < _perm.size(); i++)
+	{
+		if (_perm[i].isAdmin == true)
+		{
+			found_Admin = true;
+		}
+	}
+	if (found_Admin == false && _perm.size() != 0)
+		_perm[0].
+	return (_perm.size());
 }
 
 void	Channel::kick(std::string nickname)
@@ -207,22 +220,14 @@ bool	Channel::isAdmin(std::string nickname){
 	return false;
 }
 
-// bool	Channel::userExists(std::string nickname){
-// 	for(int i = 0; _perm.size(); i++)
-// 	{
-// 		if (_perm[i].user->getNickname() == nickname)
-// 				return true;
-// 	}
-// 	return false;
-// }
-// bool	Channel::(std::string nickname){
-// 	for(int i = 0; _perm.size(); i++)
-// 	{
-// 		if (_perm[i].user->getNickname() == nickname)
-// 			return true;
-// 	}
-// 	return false;
-// }
+bool	Channel::userExists(std::string nickname){
+	for(size_t i = 0; i < _perm.size(); i++)
+	{
+		if (_perm[i].user->getNickname() == nickname)
+				return true;
+	}
+	return false;
+}
 
 size_t	Channel::find_user_in_channel(User* user)
 {
@@ -235,7 +240,8 @@ size_t	Channel::find_user_in_channel(User* user)
 }
 
 bool	Channel::isVoice(std::string nickname){
-	
+	for(size_t i = 0; i < _perm.size(); i++)
+
 
 	for(int i = 0; _perm.size(); i++)
 		{
@@ -256,7 +262,7 @@ int	Channel::add_new_user(User& user, std::string used_password)// user& , retur
 	if ( this->find_user_in_channel(&user) == USER_NOT_FOUND)
 	{
 		// check if user needs/is invited
-		if (this->_settings.inviteOnly && this->isInvited(user.getNickname()) == false) 
+		if (this->_settings.inviteOnly && this->isInvited(user.getNickname()) == false)
 		{
 			return (rpl_ERR_INVITEONLYCHAN);
 		}
@@ -272,7 +278,7 @@ int	Channel::add_new_user(User& user, std::string used_password)// user& , retur
 }
 
 bool	Channel::isAllowedToSpeak(std::string nickname){
-	for(int i = 0; _perm.size(); i++)
+	for(size_t i = 0; i < _perm.size(); i++)
 	{
 		if (_perm[i].user->getNickname() == nickname){
 			if (_perm[i].isAllowedToSpeak == true)
@@ -309,7 +315,6 @@ std::string	Channel::get_user_list( void )
 	out(_perm.size())
 	for (size_t i = 0; i < _perm.size(); i++)
 	{
-		out("test")
 		if (i != 0)
 			list.append(" ");
 		else
@@ -320,7 +325,5 @@ std::string	Channel::get_user_list( void )
 			list.append("+");
 		list.append(_perm[i].user->getNickname());
 	}
-	out("list")
-	out(list)
 	return(list);
 }

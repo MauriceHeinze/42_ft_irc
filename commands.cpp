@@ -51,8 +51,6 @@ void Server::Command_USER(TranslateBNF msg ,int user_id)
  void Server::create_new_channel(std::string new_channel ,int user_id, std::string channel_password)
 {
 	//!check for valid channel name
-
-	//create the new channel
 	Channel Channel(new_channel, channel_password, _users[user_id]);
 	//!give first user admin rights
 	//send list of user and topics if succesfull
@@ -61,8 +59,6 @@ void Server::Command_USER(TranslateBNF msg ,int user_id)
 }
 
 //(SERVER_NAME " 353 " + request.get_user()->get_nickname() + " = " + channel.getName() + " :" + info, request.get_user()->get_fd()
-#define RPL_TEST(nickname,channel,User_list) ":irc.server.com 353 "+ nickname + " = " + channel + " " + User_list + "\r\n"
-
 //old channel
  void Server::use_old_channel(int channel_id, int user_id, std::string channel_password)
 {
@@ -76,8 +72,7 @@ void Server::Command_USER(TranslateBNF msg ,int user_id)
 	else if (rpl_msg == rpl_default)
 	{
 		this->_channels[channel_id].send_to_all(RPL_JOIN(_users[user_id].getNickname(), _channels[channel_id].getName()));
-		//this->send_msg(RPL_NAMREPLY(_users[user_id].getNickname(),_channels[channel_id].getName(),_channels[channel_id].get_user_list()),user_id);
-		this->send_msg(RPL_TEST(_users[user_id].getNickname(),_channels[channel_id].getName(),_channels[channel_id].get_user_list()),user_id);
+		this->send_msg(RPL_NAMREPLY(_users[user_id].getNickname(),_channels[channel_id].getName(),_channels[channel_id].get_user_list()),user_id);
 		this->send_msg(RPL_ENDOFNAMES(_users[user_id].getNickname(),_channels[channel_id].getName()),user_id);
 	}
 	else if (rpl_msg == rpl_no_rpl)
@@ -88,25 +83,11 @@ void Server::Command_USER(TranslateBNF msg ,int user_id)
 		return;
 	}
 }
-
-//std::string topic("default");
-//std::string user1("user_alpha");
-//std::string user2("user_better");
-//this->send_msg(":lkrabbe! JOIN :abc\r\n",user_id);
-// this->send_msg(":irc.unknown.com 332 lkrabbe abc :default\r\n",user_id);
-// this->send_msg(RPL_TOPIC(nickname, channel, topic), user_id);
-// this->send_msg(USER_LIST(nickname, channel, user1, user2),user_id);
-// this->send_msg(":irc.example.com 353 " + + "lkrabbe = abc : user1 user2 user3 @lkrabbe\r\n",user_id);
-// this->send_msg((":irc.example.com 353  #abc :@lkrabbe +user2 user3\r\n"),user_id);
-// this->send_msg((":server_name 366 your_nick #abc :End of /NAMES list\r\n"),user_id);
-// this->send_msg(RPL_ENDOFNAMES(nickname, channel),user_id);
-
 void Server::Command_JOIN(TranslateBNF msg ,int user_id)
 {
 	std::vector<s_param> params = msg.getter_params();
 	std::string channel_password;
 	std::string channel;
-	// out("in join")
 	//input protection in case to many or to little params
 	if (params.size() > 2 || params.size() == 0)
 	{
@@ -128,7 +109,6 @@ void Server::Command_JOIN(TranslateBNF msg ,int user_id)
 	out(channel_id)
 	if (channel_id != -1)
 	{
-		out("use old channel")
 		use_old_channel(channel_id, user_id, channel_password);
 	}
 	else
@@ -278,7 +258,7 @@ void	Server::Command_P_MSG(TranslateBNF msg, int user_id)
 			int i = this->find_Channel(target);
 			if (i == -1)
 				this->send_msg(ERR_NOSUCHCHANNEL(_users[user_id].getNickname(),target),user_id);
-			else 
+			else
 			{
 				this->_channels[i].send_to_all(" ",user_id);// need a send_to_with exception from sender id
 			}
@@ -313,36 +293,24 @@ void	Server::Command_CAP(TranslateBNF msg, int user_id)
 
 void	Server::Command_MODE(TranslateBNF msg, int user_id)
 {
-	return;
-	(void)user_id;
-	(void)msg;
-
 	// examples:
 	// MODE #Finnish +o Kilroy
 	// MODE #Finnish +im
 
-	// flag die sagt, ob Einstellungen gerade deaktiviert oder aktiviert werden
-	bool setting = false;
-
 	// setze variables
 	std::string nickname = this->_users[user_id].getNickname();
-	std::string channelName;
-	std::string flags = msg.getter_params()[1].trailing_or_middle;
-	std::string argument = msg.getter_params()[2].trailing_or_middle;
-	int channelIndex;
-	Channel	*currentChannel;
+	// check if enough params are available
+	if (msg.getter_params().size() < 3 || msg.getter_params()[0].trailing_or_middle.length() != 0)
+		send_msg(ERR_NEEDMOREPARAMS(nickname, (std::string)"MODE"), user_id);
 
-	if (msg.getter_params()[0].trailing_or_middle.length() == 0)
-	{
-		channelName = msg.getter_params()[0].trailing_or_middle;
-		channelIndex = this->find_Channel(channelName);
-		currentChannel = &this->_channels[channelIndex];
-	}
-	else
-		send_msg(ERR_NEEDMOREPARAMS(this->_users[user_id].getNickname(), (std::string)"MODE"), user_id);
+	size_t		i = 0;
+	bool		setting = false; // needed to set settings
+	std::string	flags = msg.getter_params()[1].trailing_or_middle;
+	std::string	argument = msg.getter_params()[2].trailing_or_middle;
+	std::string	channelName = msg.getter_params()[0].trailing_or_middle;
+	int			channelIndex = this->find_Channel(channelName);
+	Channel		*currentChannel = &this->_channels[channelIndex];
 
-	size_t i = 0;
-	// erster String ist Channel oder User
 	if (channelName[0] == '#')
 	{
 		while (i != flags.length())
@@ -352,34 +320,44 @@ void	Server::Command_MODE(TranslateBNF msg, int user_id)
 				setting = true;
 			else if (flags[i] == '-')
 				setting = false;
-			if (flags[i] == 'i') // i: Set/remove Invite-only channel
-				currentChannel->_settings.privateChannel = setting;
-			else if (flags[i] == 't') // t: Set/remove the restrictions of the TOPIC command to channel operators
-				currentChannel->_settings.topicOperatorOnly = setting;
-			else if (flags[i] == 'k') // k: Set/remove the channel key (password)
+
+			if (currentChannel->isAdmin(nickname))
 			{
-				if (setting == true)
-					currentChannel->_settings.password = argument;
-				else
-					currentChannel->_settings.password = "";
+				if (flags[i] == 'i') // i: Set/remove Invite-only channel
+					currentChannel->_settings.privateChannel = setting;
+				else if (flags[i] == 't') // t: Set/remove the restrictions of the TOPIC command to channel operators
+					currentChannel->_settings.topicOperatorOnly = setting;
+				else if (flags[i] == 'k') // k: Set/remove the channel key (password)
+				{
+					if (setting == true)
+						currentChannel->_settings.password = argument;
+					else
+						currentChannel->_settings.password = "";
+				}
+				else if (flags[i] == 'o') // o: Give/take channel operator privilege
+				{
+					if (this->_channels[channelIndex].userExists(argument))
+						currentChannel->oper(argument);
+					else
+						send_msg(ERR_USERONCHANNEL(nickname, argument), user_id);
+				}
+				else if (flags[i] == 'l') // l: Set/remove the user limit to channel
+				{
+					if (setting == true)
+						currentChannel->_settings.userLimit = INT_MAX;
+					else
+						currentChannel->_settings.userLimit = std::stoi(argument);
+				}
+				else if (flags[i] != '+' && flags[i] != '-')
+					send_msg(ERR_UNKNOWNMODE(nickname, flags[i]), user_id);
 			}
-			else if (flags[i] == 'o') // o: Give/take channel operator privilege
-			{
-				// if (currentChannel->find(argument))
-				// 	currentChannel->oper(argument);
-			}
-			else if (flags[i] == 'l') // l: Set/remove the user limit to channel
-			{
-				if (setting == true)
-					currentChannel->_settings.userLimit = INT_MAX;
-				else
-					currentChannel->_settings.userLimit = std::stoi(argument);
-			}
-			else if (flags[i] != '+' && flags[i] != '-')
-				send_msg(ERR_NEEDMOREPARAMS(nickname, (std::string)"MODE"), user_id);
+			else
+				send_msg(ERR_CHANOPRIVSNEEDED(nickname, channelName), user_id);
 			i++;
 		}
 	}
+	else
+		send_msg(ERR_NOSUCHCHANNEL(nickname, channelName), user_id);
 }
 // Formatierung der msg ( chat gpt sagt <invted user> <channel> | rfc seite sagt <channel> <invited user>)
 void Server::Command_INVITE(TranslateBNF msg, int user_id)
@@ -394,7 +372,7 @@ void Server::Command_INVITE(TranslateBNF msg, int user_id)
 		bool user = isUser(_users, invNick);
 		out(user);
 		if (user)
-			send_msg(RPL_INVITING(_users[user_id].getNickname(), invNick , channelName), user_id);
+			send_msg(RPL_INVITING(_users[user_id].getNickname(), invNick, channelName), user_id);
 		else
 			send_msg(ERR_NOSUCHNICK(invNick), user_id);
 	}

@@ -5,7 +5,7 @@
 #include	<stdlib.h>
 
 #define SEND_FLAGS 0
-
+#define LAST_USER 0
 
 
 void	Server::send_msg(std::string msg,int user_id)
@@ -56,7 +56,11 @@ void	Server::delete_user(int user_id)
 {
 	for (size_t i = 0; i < _channels.size(); i++)
 	{
-		//_channels[i].leave_user(&_users[user_id], "User got diconnected");
+		if (_channels[i].leave_user(&_users[user_id], "User got diconnected") == LAST_USER)
+		{
+
+		}
+
 	}
 	close(this->_fds[user_id].fd);
 	this->_fds.erase(this->_fds.begin() + user_id);
@@ -79,9 +83,9 @@ void Server::startServer(){
 			throw(PollFail());
 		for (size_t i = 0; i < _fds.size(); i++) 
 		{
-			out(i)
 			if ( i && _fds[i].revents & (POLLHUP | POLLERR | POLLNVAL))
 			{
+				out("delete user")
 				delete_user(i);
 			}
 			else if (_fds[i].revents & POLLIN)
@@ -127,7 +131,6 @@ void	Server::parsing(std::string buffer, int user_id)
 {
  	TranslateBNF msg(buffer);
 
-	// out("After msg creation")
 	if (msg.getter_command() == "CAP")
 	{
 		Command_CAP(msg, user_id);

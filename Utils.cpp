@@ -22,12 +22,8 @@ bool	isUser(std::vector<User> users, std::string Name)
 
 int	Server::find_Channel(std::string channelName)
 {
-	out("???????")
-	out(_channels.size())
 	for (size_t i = 0; i < _channels.size(); i++)
 	{
-		out(i)
-		out(_channels[i].getName())
 		if (_channels[i].getName() == channelName)
 			return (i);
 	}
