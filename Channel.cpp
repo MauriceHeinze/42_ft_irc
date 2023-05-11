@@ -223,7 +223,7 @@ std::string	Channel::getSettings(void) {
 	std::string	settings = "";
 
 	if (_settings.userLimit < INT_MAX || _settings.inviteOnly || _settings.topicOperatorOnly
-		|| _settings.password.length() > 0 || _settings.moderated || _settings.userLimit)
+		|| _settings.password.length() > 0 || _settings.moderated)
 		settings.append("+");
 	if (_settings.inviteOnly)
 		settings.append("i");
@@ -235,6 +235,11 @@ std::string	Channel::getSettings(void) {
 		settings.append("o");
 	if (_settings.userLimit < INT_MAX)
 		settings.append("l");
+
+	if (_settings.password.length() > 0)
+		settings.append(" " + _settings.password);
+	if (_settings.userLimit < INT_MAX)
+		settings.append(" " + std::to_string(_settings.userLimit));
 	return (settings);
 }
 
