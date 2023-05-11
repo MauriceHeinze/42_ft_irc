@@ -176,15 +176,15 @@ void	Server::parsing(std::string buffer, int user_id)
 	else if (msg.getter_command() == "KICK")
 	{
 		Command_KICK(msg,user_id);
-	}
+	} 
 	else if (msg.getter_command() == "TOPIC")
 	{
 		Command_TOPIC(msg, user_id);
 	}
-	// else if (msg.getter_command() == "PART")
-	// {
-	// 	Command_TOPIC(msg, user_id);
-	// }
+	else if (msg.getter_command() == "PART")
+	{
+		Command_PART(msg, user_id);
+	}
 	else if (msg.getter_command() == "MODE")
 	{
 		Command_MODE(msg, user_id);

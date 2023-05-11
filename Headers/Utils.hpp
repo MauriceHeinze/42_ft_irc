@@ -89,8 +89,6 @@ int		getUser(std::vector<User> users, std::string nickname);
 #define ERR_NICKCOLLISION(nickname) "436" + nickname + ":Nickname collision KILL\r\n"
 #define ERR_ERRONEUSNICKNAME(nickname) "432" + nickname + ":Erroneus nickname\r\n"
 
-
-
 // Not Sorted yet
 //:irc.server.com 353 John #example :@Alice +Bob Carl
 #define RPL_NAMREPLY(nickname,channel,User_list) ":irc.server.com 353 " + nickname + " :" + channel + " " + User_list + "\r\n"

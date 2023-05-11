@@ -198,8 +198,10 @@ bool	Channel::isInvited(std::string nickname){
 }
 
 bool	Channel::isAdmin(std::string nickname){
+	out(_perm.size())
 	for(size_t i = 0; i < _perm.size(); i++)
 	{
+		out(i)
 		if (_perm[i].user->getNickname() == nickname){
 			if (_perm[i].isAdmin == true)
 				return true;
@@ -315,8 +317,12 @@ bool	Channel::isAllowedToSpeak(std::string nickname){
 void	Channel::send_to_all(std::string msg)
 {
 	out("\e[31m" + msg + "\e[0m")
-	for (size_t i = 0; i < _perm.size(); i++)
+	out(_perm.size())
+
+	for (size_t i = 0; i < _perm.size(); i++){
+		out(_perm[i].user->_fd)
 		send(_perm[i].user->_fd, msg.c_str(), msg.size(), SEND_FLAGS);
+	}
 }
 
 void	Channel::send_to_not_all(std::string msg, int not_this_fd)

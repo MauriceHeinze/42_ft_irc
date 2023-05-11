@@ -159,8 +159,31 @@ void Server::Command_WHO(TranslateBNF msg, int user_id)
 
 void Server::Command_KICK(TranslateBNF msg,int user_id)
 {
-	(void)user_id;
-	(void)msg;
+	// (void)user_id;
+	// (void)msg;
+
+	std::string nickname = _users[user_id].getNickname();
+	if (msg.getter_params().size() > 1){
+		std::string channelName = msg.getter_params()[0].trailing_or_middle;
+		if (channelName.find("#") == std::string::npos)
+			channelName = "#" + channelName;
+		std::string kickNick = msg.getter_params()[1].trailing_or_middle;
+		int channelIndex = find_Channel(channelName);
+		if (_channels[channelIndex].isAdmin(_users[user_id].getNickname())){
+			if (msg.getter_params().size() == 2){ // leave_user()
+				_channels[channelIndex].send_to_all(":" + nickname + " KICK " + channelName + " " + kickNick + "\r\n");
+			}
+			else if (msg.getter_params().size() == 3){ // leave_user()
+				std::string reason = msg.getter_params()[2].trailing_or_middle;
+				_channels[channelIndex].send_to_all(":" + nickname + " KICK " + channelName + " " + kickNick + " :" + reason + "\r\n");
+			}
+		}
+		else
+			send_msg(ERR_CHANOPRIVSNEEDED(nickname, channelName), user_id);
+	}
+	else
+		send_msg(ERR_NEEDMOREPARAMS(nickname, "KICK"), user_id);
+
 	// std::string channelName = msg.getter_params()[0].trailing_or_middle;
 	// std::string nickname = msg.getter_params()[1].trailing_or_middle;
 	// std::string nicknameToBeKicked = msg.getter_params()[1].trailing_or_middle;
@@ -254,8 +277,24 @@ void	Server::Command_NICK(TranslateBNF msg, int user_id)
 
 void	Server::Command_PART(TranslateBNF msg, int user_id)
 {
-	(void)user_id;
-	(void)msg;
+	// (void)user_id;
+	// (void)msg;
+	std::string nickname = _users[user_id].getNickname();
+	if (msg.getter_params().size() > 0){
+		std::string channelName = msg.getter_params()[0].trailing_or_middle;
+		if (channelName.find("#") == std::string::npos)
+			channelName = "#" + channelName;
+		int channelIndex = find_Channel(channelName);
+		if (msg.getter_params().size() == 1){ // leave_user()
+			_channels[channelIndex].send_to_all(":" + nickname + " PART " + channelName + "\r\n");
+		}
+		else if (msg.getter_params().size() == 2){ // leave_user()
+			std::string reason = msg.getter_params()[1].trailing_or_middle;
+			_channels[channelIndex].send_to_all(":" + nickname + " PART " + channelName + " :" + reason + "\r\n");
+		}
+	}
+	else
+		send_msg(ERR_NEEDMOREPARAMS(nickname, "KICK"), user_id);
 	// std::string channelName = msg.getter_params()[0].trailing_or_middle;
 	// std::string nickname = msg.getter_params()[1].trailing_or_middle;
 	// int channelIndex = this->find_Channel(channelName);
