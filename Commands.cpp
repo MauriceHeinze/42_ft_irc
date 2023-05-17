@@ -263,6 +263,7 @@ void	Server::Command_NICK(TranslateBNF msg, int user_id)
 	if (msg.getter_params().size() > 0)
 	{
 		if (!msg.getter_params()[0].trailing_or_middle.empty()){
+			send_msg(":" + _users[user_id].getNickname() + " NICK :" + msg.getter_params()[0].trailing_or_middle + "\r\n", user_id);
 			_users[user_id].setNickname(msg.getter_params()[0].trailing_or_middle);
 			_users[user_id]._valid_nickname = true;
 		}
