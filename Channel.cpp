@@ -198,7 +198,7 @@ bool	Channel::isInvited(std::string nickname){
 }
 
 bool	Channel::isAdmin(std::string nickname){
-	out(_perm.size())
+	// out(_perm.size())
 	for(size_t i = 0; i < _perm.size(); i++)
 	{
 		out(i)
@@ -254,14 +254,14 @@ bool	Channel::userExists(std::string nickname){
 	return false;
 }
 
-size_t	Channel::find_user_in_channel(User* user)
+int	Channel::find_user_in_channel(std::string nickname)
 {
 	for (size_t i = 0; i < _perm.size(); i++)
 	{
-		if (user == _perm[i].user)
+		if (nickname == _perm[i].user->getNickname())
 			return(i);
 	}
-	return(USER_NOT_FOUND);
+	return(-1);
 }
 
 bool	Channel::isVoice(std::string nickname){
@@ -281,7 +281,7 @@ bool	Channel::isVoice(std::string nickname){
 // Try to add User to the Channel and returns a reply code if failed or not
 int	Channel::add_new_user(User& user, std::string used_password)// user& , return error/ string/code
 {
-	if ( this->find_user_in_channel(&user) == USER_NOT_FOUND)
+	if ( this->find_user_in_channel(user.getNickname()) == -1)
 	{
 		// check if user needs/is invited
 		if (this->_settings.inviteOnly && this->isInvited(user.getNickname()) == false)

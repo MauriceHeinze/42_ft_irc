@@ -85,9 +85,9 @@ int		getUser(std::vector<User> users, std::string nickname);
 
 //   NICK
 #define ERR_NONICKNAMEGIVEN() "431 :No nickname given\r\n"
-#define ERR_NICKNAMEINUSE(nickname) "433" + nickname + ":No nickname given\r\n"
-#define ERR_NICKCOLLISION(nickname) "436" + nickname + ":Nickname collision KILL\r\n"
-#define ERR_ERRONEUSNICKNAME(nickname) "432" + nickname + ":Erroneus nickname\r\n"
+#define ERR_NICKNAMEINUSE(nickname) "433 " + nickname + ":No nickname given\r\n"
+#define ERR_NICKCOLLISION(nickname) "436 " + nickname + ":Nickname collision KILL\r\n"
+#define ERR_ERRONEUSNICKNAME(nickname) "432 " + nickname + ":Erroneus nickname\r\n"
 
 // Not Sorted yet
 //:irc.server.com 353 John #example :@Alice +Bob Carl

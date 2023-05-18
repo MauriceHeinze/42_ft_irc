@@ -61,7 +61,7 @@ class Channel
 		bool		isVoice(std::string nickname);
 		bool		isAllowedToSpeak(std::string nickname);
 		bool		checkLimit();
-		size_t		find_user_in_channel(User* user);
+		int			find_user_in_channel(std::string nickname);
 		// bool		isUser(std::string nickname);
 		bool		userExists(std::string nickname);
 		std::string	getSettings(void);

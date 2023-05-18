@@ -57,6 +57,7 @@ class Server
 		void	create_new_channel(std::string new_channel, int user_id, std::string channel_password);
 		void	use_old_channel(int channel_id, int user_id, std::string channel_password);
 		int		find_Channel(std::string channelName);
+		int		find_User(std::vector<User> users, std::string nickname);
 		//User related
 		void	delete_user(int user_id);
 		void	remove_user_from_all_channels(std::string msg, int user_id);
