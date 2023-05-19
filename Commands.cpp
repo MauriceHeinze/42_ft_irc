@@ -314,6 +314,10 @@ void	Server::Command_MODE(TranslateBNF msg, int user_id)
 	std::string	channelName = msg.getter_params()[0].trailing_or_middle;
 	int			channelIndex = this->find_Channel(channelName);
 	Channel		*currentChannel = &this->_channels[channelIndex];
+	
+	std::string	argument = "";
+	int			argumentsNeeded;
+	int			k = 2;
 
 	std::cout << ">>>>>>>> number of args: " << msg.getter_params().size() << std::endl;
 	// check if enough params are available
@@ -336,12 +340,16 @@ void	Server::Command_MODE(TranslateBNF msg, int user_id)
 	size_t		i = 0;
 	bool		setting = false; // needed to set settings
 	std::string	flags = msg.getter_params()[1].trailing_or_middle;
-	std::string	argument = msg.getter_params()[2].trailing_or_middle;
+	argumentsNeeded = argsNeeded(flags);
 
 	if (channelName[0] == '#')
 	{
 		while (i != flags.length())
 		{
+			if ((unsigned long)argumentsNeeded != (msg.getter_params().size() - 2))
+				send_msg(ERR_NEEDMOREPARAMS(nickname, "MODE"), user_id);
+			if (argumentsNeeded < k && argumentsNeeded != 0)
+				argument = msg.getter_params()[k].trailing_or_middle;
 			// check if upcoming flags are activating or deactivating
 			if (flags[i] == '+')
 				setting = true;
@@ -357,7 +365,10 @@ void	Server::Command_MODE(TranslateBNF msg, int user_id)
 				else if (flags[i] == 'k') // k: Set/remove the channel key (password)
 				{
 					if (setting == true)
+					{
 						currentChannel->_settings.password = argument;
+						k++;
+					}
 					else
 						currentChannel->_settings.password = "";
 				}
@@ -367,7 +378,11 @@ void	Server::Command_MODE(TranslateBNF msg, int user_id)
 					if (this->_channels[channelIndex].userExists(argument))
 						currentChannel->oper(argument);
 					else
+					{
 						send_msg(ERR_NOTONCHANNEL(nickname, argument), user_id);
+						return ;
+					}
+					k++;
 				}
 				else if (flags[i] == 'l') // l: Set/remove the user limit to channel
 				{
@@ -379,20 +394,30 @@ void	Server::Command_MODE(TranslateBNF msg, int user_id)
 							currentChannel->_settings.userLimit = std::stoi(argument); }
 						catch (const std::out_of_range& e) {
 							currentChannel->_settings.userLimit = INT_MAX; }
+						k++;
 					}
 				}
 				else if (flags[i] == 'b') // just for KVIRC
 					(void)flags[i];
 				else if (flags[i] != '+' && flags[i] != '-')
+				{
 					send_msg(ERR_UNKNOWNMODE(nickname, flags[i]), user_id);
+					return ;
+				}
 			}
 			else
+			{
 				send_msg(ERR_CHANOPRIVSNEEDED(nickname, channelName), user_id);
+				return ;
+			}
 			i++;
 		}
 	}
 	else
+	{
 		send_msg(ERR_NOSUCHCHANNEL(nickname, channelName), user_id);
+		return ;
+	}
 }
 // Formatierung der msg ( chat gpt sagt <invted user> <channel> | rfc seite sagt <channel> <invited user>)
 void Server::Command_INVITE(TranslateBNF msg, int user_id)
@@ -414,3 +439,4 @@ void Server::Command_INVITE(TranslateBNF msg, int user_id)
 			send_msg(ERR_NOSUCHNICK(invNick), user_id);
 	}
 }
+

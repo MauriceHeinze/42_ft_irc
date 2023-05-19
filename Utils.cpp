@@ -41,3 +41,16 @@ int	Server::find_User(std::vector<User> users, std::string nickname)
 	out("No user :" + nickname)
 	return (-1);
 }
+
+int	argsNeeded(std::string flags)
+{
+	int argCounter = 0;
+
+	if (flags.find('k') != std::string::npos)
+		argCounter++;
+	if (flags.find('o') != std::string::npos)
+		argCounter++;
+	if (flags.find('l') != std::string::npos)
+		argCounter++;
+	return (argCounter);
+}

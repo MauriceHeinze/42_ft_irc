@@ -34,6 +34,8 @@ bool	isUser(std::vector<User> users, std::string nickname);
 // int		getChannel(std::vector<Channel> channels, std::string channelName);
 int		getUser(std::vector<User> users, std::string nickname);
 
+int	argsNeeded(std::string flags);
+
 //  NOTE USE THE  NICKNAME AFER THE NUMBER
 // PASS
 #define ERR_ALREADYREGISTRED "462 :You may not reregister\r\n"
