@@ -51,8 +51,6 @@ void Server::Command_USER(TranslateBNF msg ,int user_id)
  void Server::create_new_channel(std::string new_channel ,int user_id, std::string channel_password)
 {
 	//!check for valid channel name
-
-	//create the new channel
 	Channel Channel(new_channel, channel_password, _users[user_id]);
 	//!give first user admin rights
 	//send list of user and topics if succesfull
@@ -61,12 +59,11 @@ void Server::Command_USER(TranslateBNF msg ,int user_id)
 }
 
 //(SERVER_NAME " 353 " + request.get_user()->get_nickname() + " = " + channel.getName() + " :" + info, request.get_user()->get_fd()
-#define RPL_TEST(nickname,channel,User_list) ":irc.server.com 353 "+ nickname + " = " + channel + " " + User_list + "\r\n"
-
 //old channel
  void Server::use_old_channel(int channel_id, int user_id, std::string channel_password)
 {
 	//joining inside our channel class
+	out("use old")
 	int rpl_msg = _channels[channel_id].add_new_user(_users[user_id], channel_password);
 	// for reply
 	if (rpl_msg == rpl_ERR_BADCHANNELKEY)
@@ -76,8 +73,7 @@ void Server::Command_USER(TranslateBNF msg ,int user_id)
 	else if (rpl_msg == rpl_default)
 	{
 		this->_channels[channel_id].send_to_all(RPL_JOIN(_users[user_id].getNickname(), _channels[channel_id].getName()));
-		//this->send_msg(RPL_NAMREPLY(_users[user_id].getNickname(),_channels[channel_id].getName(),_channels[channel_id].get_user_list()),user_id);
-		this->send_msg(RPL_TEST(_users[user_id].getNickname(),_channels[channel_id].getName(),_channels[channel_id].get_user_list()),user_id);
+		this->send_msg(RPL_NAMREPLY(_users[user_id].getNickname(),_channels[channel_id].getName(),_channels[channel_id].get_user_list()),user_id);
 		this->send_msg(RPL_ENDOFNAMES(_users[user_id].getNickname(),_channels[channel_id].getName()),user_id);
 	}
 	else if (rpl_msg == rpl_no_rpl)
@@ -88,25 +84,11 @@ void Server::Command_USER(TranslateBNF msg ,int user_id)
 		return;
 	}
 }
-
-//std::string topic("default");
-//std::string user1("user_alpha");
-//std::string user2("user_better");
-//this->send_msg(":lkrabbe! JOIN :abc\r\n",user_id);
-// this->send_msg(":irc.unknown.com 332 lkrabbe abc :default\r\n",user_id);
-// this->send_msg(RPL_TOPIC(nickname, channel, topic), user_id);
-// this->send_msg(USER_LIST(nickname, channel, user1, user2),user_id);
-// this->send_msg(":irc.example.com 353 " + + "lkrabbe = abc : user1 user2 user3 @lkrabbe\r\n",user_id);
-// this->send_msg((":irc.example.com 353  #abc :@lkrabbe +user2 user3\r\n"),user_id);
-// this->send_msg((":server_name 366 your_nick #abc :End of /NAMES list\r\n"),user_id);
-// this->send_msg(RPL_ENDOFNAMES(nickname, channel),user_id);
-
 void Server::Command_JOIN(TranslateBNF msg ,int user_id)
 {
 	std::vector<s_param> params = msg.getter_params();
 	std::string channel_password;
 	std::string channel;
-	// out("in join")
 	//input protection in case to many or to little params
 	if (params.size() > 2 || params.size() == 0)
 	{
@@ -128,7 +110,6 @@ void Server::Command_JOIN(TranslateBNF msg ,int user_id)
 	out(channel_id)
 	if (channel_id != -1)
 	{
-		out("use old channel")
 		use_old_channel(channel_id, user_id, channel_password);
 	}
 	else
@@ -227,7 +208,6 @@ void	Server::Command_TOPIC(TranslateBNF msg,int user_id)
 
 void	Server::Command_NICK(TranslateBNF msg, int user_id)
 {
-	// (void)user_id;
 	if (msg.getter_params().size() > 0)
 	{
 		if (!msg.getter_params()[0].trailing_or_middle.empty() && !isUser(_users, msg.getter_params()[0].trailing_or_middle)){
@@ -235,13 +215,10 @@ void	Server::Command_NICK(TranslateBNF msg, int user_id)
 			_users[user_id].setNickname(msg.getter_params()[0].trailing_or_middle);
 			_users[user_id]._valid_nickname = true;
 		}
-		else if (isUser(_users, msg.getter_params()[0].trailing_or_middle))
-			send_msg(ERR_NICKNAMEINUSE(msg.getter_params()[0].trailing_or_middle), user_id);
 	}
 	else
 		this->send_msg(ERR_NONICKNAMEGIVEN(),user_id);
 	//call Nick_func
-	std::cout << "nickname: "<< _users[user_id].getNickname() << std::endl;
 }
 
 void	Server::Command_PART(TranslateBNF msg, int user_id)
@@ -332,7 +309,7 @@ void	Server::Command_MODE(TranslateBNF msg, int user_id)
 		if (channelIndex != -1)
 		{
 			std::cout << "Channel exists" << std::endl;
-			currentChannel->send_to_all(RPL_CHANNELMODEIS(nickname, channelName, currentChannel->getSettings()));
+			//currentChannel->send_to_all(RPL_CHANNELMODEIS(nickname, channelName, currentChannel->getSettings()));
 		}
 		return ;
 	}

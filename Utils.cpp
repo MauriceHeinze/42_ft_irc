@@ -10,11 +10,11 @@ bool	isChannel(std::vector<Channel> &channels, std::string channelName)
 	return (false);
 }
 
-bool	isUser(std::vector<User> users, std::string channelName)
+bool	isUser(std::vector<User> users, std::string Name)
 {
 	for (size_t i = 0; i < users.size(); i++)
 	{
-		if (users[i].getNickname() == channelName)
+		if (users[i].getNickname() == Name)
 			return (true);
 	}
 	return (false);

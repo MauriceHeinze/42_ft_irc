@@ -93,7 +93,7 @@ int	argsNeeded(std::string flags);
 
 // Not Sorted yet
 //:irc.server.com 353 John #example :@Alice +Bob Carl
-#define RPL_NAMREPLY(nickname,channel,User_list) ":irc.server.com 353 " + nickname + " :" + channel + " " + User_list + "\r\n"
+#define RPL_NAMREPLY(nickname,channel,User_list) ":irc.server.com 353 "+ nickname + " = " + channel + " " + User_list + "\r\n"
 #define RPL_ENDOFNAMES(nickname, channel) ":ircserver.com 366 " + nickname + " " + channel + "\r\n"
 #define RPL_JOIN(nickname, channel) ":" + nickname + " JOIN :" + channel + "\r\n"
 

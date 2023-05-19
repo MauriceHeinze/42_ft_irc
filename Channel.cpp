@@ -43,12 +43,8 @@ Channel::Channel(std::string name, std::string password, User& first_user) :_nam
 	_settings.secretChannel = false;
 	_settings.topicOperatorOnly = false;
 	_settings.userLimit = UINT_MAX;
-	out("before")
-	out(_perm.size())
-	this->add_new_user(first_user, password);
-	out(_perm.size())
+	this->add_new_user(first_user, "");
 	this->_perm[0].isAdmin = true;
-	out("after")
 }
 
 Channel::Channel(const Channel &a)
@@ -73,10 +69,12 @@ Channel& Channel::operator= (const Channel &other)
 
 void	Channel::join(User &userRef)
 {
-	out("in join????")
-	permissions perm = {false, false, true, &userRef};
+	permissions perm;
+	perm.isAdmin = false;
+	perm.isVoice = false;
+	perm.isAllowedToSpeak = true;
+	perm.user = &userRef;
 	_perm.push_back(perm);
-	out(_perm.size())
 }
 
 bool	Channel::checkLimit(){
@@ -92,13 +90,14 @@ void	Channel::part(std::string nickname)
 		if (_perm[i].user->getNickname() == nickname)
 		{
 			_perm.erase(_perm.begin() + i);
-			// _perm.shrink_to_fit();
 			return ;
 		}
 	}
 	throw("User not found in this channel");
 }
 
+
+//removes a user and give a user admin rights if no admin are left
 void	Channel::leave_user(User* user ,std::string msg)
 {
 	(void)msg;
@@ -106,12 +105,24 @@ void	Channel::leave_user(User* user ,std::string msg)
 	{
 		if (user == _perm[i].user)
 		{
+			out("delete user " + _perm[i].user->getNickname())
 			_perm.erase(_perm.begin() + i);
 			//send part msg reason disconecet
 			break;
 		}
 	}
 
+	bool found_Admin = false;
+	for (size_t i = 0; i < _perm.size(); i++)
+	{
+		if (_perm[i].isAdmin == true)
+		{
+			found_Admin = true;
+		}
+	}
+	// if (found_Admin == false && _perm.size() != 0)
+	// 	_perm[0].
+	// return ((int)_perm.size());
 }
 
 void	Channel::kick(std::string nickname)
@@ -187,6 +198,7 @@ std::string	Channel::getName( void )
 {
 	return (this->_name);
 }
+
 
 bool	Channel::isInvited(std::string nickname){
 	for(size_t i = 0; i < _invited.size(); i++)
@@ -296,8 +308,8 @@ int	Channel::add_new_user(User& user, std::string used_password)// user& , retur
 		this->join(user);
 		return (rpl_default);
 	}
+	out("user not found")
 	return (-1);
-	out("failed check")
 }
 
 bool	Channel::isAllowedToSpeak(std::string nickname){
@@ -342,7 +354,6 @@ std::string	Channel::get_user_list( void )
 	out(_perm.size())
 	for (size_t i = 0; i < _perm.size(); i++)
 	{
-		out("test")
 		if (i != 0)
 			list.append(" ");
 		else
@@ -353,7 +364,5 @@ std::string	Channel::get_user_list( void )
 			list.append("+");
 		list.append(_perm[i].user->getNickname());
 	}
-	out("list")
-	out(list)
 	return(list);
 }

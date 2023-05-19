@@ -5,7 +5,7 @@
 #include	<stdlib.h>
 
 #define SEND_FLAGS 0
-
+#define LAST_USER 0
 
 
 void	Server::send_msg(std::string msg,int user_id)
@@ -79,7 +79,6 @@ void Server::startServer(){
 			throw(PollFail());
 		for (size_t i = 0; i < _fds.size(); i++) 
 		{
-			out(i)
 			if ( i && _fds[i].revents & (POLLHUP | POLLERR | POLLNVAL))
 			{
 				out("delete user");
@@ -128,7 +127,6 @@ void	Server::parsing(std::string buffer, int user_id)
 {
  	TranslateBNF msg(buffer);
 
-	// out("After msg creation")
 	if (msg.getter_command() == "CAP")
 	{
 		Command_CAP(msg, user_id);
