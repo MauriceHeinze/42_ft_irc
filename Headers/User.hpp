@@ -13,7 +13,7 @@ class User
 		std::string				nickname;
 		// std::vector 	connected_channel; 
 	public:
-		const int			_fd;//aka socket
+		int					_fd;//aka socket
 		bool				_valid_password;
 		bool				_valid_nickname;
 		std::string			msg; // buffer to store message content until \r\n is received // check recv function options for buffer

@@ -56,11 +56,7 @@ void	Server::delete_user(int user_id)
 {
 	for (size_t i = 0; i < _channels.size(); i++)
 	{
-		// if (_channels[i].leave_user(&_users[user_id], "User got diconnected") == LAST_USER)
-		// {
-
-		// }
-
+		_channels[i].leave_user(&_users[user_id], "User got diconnected");
 	}
 	close(this->_fds[user_id].fd);
 	this->_fds.erase(this->_fds.begin() + user_id);
@@ -85,7 +81,7 @@ void Server::startServer(){
 		{
 			if ( i && _fds[i].revents & (POLLHUP | POLLERR | POLLNVAL))
 			{
-				out("delete user")
+				out("delete user");
 				delete_user(i);
 			}
 			else if (_fds[i].revents & POLLIN)
@@ -179,15 +175,15 @@ void	Server::parsing(std::string buffer, int user_id)
 	else if (msg.getter_command() == "KICK")
 	{
 		Command_KICK(msg,user_id);
-	}
+	} 
 	else if (msg.getter_command() == "TOPIC")
 	{
 		Command_TOPIC(msg, user_id);
 	}
-	// else if (msg.getter_command() == "PART")
-	// {
-	// 	Command_TOPIC(msg, user_id);
-	// }
+	else if (msg.getter_command() == "PART")
+	{
+		Command_PART(msg, user_id);
+	}
 	else if (msg.getter_command() == "MODE")
 	{
 		Command_MODE(msg, user_id);
@@ -248,8 +244,8 @@ void	Server::remove_user_from_all_channels(std::string msg, int user_id)
 {
 	for (size_t i = 0; i < this->_channels.size() ; i++)
 	{
-		size_t user_in_channel = _channels[i].find_user_in_channel(&_users[user_id]);
-		if (user_in_channel != USER_NOT_FOUND)
+		int user_in_channel = _channels[i].find_user_in_channel(_users[user_id].getNickname());
+		if (user_in_channel != -1)
 		{
 			this->_channels[i].leave_user(&_users[user_id], msg);
 		}

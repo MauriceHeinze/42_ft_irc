@@ -27,15 +27,17 @@ int	Server::find_Channel(std::string channelName)
 		if (_channels[i].getName() == channelName)
 			return (i);
 	}
+	out("No channel :" + channelName)
 	return (-1);
 }
 
-int	getUser(std::vector<User> users, std::string nickname)
+int	Server::find_User(std::vector<User> users, std::string nickname)
 {
 	for (size_t i = 0; i < users.size(); i++)
 	{
 		if (users[i].getNickname() == nickname)
 			return (i);
 	}
+	out("No user :" + nickname)
 	return (-1);
 }
