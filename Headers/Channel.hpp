@@ -44,8 +44,8 @@ class Channel
 		std::string	getName( void );
 		//Utiels
 		void		send_to_all(std::string msg);
-		void		send_to_all(std::string msg, int not_this_fd);
-		int			leave_user(User* user, std::string msg);
+		void		send_to_not_all(std::string msg, int not_this_fd);
+		void		leave_user(User* user, std::string msg);
 		std::string	get_user_list( void );
 		//Channel commands
 		void		join(User &userRef);
@@ -64,6 +64,7 @@ class Channel
 		size_t		find_user_in_channel(User* user);
 		// bool		isUser(std::string nickname);
 		bool		userExists(std::string nickname);
+		std::string	getSettings(void);
 };
 
 #endif

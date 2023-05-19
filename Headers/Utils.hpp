@@ -51,7 +51,7 @@ int		getUser(std::vector<User> users, std::string nickname);
 #define ERR_UNKNOWNMODE(nickname, char1) "472 " + nickname + " " + char1 + " :is unknown mode char to me\r\n"								// "<char> :is unknown mode char to me"
 #define ERR_USERSDONTMATCH(nickname) "502 " + nickname + " :Cant change mode for other users\r\n"										// ":Cant change mode for other users"
 #define ERR_UMODEUNKNOWNFLAG(nickname) "501 " + nickname + ":Unknown MODE flag\r\n"													// ":Unknown MODE flag"
-#define RPL_CHANNELMODEIS(nickname, channel, mode, modeParams) "324 " + nickname + " " + channel + " " + mode + " " + modeParams + "\r\n"			// "<channel> <mode> <mode params>"									// "<nickname> :No such nick/channel"
+#define RPL_CHANNELMODEIS(nickname, channel, modeAndParams) "324 " + nickname + " " + channel + " " + modeAndParams + "\r\n"			// "<channel> <mode> <mode params>"									// "<nickname> :No such nick/channel"
 #define ERR_KEYSET(nickname, channel) "467 " + nickname + " " + channel + " :Channel key already set\r\n"									// "<channel> :Channel key already set"
 #define RPL_ENDOFBANLIST(nickname, channel) "368 " + nickname + " " + channel + " :End of channel ban list\r\n";							// "<channel> :End of channel ban list"
 #define ERR_NOSUCHCHANNEL(nickname, channelWithPrefix) "403 " + nickname + " " + channelWithPrefix + " :No such channel\r\n"				// "<channel name> :No such channel"

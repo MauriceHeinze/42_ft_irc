@@ -98,7 +98,7 @@ void	Channel::part(std::string nickname)
 
 
 //removes a user and give a user admin rights if no admin are left
-int	Channel::leave_user(User* user ,std::string msg)
+void	Channel::leave_user(User* user ,std::string msg)
 {
 	(void)msg;
 	for (size_t i = 0; i < _perm.size(); i++)
@@ -119,9 +119,9 @@ int	Channel::leave_user(User* user ,std::string msg)
 			found_Admin = true;
 		}
 	}
-	if (found_Admin == false && _perm.size() != 0)
-		_perm[0].
-	return (_perm.size());
+	// if (found_Admin == false && _perm.size() != 0)
+	// 	_perm[0].
+	// return ((int)_perm.size());
 }
 
 void	Channel::kick(std::string nickname)
@@ -198,8 +198,9 @@ std::string	Channel::getName( void )
 	return (this->_name);
 }
 
+
 bool	Channel::isInvited(std::string nickname){
-	for(int i = 0; _invited.size(); i++)
+	for(size_t i = 0; i < _invited.size(); i++)
 	{
 		if (_invited[i] == nickname)
 			return true;
@@ -208,7 +209,7 @@ bool	Channel::isInvited(std::string nickname){
 }
 
 bool	Channel::isAdmin(std::string nickname){
-	for(int i = 0; _perm.size(); i++)
+	for(size_t i = 0; i < _perm.size(); i++)
 	{
 		if (_perm[i].user->getNickname() == nickname){
 			if (_perm[i].isAdmin == true)
@@ -218,6 +219,39 @@ bool	Channel::isAdmin(std::string nickname){
 		}
 	}
 	return false;
+}
+
+// i: Set/remove Invite-only channel
+// · t: Set/remove the restrictions of the TOPIC command to channel
+// operators
+// · k: Set/remove the channel key (password)
+// · o: Give/take channel operator privilege
+// 5
+// ft_irc Internet Relay Chat
+// · l: Set/remove the user limit to channel
+
+std::string	Channel::getSettings(void) {
+	std::string	settings = "";
+
+	if (_settings.userLimit < INT_MAX || _settings.inviteOnly || _settings.topicOperatorOnly
+		|| _settings.password.length() > 0 || _settings.moderated)
+		settings.append("+");
+	if (_settings.inviteOnly)
+		settings.append("i");
+	if (_settings.topicOperatorOnly)
+		settings.append("t");
+	if (_settings.password.length() > 0)
+		settings.append("k");
+	if (_settings.moderated)
+		settings.append("o");
+	if (_settings.userLimit < INT_MAX)
+		settings.append("l");
+
+	if (_settings.password.length() > 0)
+		settings.append(" " + _settings.password);
+	if (_settings.userLimit < INT_MAX)
+		settings.append(" " + std::to_string(_settings.userLimit));
+	return (settings);
 }
 
 bool	Channel::userExists(std::string nickname){
@@ -241,9 +275,6 @@ size_t	Channel::find_user_in_channel(User* user)
 
 bool	Channel::isVoice(std::string nickname){
 	for(size_t i = 0; i < _perm.size(); i++)
-
-
-	for(int i = 0; _perm.size(); i++)
 		{
 			if (_perm[i].user->getNickname() == nickname)
 			{
@@ -298,7 +329,7 @@ void	Channel::send_to_all(std::string msg)
 		send(_perm[i].user->_fd, msg.c_str(), msg.size(), SEND_FLAGS);
 }
 
-void	Channel::send_to_all(std::string msg, int not_this_fd)
+void	Channel::send_to_not_all(std::string msg, int not_this_fd)
 {
 	out("\e[31m" + msg + "\e[0m")
 	for (size_t i = 0; i < _perm.size(); i++)

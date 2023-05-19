@@ -234,19 +234,19 @@ void	Server::Command_PART(TranslateBNF msg, int user_id)
 {
 	(void)user_id;
 	(void)msg;
-	// std::string channelName = msg.getter_params()[0].trailing_or_middle;
-	// std::string nickname = msg.getter_params()[1].trailing_or_middle;
-	// int channelIndex = this->find_Channel(channelName);
-	// bool userExists = this->_channels[channelIndex].userExists(nickname);
-	// Channel	*currentChannel = &this->_channels[channelIndex];
-	// if (channelIndex != -1 && userExists)
-	// 	currentChannel->part(nickname);
-	// else if (channelName.length() == 0)
-	// 	this->send_msg(ERR_NEEDMOREPARAMS(nickname, msg.getter_command()), user_id);
-	// else if (channelIndex == -1)
-	// 	this->send_msg(ERR_NOSUCHCHANNEL(nickname, currentChannel->getName()), user_id);
-	// else if (!userExists)
-	// 	this->send_msg(ERR_NOTONCHANNEL(nickname, currentChannel->getName()), user_id);
+	std::string channelName = msg.getter_params()[0].trailing_or_middle;
+	std::string nickname = msg.getter_params()[1].trailing_or_middle;
+	int channelIndex = this->find_Channel(channelName);
+	bool userExists = this->_channels[channelIndex].userExists(nickname);
+	Channel	*currentChannel = &this->_channels[channelIndex];
+	if (channelIndex != -1 && userExists)
+		currentChannel->part(nickname);
+	else if (channelName.length() == 0)
+		this->send_msg(ERR_NEEDMOREPARAMS(nickname, msg.getter_command()), user_id);
+	else if (channelIndex == -1)
+		this->send_msg(ERR_NOSUCHCHANNEL(nickname, currentChannel->getName()), user_id);
+	else if (!userExists)
+		this->send_msg(ERR_NOTONCHANNEL(nickname, currentChannel->getName()), user_id);
 }
 
 void	Server::Command_P_MSG(TranslateBNF msg, int user_id)
@@ -260,7 +260,7 @@ void	Server::Command_P_MSG(TranslateBNF msg, int user_id)
 				this->send_msg(ERR_NOSUCHCHANNEL(_users[user_id].getNickname(),target),user_id);
 			else
 			{
-				this->_channels[i].send_to_all(" ",user_id);// need a send_to_with exception from sender id
+				this->_channels[i].send_to_not_all(" ",user_id);// need a send_to_with exception from sender id
 			}
 			// if (isChannel(_channels, msg.getter_params()[0].trailing_or_middle)){
 				// send_msg(":" + _users[user_id].getNickname() + " PRIVMSG " + msg.getter_params()[0].trailing_or_middle + " :" + msg.getter_params()[1].trailing_or_middle + "\r\n", user_id);
@@ -293,23 +293,32 @@ void	Server::Command_CAP(TranslateBNF msg, int user_id)
 
 void	Server::Command_MODE(TranslateBNF msg, int user_id)
 {
-	// examples:
-	// MODE #Finnish +o Kilroy
-	// MODE #Finnish +im
-
-	// setze variables
 	std::string nickname = this->_users[user_id].getNickname();
+	std::string	channelName = msg.getter_params()[0].trailing_or_middle;
+	int			channelIndex = this->find_Channel(channelName);
+	Channel		*currentChannel = &this->_channels[channelIndex];
+ 	std::cout << ">>>>>>>> number of args: " << msg.getter_params().size() << std::endl;
 	// check if enough params are available
-	if (msg.getter_params().size() < 3 || msg.getter_params()[0].trailing_or_middle.length() != 0)
-		send_msg(ERR_NEEDMOREPARAMS(nickname, (std::string)"MODE"), user_id);
+	if (channelIndex == -1)
+	{
+		send_msg(ERR_NOSUCHCHANNEL(nickname, channelName), user_id);
+		return ;
+	}
+	if (msg.getter_params().size() == 1) // you should return current settings at this point
+	{
+		std::cout << "JUST MODE" << std::endl;
+		if (channelIndex != -1)
+		{
+			std::cout << "Channel exists" << std::endl;
+			//currentChannel->send_to_all(RPL_CHANNELMODEIS(nickname, channelName, currentChannel->getSettings()));
+		}
+		return ;
+	}
 
 	size_t		i = 0;
 	bool		setting = false; // needed to set settings
 	std::string	flags = msg.getter_params()[1].trailing_or_middle;
 	std::string	argument = msg.getter_params()[2].trailing_or_middle;
-	std::string	channelName = msg.getter_params()[0].trailing_or_middle;
-	int			channelIndex = this->find_Channel(channelName);
-	Channel		*currentChannel = &this->_channels[channelIndex];
 
 	if (channelName[0] == '#')
 	{
@@ -336,18 +345,26 @@ void	Server::Command_MODE(TranslateBNF msg, int user_id)
 				}
 				else if (flags[i] == 'o') // o: Give/take channel operator privilege
 				{
+					std::cout << "// o: Give/take channel operator privilege" << std::endl;
 					if (this->_channels[channelIndex].userExists(argument))
 						currentChannel->oper(argument);
 					else
-						send_msg(ERR_USERONCHANNEL(nickname, argument), user_id);
+						send_msg(ERR_NOTONCHANNEL(nickname, argument), user_id);
 				}
 				else if (flags[i] == 'l') // l: Set/remove the user limit to channel
 				{
-					if (setting == true)
+					if (setting == false)
 						currentChannel->_settings.userLimit = INT_MAX;
 					else
-						currentChannel->_settings.userLimit = std::stoi(argument);
+					{
+						try {
+							currentChannel->_settings.userLimit = std::stoi(argument); }
+						catch (const std::out_of_range& e) {
+							currentChannel->_settings.userLimit = INT_MAX; }
+					}
 				}
+				else if (flags[i] == 'b') // just for KVIRC
+					(void)flags[i];
 				else if (flags[i] != '+' && flags[i] != '-')
 					send_msg(ERR_UNKNOWNMODE(nickname, flags[i]), user_id);
 			}

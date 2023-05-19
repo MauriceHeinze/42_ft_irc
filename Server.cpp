@@ -56,10 +56,10 @@ void	Server::delete_user(int user_id)
 {
 	for (size_t i = 0; i < _channels.size(); i++)
 	{
-		if (_channels[i].leave_user(&_users[user_id], "User got diconnected") == LAST_USER)
-		{
+		// if (_channels[i].leave_user(&_users[user_id], "User got diconnected") == LAST_USER)
+		// {
 
-		}
+		// }
 
 	}
 	close(this->_fds[user_id].fd);
