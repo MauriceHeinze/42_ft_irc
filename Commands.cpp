@@ -30,18 +30,20 @@ void	Server::Command_PASS(TranslateBNF msg, int user_id)
 
 void Server::Command_USER(TranslateBNF msg ,int user_id)
 {
-	// (void)user_id;
-	if (msg.getter_params().size() > 0)
+	if (msg.getter_params().size() > 0 && msg.getter_params()[0].trailing_or_middle.empty() == false)
 	{
-		if (!msg.getter_params()[0].trailing_or_middle.empty() && !isUser(_users, msg.getter_params()[0].trailing_or_middle)){
+		int user_index = find_Username(_users,msg.getter_params()[0].trailing_or_middle);
+		if (user_index  == -1)
+		{
 			_users[user_id].setUsername(msg.getter_params()[0].trailing_or_middle);
 		}
-		else if (isUser(_users, msg.getter_params()[0].trailing_or_middle))
+		else
+		{
 			send_msg(ERR_ALREADYREGISTRED, user_id);
+		}
 	}
 	else
-		this->send_msg(ERR_NEEDMOREPARAMS((std::string)"*", (std::string)"USER"),user_id);
-	//call Nick_func
+		this->send_msg(ERR_NONICKNAMEGIVEN(),user_id);
 	std::cout << "U: "<< _users[user_id].getNickname() << std::endl;
 }
 
@@ -210,13 +212,17 @@ void	Server::Command_TOPIC(TranslateBNF msg,int user_id)
 
 void	Server::Command_NICK(TranslateBNF msg, int user_id)
 {
-	if (msg.getter_params().size() > 0)
+	if (msg.getter_params().size() > 0 && msg.getter_params()[0].trailing_or_middle.empty() == false)
 	{
-		if (!msg.getter_params()[0].trailing_or_middle.empty() && !isUser(_users, msg.getter_params()[0].trailing_or_middle)){
+		int index = find_User(_users, msg.getter_params()[0].trailing_or_middle);
+		if (index == -1)
+		{
 			send_msg(":" + _users[user_id].getNickname() + " NICK :" + msg.getter_params()[0].trailing_or_middle + "\r\n", user_id);
 			_users[user_id].setNickname(msg.getter_params()[0].trailing_or_middle);
 			_users[user_id]._valid_nickname = true;
 		}
+		else
+				this->send_msg(ERR_NICKNAMEINUSE(_users[user_id].getNickname()),user_id);
 	}
 	else
 		this->send_msg(ERR_NONICKNAMEGIVEN(),user_id);
@@ -245,6 +251,7 @@ void	Server::Command_PART(TranslateBNF msg, int user_id)
 		send_msg(ERR_NEEDMOREPARAMS(nickname, "PART"), user_id);
 }
 
+#define PRIVTMSG(nickname,target,message) ":" + nickname + " PRIVMSG " + target + " :" + message + "\r\n"
 void	Server::Command_P_MSG(TranslateBNF msg, int user_id)
 {
 	if (msg.getter_params().size() > 0)
@@ -256,16 +263,15 @@ void	Server::Command_P_MSG(TranslateBNF msg, int user_id)
 				this->send_msg(ERR_NOSUCHCHANNEL(_users[user_id].getNickname(),target),user_id);
 			else
 			{
-				this->_channels[i].send_to_not_all(" ",user_id);// need a send_to_with exception from sender id
+				this->_channels[i].send_to_not_all(" ",user_id);
 			}
-			// if (isChannel(_channels, msg.getter_params()[0].trailing_or_middle)){
-				// send_msg(":" + _users[user_id].getNickname() + " PRIVMSG " + msg.getter_params()[0].trailing_or_middle + " :" + msg.getter_params()[1].trailing_or_middle + "\r\n", user_id);
-			// }
-			// else
-			// 	return;
 		}
 		else
-			send_msg(":" + _users[user_id].getNickname() + " PRIVMSG " + msg.getter_params()[0].trailing_or_middle + " :" + msg.getter_params()[1].trailing_or_middle + "\r\n", user_id);
+		{
+			int target_user = find_User(_users, target);
+			send_msg(PRIVTMSG(_users[user_id].getNickname(),msg.getter_params()[0].trailing_or_middle,msg.getter_params()[1].trailing_or_middle), target_user);
+			send_msg(PRIVTMSG(_users[user_id].getNickname(),msg.getter_params()[0].trailing_or_middle,msg.getter_params()[1].trailing_or_middle), user_id);
+		}
 	}
 	else
 		send_msg(ERR_NEEDMOREPARAMS(this->_users[user_id].getNickname(), msg.getter_command()), user_id);

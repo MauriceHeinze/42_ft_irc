@@ -38,7 +38,18 @@ int	Server::find_User(std::vector<User> users, std::string nickname)
 		if (users[i].getNickname() == nickname)
 			return (i);
 	}
-	out("No user :" + nickname)
+	out("No user : " + nickname)
+	return (-1);
+}
+
+int	Server::find_Username(std::vector<User> users, std::string username)
+{
+	for (size_t i = 0; i < users.size(); i++)
+	{
+		if (users[i].getUsername() == username)
+			return (i);
+	}
+	out("No user : " + username)
 	return (-1);
 }
 

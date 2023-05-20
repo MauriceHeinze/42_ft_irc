@@ -2,6 +2,10 @@
 # define SERVER_HPP
 
 #define out(x) std::cout << x << std::endl;
+#define out_g(x) std::cout << x << std::endl;
+#define out_b(x) std::cout << x << std::endl;
+#define out_r(x) std::cout << x << std::endl;
+#define t(...) std::cout << ... << std::end
 #include	<stdint.h>
 #define USER_NOT_FOUND SIZE_T_MAX
 #include	"Utils.hpp"
@@ -58,6 +62,7 @@ class Server
 		void	use_old_channel(int channel_id, int user_id, std::string channel_password);
 		int		find_Channel(std::string channelName);
 		int		find_User(std::vector<User> users, std::string nickname);
+		int		find_Username(std::vector<User> users, std::string username);
 		//User related
 		void	delete_user(int user_id);
 		void	remove_user_from_all_channels(int user_id);
