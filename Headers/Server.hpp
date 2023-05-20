@@ -60,7 +60,7 @@ class Server
 		int		find_User(std::vector<User> users, std::string nickname);
 		//User related
 		void	delete_user(int user_id);
-		void	remove_user_from_all_channels(std::string msg, int user_id);
+		void	remove_user_from_all_channels(int user_id);
 		//commands
 		void	Command_PASS( TranslateBNF msg, int user_id);
 		void	Command_USER( TranslateBNF msg, int user_id);

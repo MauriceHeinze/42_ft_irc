@@ -56,7 +56,7 @@ void	Server::delete_user(int user_id)
 {
 	for (size_t i = 0; i < _channels.size(); i++)
 	{
-		_channels[i].leave_user(&_users[user_id], "User got diconnected");
+		_channels[i].leave_user(&_users[user_id]);//, "User got diconnected"
 	}
 	close(this->_fds[user_id].fd);
 	this->_fds.erase(this->_fds.begin() + user_id);
@@ -240,14 +240,14 @@ std::string	Server::get_password( void )
  * @param user_id the fd/Socket/user that left the channel
  * 
  */
-void	Server::remove_user_from_all_channels(std::string msg, int user_id)
+void	Server::remove_user_from_all_channels( int user_id)
 {
 	for (size_t i = 0; i < this->_channels.size() ; i++)
 	{
 		int user_in_channel = _channels[i].find_user_in_channel(_users[user_id].getNickname());
 		if (user_in_channel != -1)
 		{
-			this->_channels[i].leave_user(&_users[user_id], msg);
+			this->_channels[i].leave_user(&_users[user_id]);
 		}
 	}
 	

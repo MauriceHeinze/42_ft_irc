@@ -153,6 +153,8 @@ void Server::Command_KICK(TranslateBNF msg,int user_id)
 			send_msg(ERR_NOSUCHNICK(nickname),user_id);
 		else if (_channels[channelIndex].isAdmin(_users[user_id].getNickname())){
 			if (msg.getter_params().size() == 2){ // leave_user()
+				// int user = _channels[channelIndex].find_user_in_channel(kickNick);
+				_channels[channelIndex].leave_user(&_users[find_User(_users,kickNick)]);
 				_channels[channelIndex].send_to_all(":" + nickname + " KICK " + channelName + " " + kickNick + "\r\n");
 			}
 			else if (msg.getter_params().size() == 3){ // leave_user()
@@ -335,7 +337,7 @@ void	Server::Command_MODE(TranslateBNF msg, int user_id)
 
 			if (currentChannel->isAdmin(nickname))
 			{
-				if (flags[i] == 'i') // i: Set/remove Invite-only channel
+				if (flags[i] == 'i') // i: Set/remove Invite-only channelkl , 
 					currentChannel->_settings.privateChannel = setting;
 				else if (flags[i] == 't') // t: Set/remove the restrictions of the TOPIC command to channel operators
 					currentChannel->_settings.topicOperatorOnly = setting;
@@ -396,24 +398,30 @@ void	Server::Command_MODE(TranslateBNF msg, int user_id)
 		return ;
 	}
 }
-// Formatierung der msg ( chat gpt sagt <invted user> <channel> | rfc seite sagt <channel> <invited user>)
+
 void Server::Command_INVITE(TranslateBNF msg, int user_id)
 {
+	std::string nickname = _users[user_id].getNickname();
 	if (msg.getter_params().size() > 1)
 	{
-		std::string nickname = _users[user_id].getNickname();
 		std::string channelName = msg.getter_params()[1].trailing_or_middle;
-		// int channel = find_Channel(channelName);
+		int channel = find_Channel(channelName);
 		std::string invNick = msg.getter_params()[0].trailing_or_middle;
 		out(invNick)
-		bool user = isUser(_users, invNick);
+		int user = find_User(_users, invNick);
 		out(user);
-		if (user){
+		if (user != -1){
+			if (_channels[channel].isInvited(invNick)){
+				send_msg(ERR_USERONCHANNEL(invNick, channelName), user_id);
+				return ;
+			}
+			_channels[channel].invite(invNick);
 			send_msg(RPL_INVITING(_users[user_id].getNickname(), invNick, channelName), user_id);
-			// _channels[channel].
 		}
 		else
 			send_msg(ERR_NOSUCHNICK(invNick), user_id);
 	}
+	else
+		send_msg(ERR_NEEDMOREPARAMS(nickname, "INVITE"), user_id);
 }
 

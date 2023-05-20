@@ -98,9 +98,8 @@ void	Channel::part(std::string nickname)
 
 
 //removes a user and give a user admin rights if no admin are left
-void	Channel::leave_user(User* user ,std::string msg)
+void	Channel::leave_user(User* user)
 {
-	(void)msg;
 	for (size_t i = 0; i < _perm.size(); i++)
 	{
 		if (user == _perm[i].user)
