@@ -4,12 +4,16 @@ User::User( std::string username, int fd) : username(username) , _fd(fd)
 {
 	_valid_password = false;
 	_valid_nickname = false;
+	_valid_username = false;
+	_send_welcome = false;
 }
 
 User::User( int fd ) :_fd(fd)
 {
 	_valid_password = false;
 	_valid_nickname = false;
+	_valid_username = false;
+	_send_welcome = false;
 }
 
 // User::User(const User &a)

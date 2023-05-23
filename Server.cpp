@@ -121,12 +121,22 @@ void Server::acceptConnection()
 	// send_msg(":Server opening :Hallo, was geht\r\n",clientSocket);
 }
 
+void	Server::send_WELCOME(user_id);
+{
+
+}
 
 
 void	Server::parsing(std::string buffer, int user_id)
 {
  	TranslateBNF msg(buffer);
 
+	if (_users[user_id]._send_welcome == false && this->_users[user_id]._valid_password == true && this->_users[user_id]._valid_nickname == true && this->_users[user_id]._valid_username == true)
+	{
+	{
+		send_WELCOME(user_id);
+		_users[user_id]._send_welcome = true;
+	}
 	if (msg.getter_command() == "CAP")
 	{
 		Command_CAP(msg, user_id);
@@ -147,23 +157,15 @@ void	Server::parsing(std::string buffer, int user_id)
 	{
 		Command_NICK(msg, user_id);
 	}
-	else if (this->_users[user_id]._valid_password == false)//check here if passwort is vaild
+	else if (this->_users[user_id]._valid_password == false || this->_users[user_id]._valid_nickname == false || this->_users[user_id]._valid_username == false)
 	{
-		// send(this->_fds[user_id].fd,)
+		this->send_msg("Pass username or nickname incorrect\r\n",user_id);
+		//maybe more info what is missing 
 		return ;
 	}
+
 	// protection for everthing that need Password_valid
 	// protection for everthing that need valid_nick
-	else if (this->_users[user_id]._valid_nickname == false)//check here if passwort is vaild
-	{
-		
-		// send(this->_fds[user_id].fd,)
-		out("Nickname")
-		out(this->_users[user_id].getNickname())
-		out("\e[0;31merror invalid Nick\e[0m")
-		send_msg(":Server Invalid Nickname", user_id);
-		return ;
-	}
 	else if (msg.getter_command() == "JOIN")
 	{
 		Command_JOIN(msg ,user_id);

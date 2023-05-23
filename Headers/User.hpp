@@ -16,6 +16,8 @@ class User
 		int					_fd;//aka socket
 		bool				_valid_password;
 		bool				_valid_nickname;
+		bool				_valid_username;
+		bool				_send_welcome;
 		std::string			msg; // buffer to store message content until \r\n is received // check recv function options for buffer
 		User( std::string username,int fd);
 		User(int fd);

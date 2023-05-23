@@ -214,15 +214,16 @@ void	Server::Command_NICK(TranslateBNF msg, int user_id)
 {
 	if (msg.getter_params().size() > 0 && msg.getter_params()[0].trailing_or_middle.empty() == false)
 	{
-		int index = find_User(_users, msg.getter_params()[0].trailing_or_middle);
+		std::string new_nickname = msg.getter_params()[0].trailing_or_middle;
+		int index = find_User(_users, new_nickname);
 		if (index == -1)
 		{
-			send_msg(":" + _users[user_id].getNickname() + " NICK :" + msg.getter_params()[0].trailing_or_middle + "\r\n", user_id);
-			_users[user_id].setNickname(msg.getter_params()[0].trailing_or_middle);
+			send_msg(":" + _users[user_id].getNickname() + " NICK :" + new_nickname + "\r\n", user_id);
+			_users[user_id].setNickname(new_nickname);
 			_users[user_id]._valid_nickname = true;
 		}
 		else
-				this->send_msg(ERR_NICKNAMEINUSE(_users[user_id].getNickname()),user_id);
+			this->send_msg(ERR_NICKNAMEINUSE(_users[user_id].getNickname()),user_id);
 	}
 	else
 		this->send_msg(ERR_NONICKNAMEGIVEN(),user_id);
