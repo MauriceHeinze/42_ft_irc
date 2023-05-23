@@ -196,7 +196,7 @@ void	Server::Command_TOPIC(TranslateBNF msg,int user_id)
 			}
 			else
 			{
-				if (currentChannel->isAdmin(nickname))
+				if (currentChannel->isAdmin(nickname) || currentChannel->_settings.topicOperatorOnly == false)
 				{
 					currentChannel->setTopic(nickname, topic);
 					this->send_msg(RPL_TOPIC(nickname, channelName, currentChannel->getTopic()), user_id);
