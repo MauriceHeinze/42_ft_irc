@@ -154,14 +154,14 @@ void Server::Command_KICK(TranslateBNF msg,int user_id)
 		else if (_channels[channelIndex].find_user_in_channel(kickNick) == -1)
 			send_msg(ERR_NOSUCHNICK(nickname),user_id);
 		else if (_channels[channelIndex].isAdmin(_users[user_id].getNickname())){
-			if (msg.getter_params().size() == 2){ // leave_user()
-				// int user = _channels[channelIndex].find_user_in_channel(kickNick);
-				_channels[channelIndex].leave_user(&_users[find_User(_users,kickNick)]);
+			if (msg.getter_params().size() == 2){
 				_channels[channelIndex].send_to_all(":" + nickname + " KICK " + channelName + " " + kickNick + "\r\n");
+				_channels[channelIndex].leave_user(&_users[find_User(_users,kickNick)]);
 			}
-			else if (msg.getter_params().size() == 3){ // leave_user()
+			else if (msg.getter_params().size() == 3){
 				std::string reason = msg.getter_params()[2].trailing_or_middle;
 				_channels[channelIndex].send_to_all(":" + nickname + " KICK " + channelName + " " + kickNick + " :" + reason + "\r\n");
+				_channels[channelIndex].leave_user(&_users[find_User(_users,kickNick)]);
 			}
 		}
 		else
@@ -240,12 +240,16 @@ void	Server::Command_PART(TranslateBNF msg, int user_id)
 		int channelIndex = find_Channel(channelName);
 		if (channelIndex == -1)
 			send_msg(ERR_NOSUCHCHANNEL(nickname,channelName),user_id);
-		else if (msg.getter_params().size() == 1){ // leave_user()
+		if (_channels[channelIndex].find_user_in_channel(nickname))
+			send_msg(ERR_NOTONCHANNEL(nickname, channelName), user_id);
+		else if (msg.getter_params().size() == 1){
 			_channels[channelIndex].send_to_all(":" + nickname + " PART " + channelName + "\r\n");
+			_channels[channelIndex].leave_user(&_users[user_id]);
 		}
-		else if (msg.getter_params().size() == 2){ // leave_user()
+		else if (msg.getter_params().size() == 2){
 			std::string reason = msg.getter_params()[1].trailing_or_middle;
 			_channels[channelIndex].send_to_all(":" + nickname + " PART " + channelName + " :" + reason + "\r\n");
+			_channels[channelIndex].leave_user(&_users[user_id]);
 		}
 	}
 	else
