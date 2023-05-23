@@ -57,11 +57,14 @@ int	argsNeeded(std::string flags)
 {
 	int argCounter = 0;
 
-	if (flags.find('k') != std::string::npos)
-		argCounter++;
-	if (flags.find('o') != std::string::npos)
-		argCounter++;
-	if (flags.find('l') != std::string::npos)
-		argCounter++;
+	if (flags[0] == '+')
+	{
+		if (flags.find('k') != std::string::npos)
+			argCounter++;
+		if (flags.find('o') != std::string::npos)
+			argCounter++;
+		if (flags.find('l') != std::string::npos)
+			argCounter++;
+	}
 	return (argCounter);
 }

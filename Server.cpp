@@ -60,7 +60,9 @@ void	Server::delete_user(int user_id)
 	}
 	close(this->_fds[user_id].fd);
 	this->_fds.erase(this->_fds.begin() + user_id);
+	this->_fds.shrink_to_fit();
 	this->_users.erase(this->_users.begin() + user_id);
+	this->_users.shrink_to_fit();
 }
 
 void Server::startServer(){

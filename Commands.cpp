@@ -239,7 +239,7 @@ void	Server::Command_PART(TranslateBNF msg, int user_id)
 		int channelIndex = find_Channel(channelName);
 		if (channelIndex == -1)
 			send_msg(ERR_NOSUCHCHANNEL(nickname,channelName),user_id);
-		if (_channels[channelIndex].find_user_in_channel(nickname))
+		else if (_channels[channelIndex].find_user_in_channel(nickname) == -1)
 			send_msg(ERR_NOTONCHANNEL(nickname, channelName), user_id);
 		else if (msg.getter_params().size() == 1){
 			_channels[channelIndex].send_to_all(":" + nickname + " PART " + channelName + "\r\n");
@@ -300,29 +300,36 @@ void	Server::Command_CAP(TranslateBNF msg, int user_id)
 void	Server::Command_MODE(TranslateBNF msg, int user_id)
 {
 	std::string nickname = this->_users[user_id].getNickname();
-	std::string	channelName = msg.getter_params()[0].trailing_or_middle;
+	std::string	channelName = "";
+	if (msg.getter_params().size() > 0)
+		channelName = msg.getter_params()[0].trailing_or_middle;
 	int			channelIndex = this->find_Channel(channelName);
 	Channel		*currentChannel = &this->_channels[channelIndex];
-	
+
 	std::string	argument = "";
 	int			argumentsNeeded;
 	int			k = 2;
 
 	std::cout << ">>>>>>>> number of args: " << msg.getter_params().size() << std::endl;
 	// check if enough params are available
-	if (channelIndex == -1)
-	{
-		send_msg(ERR_NOSUCHCHANNEL(nickname, channelName), user_id);
-		return ;
-	}
 	if (msg.getter_params().size() == 1) // you should return current settings at this point
 	{
 		std::cout << "JUST MODE" << std::endl;
 		if (channelIndex != -1)
 		{
 			std::cout << "Channel exists" << std::endl;
-			//currentChannel->send_to_all(RPL_CHANNELMODEIS(nickname, channelName, currentChannel->getSettings()));
+			currentChannel->send_to_all(RPL_CHANNELMODEIS(nickname, channelName, currentChannel->getSettings()));
 		}
+		else
+		{
+			send_msg(ERR_NOSUCHCHANNEL(nickname, channelName), user_id);
+			return ;
+		}
+		return ;
+	}
+	if (channelIndex == -1)
+	{
+		send_msg(ERR_NOSUCHCHANNEL(nickname, channelName), user_id);
 		return ;
 	}
 
@@ -335,9 +342,12 @@ void	Server::Command_MODE(TranslateBNF msg, int user_id)
 	{
 		while (i != flags.length())
 		{
-			if ((unsigned long)argumentsNeeded != (msg.getter_params().size() - 2))
+			if ((unsigned long)argumentsNeeded > (msg.getter_params().size() - 2))
+			{
 				send_msg(ERR_NEEDMOREPARAMS(nickname, "MODE"), user_id);
-			if (argumentsNeeded < k && argumentsNeeded != 0)
+				return ;
+			}
+			if (argumentsNeeded != 0)
 				argument = msg.getter_params()[k].trailing_or_middle;
 			// check if upcoming flags are activating or deactivating
 			if (flags[i] == '+')
@@ -347,12 +357,13 @@ void	Server::Command_MODE(TranslateBNF msg, int user_id)
 
 			if (currentChannel->isAdmin(nickname))
 			{
-				if (flags[i] == 'i') // i: Set/remove Invite-only channelkl , 
+				if (flags[i] == 'i') // i: Set/remove Invite-only channelkl ,
 					currentChannel->_settings.privateChannel = setting;
 				else if (flags[i] == 't') // t: Set/remove the restrictions of the TOPIC command to channel operators
 					currentChannel->_settings.topicOperatorOnly = setting;
 				else if (flags[i] == 'k') // k: Set/remove the channel key (password)
 				{
+					std::cout << "// k: Set password to " << argument << std::endl;
 					if (setting == true)
 					{
 						currentChannel->_settings.password = argument;
@@ -363,7 +374,7 @@ void	Server::Command_MODE(TranslateBNF msg, int user_id)
 				}
 				else if (flags[i] == 'o') // o: Give/take channel operator privilege
 				{
-					std::cout << "// o: Give/take channel operator privilege" << std::endl;
+					std::cout << "// o: Give/take channel operator privilege to: " << argument << std::endl;
 					if (this->_channels[channelIndex].userExists(argument))
 						currentChannel->oper(argument);
 					else
