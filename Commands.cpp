@@ -173,17 +173,19 @@ void Server::Command_KICK(TranslateBNF msg,int user_id)
 
 void	Server::Command_TOPIC(TranslateBNF msg,int user_id)
 {
+	std::string nickname = _users[user_id].getNickname();
 	if (msg.getter_params().size() > 0)
 	{
 		std::string channelName = msg.getter_params()[0].trailing_or_middle;
 		if (channelName.find("#") == std::string::npos)
 			channelName = "#" + channelName;
 		int channelIndex = this->find_Channel(channelName);
-		std::string nickname = _users[user_id].getNickname();
-		bool userExists = isUser(_users, nickname);//this->_channels[channelIndex].userExists(nickname);
-		std::string topic = msg.getter_params()[1].trailing_or_middle;
 		Channel	*currentChannel = &this->_channels[channelIndex];
-		if (channelIndex != -1 && userExists)
+		int userExists = currentChannel->find_user_in_channel(nickname);
+		std::string topic = msg.getter_params()[1].trailing_or_middle;
+		if (userExists == -1)
+			this->send_msg(ERR_NOTONCHANNEL(nickname, channelName), user_id);
+		else if (channelIndex != -1 && userExists > -1)
 		{
 			if (topic.length() == 0)
 			{
@@ -203,11 +205,11 @@ void	Server::Command_TOPIC(TranslateBNF msg,int user_id)
 					this->send_msg(ERR_CHANOPRIVSNEEDED(nickname, channelName), user_id);
 			}
 		}
-		else if (!userExists)
-			this->send_msg(ERR_NOTONCHANNEL(nickname, channelName), user_id);
 		else if (channelIndex == -1)
 			this->send_msg(ERR_NOSUCHCHANNEL(nickname, channelName), user_id);
 	}
+	else
+		this->send_msg(ERR_NEEDMOREPARAMS(nickname, "TOPIC"), user_id);
 }
 
 void	Server::Command_NICK(TranslateBNF msg, int user_id)
