@@ -99,7 +99,7 @@ void	Channel::part(std::string nickname)
 
 
 //removes a user and give a user admin rights if no admin are left
-void	Channel::leave_user(User* user)
+void	Channel::leave_user(User *user)
 {
 	for (size_t i = 0; i < _perm.size(); i++)
 	{
@@ -369,12 +369,14 @@ std::string	Channel::get_user_list( void )
 	return(list);
 }
 
+std::vector<permissions> Channel::getPerms(){
+	return _perm;
+}
+
 bool	Channel::empty()
 {
 	return(_perm.empty());
 }
-
-
 
 
 void	Channel::update_nickname(std::string new_nickname, int user_id)
