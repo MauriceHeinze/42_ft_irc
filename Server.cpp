@@ -126,7 +126,7 @@ void Server::acceptConnection()
 	// send_msg(":Server opening :Hallo, was geht\r\n",clientSocket);
 }
 
-#define RPL_WELCOME(client, networkname, nick) "001 " + client + " :Welcome to the " + networkname + " Network, " + nick + "\r\n"
+#define RPL_WELCOME(nick, networkname) "001 " + nick + " :Welcome to the " + networkname + " Network, " + nick + "\r\n"
 
 #define RPL_YOURHOST(client, servername, version) "002 " + client + " :Your host is " + servername + ", runnig version " + version + "\r\n"
 
@@ -139,16 +139,14 @@ void Server::acceptConnection()
 void	Server::send_WELCOME(int user_id)
 {
 	out("send Welcome")
-	// std::string client("Client_t");
-	// std::string networkname("Networkname_t");
-	// std::string nick = _users[user_id].getNickname();
+	// std::string client("KVIRC"); // client not needed, otherwise it returns an error because nickname can't be set then
+	std::string networkname("LOL");
+	std::string nickname = _users[user_id].getNickname();
 	// std::string servername("Servername_t");
 	// std::string datetime("datetime_t");
 	// std::string version("version");
-	// send_msg(RPL_WELCOME("client", ""),user_id);
-	// send_msg("",user_id);
-	// send_msg("",user_id);
-	// send_msg("",user_id);
+	send_msg(RPL_WELCOME(nickname, networkname), user_id);
+	// send_msg(RPL_CREATED(client, datetime), user_id);
 	(void)user_id;
 }
 
@@ -157,11 +155,7 @@ void	Server::parsing(std::string buffer, int user_id)
 {
  	TranslateBNF msg(buffer);
 
-	if (_users[user_id]._send_welcome == false && this->_users[user_id]._valid_password == true && this->_users[user_id]._valid_nickname == true && this->_users[user_id]._valid_username == true)
-	{
-		send_WELCOME(user_id);
-		_users[user_id]._send_welcome = true;
-	}
+	// send_WELCOME(user_id);
 	if (msg.getter_command() == "CAP")
 	{
 		Command_CAP(msg, user_id);
@@ -227,6 +221,11 @@ void	Server::parsing(std::string buffer, int user_id)
 	{
 		out("no Command found")
 		//!needs Return a Error rpl
+	}
+	if (_users[user_id]._send_welcome == false && this->_users[user_id]._valid_password == true && this->_users[user_id]._valid_nickname == true && this->_users[user_id]._valid_username == true)
+	{
+		send_WELCOME(user_id);
+		_users[user_id]._send_welcome = true;
 	}
 }
 
