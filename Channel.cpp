@@ -365,3 +365,7 @@ std::string	Channel::get_user_list( void )
 	}
 	return(list);
 }
+
+std::vector<permissions> Channel::getPerms(){
+	return _perm;
+}

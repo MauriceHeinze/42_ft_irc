@@ -65,6 +65,7 @@ class Channel
 		// bool		isUser(std::string nickname);
 		bool		userExists(std::string nickname);
 		std::string	getSettings(void);
+		std::vector<permissions> getPerms();
 };
 
 #endif
