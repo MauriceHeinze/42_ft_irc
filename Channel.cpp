@@ -369,3 +369,8 @@ std::string	Channel::get_user_list( void )
 std::vector<permissions> Channel::getPerms(){
 	return _perm;
 }
+
+bool	Channel::empty()
+{
+	return(_perm.empty());
+}

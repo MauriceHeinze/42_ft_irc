@@ -55,6 +55,7 @@ class TranslateBNF
 		std::string				get_prefix_nick( void );
 		std::string				get_prefix_user( void );
 		std::string				get_prefix_host( void );
+		std::string				get_all_params( size_t start );
 		TranslateBNF();
 		TranslateBNF(std::string);
 		TranslateBNF(const TranslateBNF &a);
