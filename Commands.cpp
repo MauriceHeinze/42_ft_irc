@@ -223,6 +223,8 @@ void	Server::Command_NICK(TranslateBNF msg, int user_id)
 		{
 			send_msg(":" + _users[user_id].getNickname() + " NICK :" + new_nickname + "\r\n", user_id);
 			_users[user_id].setNickname(new_nickname);
+			if (_users[user_id]._valid_nickname == true)
+				update_channel_nickname(new_nickname, user_id);
 			_users[user_id]._valid_nickname = true;
 		}
 		else
@@ -284,7 +286,7 @@ void	Server::Command_P_MSG(TranslateBNF msg, int user_id)
 			else
 			{
 				send_msg(PRIVTMSG(_users[user_id].getNickname(),msg.getter_params()[0].trailing_or_middle,msg.get_all_params(1)), target_user);
-				//send_msg(PRIVTMSG(_users[user_id].getNickname(),msg.getter_params()[0].trailing_or_middle,msg.get_all_params(1) + (std::string)"test" ), user_id);
+				//send_msg(PRIVTMSG(_users[target_user].getNickname(),msg.getter_params()[0].trailing_or_middle,msg.get_all_params(1) + (std::string)"test" ), user_id);
 			}
 		}
 	}
@@ -456,4 +458,3 @@ void Server::Command_INVITE(TranslateBNF msg, int user_id)
 	else
 		send_msg(ERR_NEEDMOREPARAMS(nickname, "INVITE"), user_id);
 }
-

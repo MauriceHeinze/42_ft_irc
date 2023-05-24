@@ -64,6 +64,7 @@ class Server
 		int		find_User(std::vector<User> users, std::string nickname);
 		int		find_Username(std::vector<User> users, std::string username);
 		//User related
+		void	update_channel_nickname(std::string new_name, int user_id);
 		void	delete_user(int user_id);
 		void	remove_user_from_all_channels(int user_id);
 		//commands

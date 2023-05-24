@@ -82,7 +82,7 @@ int	argsNeeded(std::string flags);
 
 // INVITE
 #define RPL_INVITING(nickname, invNick, channel) "341 " + nickname + " " + invNick + " " + channel + "\r\n"														// "<channel> <nick>"
-#define ERR_NOSUCHNICK(nickname) "401 " + nickname + " :No such nick/channel\r\n"														// "<nickname> :No such nick/channel"
+#define ERR_NOSUCHNICK(nickname) "401 " + nickname + " :No such nick/channel\r\n"
 #define ERR_USERONCHANNEL(nickname, channel) "443 " + nickname + " " + channel + " :is already on channel\r\n"							// "<user> <channel> :is already on channel"
 
 //   NICK

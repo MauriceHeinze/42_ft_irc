@@ -68,3 +68,12 @@ int	argsNeeded(std::string flags)
 	}
 	return (argCounter);
 }
+
+void	Server::update_channel_nickname(std::string new_nickname,int user_id)
+{
+	for (size_t i = 0; i < _channels.size(); i++)
+	{
+		_channels[i].update_nickname(new_nickname, user_id);
+	}
+	
+}

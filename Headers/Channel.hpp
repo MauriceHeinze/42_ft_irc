@@ -6,10 +6,11 @@
 #include "Utils.hpp"
 
 struct permissions{
-		bool	isAdmin;
-		bool	isVoice;
-		bool	isAllowedToSpeak;
-		User	*user;
+		bool		isAdmin;
+		bool		isVoice;
+		bool		isAllowedToSpeak;
+		std::string	user_nickname;
+		int			user_id;
 };
 
 struct channelSettings{
@@ -47,6 +48,7 @@ class Channel
 		void		send_to_not_all(std::string msg, int not_this_fd);
 		void		leave_user(User* user);
 		bool		empty();
+		void		update_nickname(std::string new_nickname, int user_id);
 		std::string	get_user_list( void );
 		//Channel commands
 		void		join(User &userRef);
