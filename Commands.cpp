@@ -223,10 +223,19 @@ void	Server::Command_NICK(TranslateBNF msg, int user_id)
 		int index = find_User(_users, new_nickname);
 		if (index == -1)
 		{
-			send_msg(":" + _users[user_id].getNickname() + " NICK :" + new_nickname + "\r\n", user_id);
-			_users[user_id].setNickname(new_nickname);
 			if (_users[user_id]._valid_nickname == true)
+			{
 				update_channel_nickname(new_nickname, user_id);
+			}
+			for (size_t i = 0; i < _users.size(); i++)
+			{
+				std::cout << "user_id: " << user_id << std::endl;
+				std::cout << "new_nickname: " << new_nickname << std::endl;
+				std::cout << "_users[user_id].getNickname(): " << _users[user_id].getNickname() << std::endl;
+				std::cout << ": " << new_nickname << std::endl;
+				send_msg(":" + _users[user_id].getNickname() + " NICK :" + new_nickname + "\r\n", i);
+			}
+			_users[user_id].setNickname(new_nickname);
 			_users[user_id]._valid_nickname = true;
 		}
 		else
