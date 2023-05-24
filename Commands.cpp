@@ -36,6 +36,7 @@ void Server::Command_USER(TranslateBNF msg ,int user_id)
 		if (user_index  == -1)
 		{
 			_users[user_id].setUsername(msg.getter_params()[0].trailing_or_middle);
+			_users[user_id]._valid_username = true;
 		}
 		else
 		{
@@ -274,8 +275,15 @@ void	Server::Command_P_MSG(TranslateBNF msg, int user_id)
 		else
 		{
 			int target_user = find_User(_users, target);
-			send_msg(PRIVTMSG(_users[user_id].getNickname(),msg.getter_params()[0].trailing_or_middle,msg.getter_params()[1].trailing_or_middle), target_user);
-			send_msg(PRIVTMSG(_users[user_id].getNickname(),msg.getter_params()[0].trailing_or_middle,msg.getter_params()[1].trailing_or_middle), user_id);
+			if (target_user == -1)
+			{
+				send_msg(ERR_NOSUCHNICK(_users[user_id].getNickname()), user_id);
+			}
+			else
+			{
+				send_msg(PRIVTMSG(_users[user_id].getNickname(),msg.getter_params()[0].trailing_or_middle,msg.get_all_params(1)), target_user);
+				//send_msg(PRIVTMSG(_users[user_id].getNickname(),msg.getter_params()[0].trailing_or_middle,msg.get_all_params(1) + (std::string)"test" ), user_id);
+			}
 		}
 	}
 	else
@@ -336,6 +344,7 @@ void	Server::Command_MODE(TranslateBNF msg, int user_id)
 	{
 		while (i != flags.length())
 		{
+			out(i)
 			if ((unsigned long)argumentsNeeded != (msg.getter_params().size() - 2))
 				send_msg(ERR_NEEDMOREPARAMS(nickname, "MODE"), user_id);
 			if (argumentsNeeded < k && argumentsNeeded != 0)
@@ -408,6 +417,7 @@ void	Server::Command_MODE(TranslateBNF msg, int user_id)
 		send_msg(ERR_NOSUCHCHANNEL(nickname, channelName), user_id);
 		return ;
 	}
+	out("here")
 }
 
 void Server::Command_INVITE(TranslateBNF msg, int user_id)

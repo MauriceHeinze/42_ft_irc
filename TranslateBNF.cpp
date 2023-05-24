@@ -92,6 +92,7 @@ void	TranslateBNF::deconstruct_params(std::string& msg,int& i)
 		i++;
 		while(msg[i] != '\0' && tools::_nonnonwhite.find(msg[i]) == std::string::npos)
 		{
+
 			param.trailing_or_middle.push_back(msg[i]);
 			i++;
 		}
@@ -104,6 +105,7 @@ void	TranslateBNF::deconstruct_params(std::string& msg,int& i)
 			param.trailing_or_middle.push_back(msg[i]);
 			i++;
 		}
+		param.trailing = true;
 	}
 	params.push_back(param);
 }
@@ -289,4 +291,17 @@ void	TranslateBNF::add_param(std::string msg, bool trailing)
 {
 	struct s_param param = {trailing, msg};
 	this->params.push_back(param);
+}
+
+std::string TranslateBNF::get_all_params(size_t start)
+{
+	std::string all;
+
+	for (size_t i = start; i < this->params.size(); i++)
+	{
+		if (i != start)
+			all.push_back(' ');
+		all.append(params[i].trailing_or_middle);
+	}
+	return(all);
 }

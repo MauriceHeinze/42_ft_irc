@@ -97,7 +97,6 @@ int	argsNeeded(std::string flags);
 #define RPL_ENDOFNAMES(nickname, channel) ":ircserver.com 366 " + nickname + " " + channel + "\r\n"
 #define RPL_JOIN(nickname, channel) ":" + nickname + " JOIN :" + channel + "\r\n"
 
-#define RPL_WELCOME(client,networkname,nickname) client + ":Welcome to the " + networkname + " Network, " + nickname
 
 
 #endif

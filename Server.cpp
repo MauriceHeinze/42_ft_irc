@@ -57,6 +57,9 @@ void	Server::delete_user(int user_id)
 	for (size_t i = 0; i < _channels.size(); i++)
 	{
 		_channels[i].leave_user(&_users[user_id]);//, "User got diconnected"
+		if (_channels[i].empty() == true)
+			_channels.erase(_channels.begin() + i);
+
 	}
 	close(this->_fds[user_id].fd);
 	this->_fds.erase(this->_fds.begin() + user_id);
@@ -121,9 +124,30 @@ void Server::acceptConnection()
 	// send_msg(":Server opening :Hallo, was geht\r\n",clientSocket);
 }
 
-void	Server::send_WELCOME(user_id);
-{
+#define RPL_WELCOME(client, networkname, nick) "001 " + client + " :Welcome to the " + networkname + " Network, " + nick + "\r\n"
 
+#define RPL_YOURHOST(client, servername, version) "002 " + client + " :Your host is " + servername + ", runnig version " + version + "\r\n"
+
+#define RPL_CREATED(client, datetime) "003 " + client + " :this server was created " + datetime + "\r\n"
+
+#define RPL_MYINFO(client, servername, version, availble_user_modes, available_channel_modes) "004 " + client + " " + servername + " " + version + " " + availble_user_modes + " " + available_channel_modes + "\r\n"
+
+#define RPL_ISUPPORT(client, token_list) "005 " + client + " " + token_list + " :are supportedby this server" + "\r\n"
+
+void	Server::send_WELCOME(int user_id)
+{
+	out("send Welcome")
+	// std::string client("Client_t");
+	// std::string networkname("Networkname_t");
+	// std::string nick = _users[user_id].getNickname();
+	// std::string servername("Servername_t");
+	// std::string datetime("datetime_t");
+	// std::string version("version");
+	// send_msg(RPL_WELCOME("client", ""),user_id);
+	// send_msg("",user_id);
+	// send_msg("",user_id);
+	// send_msg("",user_id);
+	(void)user_id;
 }
 
 
@@ -132,7 +156,6 @@ void	Server::parsing(std::string buffer, int user_id)
  	TranslateBNF msg(buffer);
 
 	if (_users[user_id]._send_welcome == false && this->_users[user_id]._valid_password == true && this->_users[user_id]._valid_nickname == true && this->_users[user_id]._valid_username == true)
-	{
 	{
 		send_WELCOME(user_id);
 		_users[user_id]._send_welcome = true;

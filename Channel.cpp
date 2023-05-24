@@ -365,3 +365,8 @@ std::string	Channel::get_user_list( void )
 	}
 	return(list);
 }
+
+bool	Channel::empty()
+{
+	return(_perm.empty());
+}
