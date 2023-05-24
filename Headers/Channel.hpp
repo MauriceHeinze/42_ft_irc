@@ -5,11 +5,11 @@
 
 #include "Utils.hpp"
 
-struct permissions{
+struct permissions {
 		bool	isAdmin;
 		bool	isVoice;
 		bool	isAllowedToSpeak;
-		User	*user;
+		User	*user; // socket_id aka  user_id 
 };
 
 struct channelSettings{

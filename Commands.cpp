@@ -72,8 +72,8 @@ void Server::Command_USER(TranslateBNF msg ,int user_id)
 	if (rpl_msg == rpl_ERR_BADCHANNELKEY)
 		this->send_msg(ERR_BADCHANNELKEY(_users[user_id].getNickname(), _channels[channel_id].getName()), user_id);
 	else if (_channels[channel_id]._settings.userLimit == _channels[channel_id].getPerms().size())
-		this->send_msg(ERR_CHANNELISFULL(_users[user_id].getNickname(), channel), user_id);
-	else if (rpl_msg == rpl_ERR_INVITEONLYCHAN)
+		this->send_msg(ERR_CHANNELISFULL(_users[user_id].getNickname(), _channels[channel_id].getName()), user_id);
+	else if (rpl_msg == rpl_ERR_INVITEONLYCHAN && !_channels[channel_id].isInvited(_users[user_id].getNickname()))
 		this->send_msg(ERR_INVITEONLYCHAN(_users[user_id].getNickname(), _channels[channel_id].getName()), user_id);
 	else if (rpl_msg == rpl_default)
 	{
@@ -115,12 +115,7 @@ void Server::Command_JOIN(TranslateBNF msg ,int user_id)
 	out(channel_id)
 	if (channel_id != -1)
 	{
-		if (_channels[channel_id]._settings.userLimit == _channels[channel_id].getPerms().size())
-			send_msg(ERR_CHANNELISFULL(_users[user_id].getNickname(), channel), user_id);
-		else if (_channels[channel_id]._settings.inviteOnly == true)
-			send_msg(ERR_INVITEONLYCHAN(_users[user_id].getNickname(), channel), user_id);
-		else
-			use_old_channel(channel_id, user_id, channel_password);
+		use_old_channel(channel_id, user_id, channel_password);
 	}
 	else
 	{
