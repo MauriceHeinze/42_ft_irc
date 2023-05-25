@@ -66,6 +66,7 @@ class Server
 		//User related
 		void	update_channel_nickname(std::string new_name, int user_id);
 		void	delete_user(int user_id);
+		void	delete_channel(int channel_id);
 		void	remove_user_from_all_channels(int user_id);
 		//commands
 		void	Command_PASS( TranslateBNF msg, int user_id );

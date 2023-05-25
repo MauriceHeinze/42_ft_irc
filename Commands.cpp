@@ -71,7 +71,7 @@ void Server::Command_USER(TranslateBNF msg ,int user_id)
 	// for reply
 	if (rpl_msg == rpl_ERR_BADCHANNELKEY)
 		this->send_msg(ERR_BADCHANNELKEY(_users[user_id].getNickname(), _channels[channel_id].getName()), user_id);
-	else if (_channels[channel_id]._settings.userLimit == _channels[channel_id].getPerms().size())
+	else if (rpl_msg == 471)
 		this->send_msg(ERR_CHANNELISFULL(_users[user_id].getNickname(), _channels[channel_id].getName()), user_id);
 	else if (rpl_msg == rpl_ERR_INVITEONLYCHAN && !_channels[channel_id].isInvited(_users[user_id].getNickname()))
 		this->send_msg(ERR_INVITEONLYCHAN(_users[user_id].getNickname(), _channels[channel_id].getName()), user_id);
@@ -160,11 +160,15 @@ void Server::Command_KICK(TranslateBNF msg,int user_id)
 			if (msg.getter_params().size() == 2){
 				_channels[channelIndex].send_to_all(":" + nickname + " KICK " + channelName + " " + kickNick + "\r\n");
 				_channels[channelIndex].leave_user(&_users[find_User(_users,kickNick)]);
+				if (_channels[channelIndex].getPerms().size() == 0)
+					delete_channel(channelIndex);
 			}
 			else if (msg.getter_params().size() >= 2){
 				std::string reason = msg.get_all_params(2);
 				_channels[channelIndex].send_to_all(":" + nickname + " KICK " + channelName + " " + kickNick + " :" + reason + "\r\n");
 				_channels[channelIndex].leave_user(&_users[find_User(_users,kickNick)]);
+				if (_channels[channelIndex].getPerms().size() == 0)
+					delete_channel(channelIndex);
 			}
 		}
 		else
@@ -261,11 +265,15 @@ void	Server::Command_PART(TranslateBNF msg, int user_id)
 		else if (msg.getter_params().size() == 1){
 			_channels[channelIndex].send_to_all(":" + nickname + " PART " + channelName + "\r\n");
 			_channels[channelIndex].leave_user(&_users[user_id]);
+			if (_channels[channelIndex].getPerms().size() == 0)
+				delete_channel(channelIndex);
 		}
 		else if (msg.getter_params().size() >= 2){
 			std::string reason = msg.get_all_params(1);
 			_channels[channelIndex].send_to_all(":" + nickname + " PART " + channelName + " :" + reason + "\r\n");
 			_channels[channelIndex].leave_user(&_users[user_id]);
+			if (_channels[channelIndex].getPerms().size() == 0)
+				delete_channel(channelIndex);
 		}
 	}
 	else
@@ -413,6 +421,7 @@ void	Server::Command_MODE(TranslateBNF msg, int user_id)
 				}
 				else if (flags[i] == 'l') // l: Set/remove the user limit to channel
 				{
+					std::cout << "old limit: " << currentChannel->_settings.userLimit << std::endl;
 					if (setting == false)
 						currentChannel->_settings.userLimit = INT_MAX;
 					else
@@ -423,6 +432,7 @@ void	Server::Command_MODE(TranslateBNF msg, int user_id)
 							currentChannel->_settings.userLimit = INT_MAX; }
 						k++;
 					}
+					std::cout << "new limit: " << currentChannel->_settings.userLimit << std::endl;
 				}
 				else if (flags[i] == 'b') // just for KVIRC
 					(void)flags[i];

@@ -278,3 +278,13 @@ void	Server::remove_user_from_all_channels( int user_id)
 	}
 	
 }
+
+void	Server::delete_channel(int channel_id){
+	for (size_t i = 0; i < _channels.size(); i++){
+		if (_channels[i].getName() == _channels[channel_id].getName()){
+			_channels.erase(_channels.begin() + i);
+			out("deleted channel")
+			return ;
+		}
+	}
+}

@@ -307,6 +307,10 @@ int	Channel::add_new_user(User& user, std::string used_password)// user& , retur
 		{
 			return (rpl_ERR_BADCHANNELKEY);
 		}
+		if (this->_settings.userLimit <= this->_perm.size())
+		{
+			return (471);
+		}
 		this->join(user);
 		return (rpl_default);
 	}
