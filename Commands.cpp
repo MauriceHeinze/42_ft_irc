@@ -73,8 +73,10 @@ void Server::Command_USER(TranslateBNF msg ,int user_id)
 		this->send_msg(ERR_BADCHANNELKEY(_users[user_id].getNickname(), _channels[channel_id].getName()), user_id);
 	else if (rpl_msg == 471)
 		this->send_msg(ERR_CHANNELISFULL(_users[user_id].getNickname(), _channels[channel_id].getName()), user_id);
-	else if (rpl_msg == rpl_ERR_INVITEONLYCHAN && !_channels[channel_id].isInvited(_users[user_id].getNickname()))
+	else if (rpl_msg == rpl_ERR_INVITEONLYCHAN && !(_channels[channel_id].isInvited(_users[user_id].getNickname()))){
+		out("scheisse");
 		this->send_msg(ERR_INVITEONLYCHAN(_users[user_id].getNickname(), _channels[channel_id].getName()), user_id);
+	}
 	else if (rpl_msg == rpl_default)
 	{
 		this->_channels[channel_id].send_to_all(RPL_JOIN(_users[user_id].getNickname(), _channels[channel_id].getName()));
@@ -393,7 +395,7 @@ void	Server::Command_MODE(TranslateBNF msg, int user_id)
 			if (currentChannel->isAdmin(nickname))
 			{
 				if (flags[i] == 'i') // i: Set/remove Invite-only channelkl ,
-					currentChannel->_settings.privateChannel = setting;
+					currentChannel->_settings.inviteOnly = setting;
 				else if (flags[i] == 't') // t: Set/remove the restrictions of the TOPIC command to channel operators
 					currentChannel->_settings.topicOperatorOnly = setting;
 				else if (flags[i] == 'k') // k: Set/remove the channel key (password)
