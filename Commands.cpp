@@ -161,8 +161,8 @@ void Server::Command_KICK(TranslateBNF msg,int user_id)
 				_channels[channelIndex].send_to_all(":" + nickname + " KICK " + channelName + " " + kickNick + "\r\n");
 				_channels[channelIndex].leave_user(&_users[find_User(_users,kickNick)]);
 			}
-			else if (msg.getter_params().size() == 3){
-				std::string reason = msg.getter_params()[2].trailing_or_middle;
+			else if (msg.getter_params().size() >= 2){
+				std::string reason = msg.get_all_params(2);
 				_channels[channelIndex].send_to_all(":" + nickname + " KICK " + channelName + " " + kickNick + " :" + reason + "\r\n");
 				_channels[channelIndex].leave_user(&_users[find_User(_users,kickNick)]);
 			}
@@ -262,8 +262,8 @@ void	Server::Command_PART(TranslateBNF msg, int user_id)
 			_channels[channelIndex].send_to_all(":" + nickname + " PART " + channelName + "\r\n");
 			_channels[channelIndex].leave_user(&_users[user_id]);
 		}
-		else if (msg.getter_params().size() == 2){
-			std::string reason = msg.getter_params()[1].trailing_or_middle;
+		else if (msg.getter_params().size() >= 2){
+			std::string reason = msg.get_all_params(1);
 			_channels[channelIndex].send_to_all(":" + nickname + " PART " + channelName + " :" + reason + "\r\n");
 			_channels[channelIndex].leave_user(&_users[user_id]);
 		}
@@ -284,7 +284,7 @@ void	Server::Command_P_MSG(TranslateBNF msg, int user_id)
 				this->send_msg(ERR_NOSUCHCHANNEL(_users[user_id].getNickname(),target),user_id);
 			else
 			{
-				this->_channels[i].send_to_not_all(" ",user_id);
+				this->_channels[i].send_to_not_all(PRIVTMSG(_users[user_id].getNickname(),msg.getter_params()[0].trailing_or_middle,msg.get_all_params(1)), user_id);
 			}
 		}
 		else
