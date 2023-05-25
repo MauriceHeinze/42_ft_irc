@@ -227,7 +227,7 @@ void	Server::Command_NICK(TranslateBNF msg, int user_id)
 			if (_users[user_id]._valid_nickname == true)
 			{
 				update_channel_nickname(new_nickname, user_id);
-				this->
+				// this->c
 			}
 			send_msg(":" + _users[user_id].getNickname() + " NICK :" + new_nickname + "\r\n", user_id);
 			_users[user_id]._valid_nickname = true;
@@ -299,13 +299,16 @@ void	Server::Command_P_MSG(TranslateBNF msg, int user_id)
 		send_msg(ERR_NEEDMOREPARAMS(this->_users[user_id].getNickname(), msg.getter_command()), user_id);
 }
 
-#define rpl_PONG(msg) "PONG" + msg + "\r\n"
+#define rpl_PONG(nickname, nick, server) ":" + nickname + " PONG :" + nick + " " + server + "\r\n"
 
 void	Server::Command_PING(TranslateBNF msg, int user_id)
 {
 	(void) msg;
-	std::string text(" params ");
-	send_msg(rpl_PONG(text), user_id);
+	std::string text("guten tag");
+	if (msg.getter_params().size() < 2)
+		send_msg(ERR_NEEDMOREPARAMS(_users[user_id].getNickname(), "PING"), user_id);
+	else
+		send_msg(rpl_PONG(_users[user_id].getNickname(), msg.getter_params()[0].trailing_or_middle, msg.getter_params()[1].trailing_or_middle), user_id);
 }
 
 void	Server::Command_CAP(TranslateBNF msg, int user_id)
