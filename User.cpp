@@ -29,7 +29,6 @@ User::~User()
 void	User::insert_in_user_buffer(std::string read_buffer)
 {
 	this->msg.append(read_buffer);
-	std::cout << "current Buffer" << std::endl <<this->msg << std::endl;
 }
 
 // Get the next complete(\r\n) command inside of the msg_buffer or return a empty if no one is found

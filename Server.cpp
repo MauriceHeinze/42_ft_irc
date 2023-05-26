@@ -10,7 +10,7 @@
 
 void	Server::send_msg(std::string msg,int user_id)
 {
-	out("\e[31m" + msg + "\e[0m")
+	std::cout << "\e[31m" + msg + "\e[0m" << std::endl;
 	send(this->_fds[user_id].fd,msg.c_str(),msg.size(), SEND_FLAGS);
 }
 
@@ -86,7 +86,6 @@ void Server::startServer(){
 		{
 			if ( i && _fds[i].revents & (POLLHUP | POLLERR | POLLNVAL))
 			{
-				out("delete user");
 				delete_user(i);
 			}
 			else if (_fds[i].revents & POLLIN)
@@ -138,7 +137,6 @@ void Server::acceptConnection()
 
 void	Server::send_WELCOME(int user_id)
 {
-	out("send Welcome")
 	// std::string client("KVIRC"); // client not needed, otherwise it returns an error because nickname can't be set then
 	std::string networkname("LOL");
 	std::string nickname = _users[user_id].getNickname();
@@ -151,7 +149,7 @@ void	Server::send_WELCOME(int user_id)
 }
 
 
-void	Server::parsing(std::string buffer, int user_id)
+void	Server::parsing(std::string buffer, int user_id, int user_fd)
 {
  	TranslateBNF msg(buffer);
 
@@ -182,9 +180,6 @@ void	Server::parsing(std::string buffer, int user_id)
 		//maybe more info what is missing 
 		return ;
 	}
-
-	// protection for everthing that need Password_valid
-	// protection for everthing that need valid_nick
 	else if (msg.getter_command() == "JOIN")
 	{
 		Command_JOIN(msg ,user_id);
@@ -211,7 +206,7 @@ void	Server::parsing(std::string buffer, int user_id)
 	}
 	else if (msg.getter_command() == "PRIVMSG")
 	{
-		Command_P_MSG(msg, user_id);
+		Command_P_MSG(msg, user_id, user_fd);
 	}
 	else if (msg.getter_command() == "INVITE")
 	{
@@ -233,9 +228,14 @@ void	Server::parsing(std::string buffer, int user_id)
 void Server::recvMsg(size_t user_id)
 {
 	char buffer[1024];
-	int valread;
+	int valread = -2;
 	memset(buffer, 0, 1024); //set the buffer to 0
-	valread = recv(_fds[user_id].fd, buffer, 1024, 0);
+	while (valread == -2 || !strstr(buffer, "\n"))
+	{
+		valread = recv(_fds[user_id].fd, buffer, 1024, 0);
+		if (valread <= 0)
+			break ;
+	}
 	if (valread == 0)// check for error 
 	{
 		std::cout << "Connection Closed " << user_id << std::endl;
@@ -247,7 +247,7 @@ void Server::recvMsg(size_t user_id)
 		std::string command= this->_users[user_id].get_next_command();
 		if (command[0] == 0)
 			break;
-		parsing(command, user_id);
+		parsing(command, user_id, _users[user_id]._fd);
 	}
 	_fds[user_id].revents = 0;
 	_fds[user_id].events = POLLIN;
@@ -277,4 +277,13 @@ void	Server::remove_user_from_all_channels( int user_id)
 		}
 	}
 	
+}
+
+void	Server::delete_channel(int channel_id){
+	for (size_t i = 0; i < _channels.size(); i++){
+		if (_channels[i].getName() == _channels[channel_id].getName()){
+			_channels.erase(_channels.begin() + i);
+			return ;
+		}
+	}
 }

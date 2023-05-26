@@ -133,16 +133,16 @@ void	TranslateBNF::deconstruct_msg (std::string msg)
 		else
 			deconstruct_params(msg , i);
 	}
-	std::cout << "prefix = " << prefix.nick_or_servername << std::endl;
-	std::cout << "user = " << prefix.user << std::endl;
-	std::cout << "host = " << prefix.host << std::endl;
-	std::cout << "command = " << command.command << std::endl;
-	std::cout << "nums = " << command.num << std::endl;
-	for(size_t j = 0; j < params.size();j++)
-	{
-		std::cout << "param " << j << " = "<< params[j].trailing_or_middle << std::endl;
-	}
-	std::cout <<std::endl;
+	// std::cout << "prefix = " << prefix.nick_or_servername << std::endl;
+	// std::cout << "user = " << prefix.user << std::endl;
+	// std::cout << "host = " << prefix.host << std::endl;
+	// std::cout << "command = " << command.command << std::endl;
+	// std::cout << "nums = " << command.num << std::endl;
+	// for(size_t j = 0; j < params.size();j++)
+	// {
+	// 	std::cout << "param " << j << " = "<< params[j].trailing_or_middle << std::endl;
+	// }
+	// std::cout <<std::endl;
 }
 
 

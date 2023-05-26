@@ -66,6 +66,7 @@ class Server
 		//User related
 		void	update_channel_nickname(std::string new_name, int user_id);
 		void	delete_user(int user_id);
+		void	delete_channel(int channel_id);
 		void	remove_user_from_all_channels(int user_id);
 		//commands
 		void	Command_PASS( TranslateBNF msg, int user_id );
@@ -77,13 +78,14 @@ class Server
 		void	Command_NICK( TranslateBNF msg, int user_id );
 		void	Command_PART( TranslateBNF msg, int user_id );
 		void	Command_MODE( TranslateBNF msg, int user_id );
-		void	Command_P_MSG(TranslateBNF msg, int user_id);
+		// void	Command_P_MSG(TranslateBNF msg, int user_id);
+		void	Command_P_MSG(TranslateBNF msg, int user_id, int user_fd);
 		void	Command_PING( TranslateBNF msg, int user_id);
 		void	Command_CAP(  TranslateBNF msg, int user_id);
 		void	Command_INVITE(TranslateBNF msg, int user_id);
 		void	send_WELCOME(int user_id);
 		void	send_msg(std::string msg, int user_id);
-		void	parsing( std::string msg, int user_id);
+		void	parsing( std::string msg, int user_id, int user_fd);
 		int	_socket;
 		int	_port;
 		std::string _password;

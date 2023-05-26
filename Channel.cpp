@@ -8,7 +8,6 @@
 
 Channel::Channel(std::string name) :_name(name)
 {
-	out(name + " Channel created")
 	_settings.inviteOnly = false;
 	_settings.moderated = false;
 	_settings.msgFromOutside = true;
@@ -21,7 +20,6 @@ Channel::Channel(std::string name) :_name(name)
 
 Channel::Channel(std::string name, std::string password) :_name(name)
 {
-	out(name + " Channel created")
 	_settings.inviteOnly = false;
 	_settings.moderated = false;
 	_settings.msgFromOutside = true;
@@ -34,7 +32,6 @@ Channel::Channel(std::string name, std::string password) :_name(name)
 
 Channel::Channel(std::string name, std::string password, User& first_user) :_name(name)
 {
-	out(name + " Channel created")
 	_settings.inviteOnly = false;
 	_settings.moderated = false;
 	_settings.msgFromOutside = true;
@@ -105,7 +102,6 @@ void	Channel::leave_user(User *user)
 	{
 		if (user->_fd == _perm[i].user_id)
 		{
-			out("delete user " + _perm[i].user_nickname)
 			_perm.erase(_perm.begin() + i);
 			//send part msg reason disconecet
 			break;
@@ -210,11 +206,10 @@ bool	Channel::isInvited(std::string nickname){
 }
 
 bool	Channel::isAdmin(std::string nickname){
-	// out(_perm.size())
 	for(size_t i = 0; i < _perm.size(); i++)
 	{
-		out(i)
-		if (_perm[i].user_nickname == nickname){
+		if (_perm[i].user_nickname == nickname)
+		{
 			if (_perm[i].isAdmin == true)
 				return true;
 			else
@@ -270,10 +265,8 @@ int	Channel::find_user_in_channel(std::string nickname)
 {
 	for (size_t i = 0; i < _perm.size(); i++)
 	{
-		out(i)
 		if (nickname == _perm[i].user_nickname)
 			return(i);
-		out(_perm[i].user_nickname)
 	}
 	return(-1);
 }
@@ -307,10 +300,13 @@ int	Channel::add_new_user(User& user, std::string used_password)// user& , retur
 		{
 			return (rpl_ERR_BADCHANNELKEY);
 		}
+		if (this->_settings.userLimit <= this->_perm.size())
+		{
+			return (471);
+		}
 		this->join(user);
 		return (rpl_default);
 	}
-	out("user not found")
 	return (-1);
 }
 
@@ -330,22 +326,21 @@ bool	Channel::isAllowedToSpeak(std::string nickname){
 
 void	Channel::send_to_all(std::string msg)
 {
-	out("\e[31m" + msg + "\e[0m")
-	out(_perm.size())
+	std::cout << "\e[31m" << msg << "\e[0m" <<std::endl;
 
 	for (size_t i = 0; i < _perm.size(); i++){
-		out(_perm[i].user_id)
 		send(_perm[i].user_id, msg.c_str(), msg.size(), SEND_FLAGS);
 	}
 }
 
 void	Channel::send_to_not_all(std::string msg, int not_this_fd)
 {
-	out("\e[31m" + msg + "\e[0m")
+	std::cout << "\e[31m" << msg << "\e[0m" <<std::endl;
 	for (size_t i = 0; i < _perm.size(); i++)
 	{
-		if (_perm[i].user_id != not_this_fd)
+		if (_perm[i].user_id != not_this_fd){
 			send(_perm[i].user_id, msg.c_str(), msg.size(), SEND_FLAGS);
+		}
 	}
 }
 
@@ -353,7 +348,6 @@ std::string	Channel::get_user_list( void )
 {
 	std::string list;
 
-	out(_perm.size())
 	for (size_t i = 0; i < _perm.size(); i++)
 	{
 		if (i != 0)

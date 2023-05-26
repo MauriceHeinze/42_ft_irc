@@ -66,14 +66,13 @@ void Server::Command_USER(TranslateBNF msg ,int user_id)
  void Server::use_old_channel(int channel_id, int user_id, std::string channel_password)
 {
 	//joining inside our channel class
-	out("use old")
 	int rpl_msg = _channels[channel_id].add_new_user(_users[user_id], channel_password);
 	// for reply
 	if (rpl_msg == rpl_ERR_BADCHANNELKEY)
 		this->send_msg(ERR_BADCHANNELKEY(_users[user_id].getNickname(), _channels[channel_id].getName()), user_id);
-	else if (_channels[channel_id]._settings.userLimit == _channels[channel_id].getPerms().size())
+	else if (rpl_msg == 471)
 		this->send_msg(ERR_CHANNELISFULL(_users[user_id].getNickname(), _channels[channel_id].getName()), user_id);
-	else if (rpl_msg == rpl_ERR_INVITEONLYCHAN && !_channels[channel_id].isInvited(_users[user_id].getNickname()))
+	else if (rpl_msg == rpl_ERR_INVITEONLYCHAN && !(_channels[channel_id].isInvited(_users[user_id].getNickname())))
 		this->send_msg(ERR_INVITEONLYCHAN(_users[user_id].getNickname(), _channels[channel_id].getName()), user_id);
 	else if (rpl_msg == rpl_default)
 	{
@@ -112,7 +111,6 @@ void Server::Command_JOIN(TranslateBNF msg ,int user_id)
 		channel_password = "";
 	//looks if the channel already is created
 	int channel_id = this->find_Channel(channel);
-	out(channel_id)
 	if (channel_id != -1)
 	{
 		use_old_channel(channel_id, user_id, channel_password);
@@ -126,12 +124,9 @@ void Server::Command_JOIN(TranslateBNF msg ,int user_id)
 
 void Server::Command_WHO(TranslateBNF msg, int user_id)
 {
-	out("send who")
 	if (msg.getter_params().size() > 0)
 	{
 		std::string channelName = msg.getter_params()[0].trailing_or_middle;
-		out(channelName)
-		out(find_Channel(channelName))
 		if (find_Channel(channelName) != -1)
 		{
 			send_msg(RPL_WHOREPLY(_users[user_id].getNickname(), channelName, "kvirc", "127.0.0.1", "blublub", _users[user_id].getNickname(),"0" , "lgollong"), user_id);
@@ -160,11 +155,15 @@ void Server::Command_KICK(TranslateBNF msg,int user_id)
 			if (msg.getter_params().size() == 2){
 				_channels[channelIndex].send_to_all(":" + nickname + " KICK " + channelName + " " + kickNick + "\r\n");
 				_channels[channelIndex].leave_user(&_users[find_User(_users,kickNick)]);
+				if (_channels[channelIndex].getPerms().size() == 0)
+					delete_channel(channelIndex);
 			}
-			else if (msg.getter_params().size() == 3){
-				std::string reason = msg.getter_params()[2].trailing_or_middle;
+			else if (msg.getter_params().size() >= 2){
+				std::string reason = msg.get_all_params(2);
 				_channels[channelIndex].send_to_all(":" + nickname + " KICK " + channelName + " " + kickNick + " :" + reason + "\r\n");
 				_channels[channelIndex].leave_user(&_users[find_User(_users,kickNick)]);
+				if (_channels[channelIndex].getPerms().size() == 0)
+					delete_channel(channelIndex);
 			}
 		}
 		else
@@ -255,11 +254,15 @@ void	Server::Command_PART(TranslateBNF msg, int user_id)
 		else if (msg.getter_params().size() == 1){
 			_channels[channelIndex].send_to_all(":" + nickname + " PART " + channelName + "\r\n");
 			_channels[channelIndex].leave_user(&_users[user_id]);
+			if (_channels[channelIndex].getPerms().size() == 0)
+				delete_channel(channelIndex);
 		}
-		else if (msg.getter_params().size() == 2){
-			std::string reason = msg.getter_params()[1].trailing_or_middle;
+		else if (msg.getter_params().size() >= 2){
+			std::string reason = msg.get_all_params(1);
 			_channels[channelIndex].send_to_all(":" + nickname + " PART " + channelName + " :" + reason + "\r\n");
 			_channels[channelIndex].leave_user(&_users[user_id]);
+			if (_channels[channelIndex].getPerms().size() == 0)
+				delete_channel(channelIndex);
 		}
 	}
 	else
@@ -267,18 +270,21 @@ void	Server::Command_PART(TranslateBNF msg, int user_id)
 }
 
 #define PRIVTMSG(nickname,target,message) ":" + nickname + " PRIVMSG " + target + " :" + message + "\r\n"
-void	Server::Command_P_MSG(TranslateBNF msg, int user_id)
+void	Server::Command_P_MSG(TranslateBNF msg, int user_id, int user_fd)
 {
 	if (msg.getter_params().size() > 0)
 	{
 		std::string	target = msg.getter_params()[0].trailing_or_middle;
 		if (msg.getter_params()[0].trailing_or_middle[0] == '#'){
-			int i = this->find_Channel(target);
-			if (i == -1)
+			int channel_index = this->find_Channel(target);
+			if (channel_index == -1)
 				this->send_msg(ERR_NOSUCHCHANNEL(_users[user_id].getNickname(),target),user_id);
 			else
 			{
-				this->_channels[i].send_to_not_all(" ",user_id);
+				if (_channels[channel_index].find_user_in_channel(_users[user_id].getNickname()) != -1)
+					this->_channels[channel_index].send_to_not_all(PRIVTMSG(_users[user_id].getNickname(),msg.getter_params()[0].trailing_or_middle,msg.get_all_params(1)), user_fd);
+				else
+					send_msg(ERR_NOTONCHANNEL(_users[user_id].getNickname(),target),user_id);
 			}
 		}
 		else
@@ -291,6 +297,7 @@ void	Server::Command_P_MSG(TranslateBNF msg, int user_id)
 			else
 			{
 				send_msg(PRIVTMSG(_users[user_id].getNickname(),msg.getter_params()[0].trailing_or_middle,msg.get_all_params(1)), target_user);
+				send_msg(PRIVTMSG(_users[user_id].getNickname(),msg.getter_params()[0].trailing_or_middle,msg.get_all_params(1)), user_id);
 				//send_msg(PRIVTMSG(_users[target_user].getNickname(),msg.getter_params()[0].trailing_or_middle,msg.get_all_params(1) + (std::string)"test" ), user_id);
 			}
 		}
@@ -379,7 +386,7 @@ void	Server::Command_MODE(TranslateBNF msg, int user_id)
 			if (currentChannel->isAdmin(nickname))
 			{
 				if (flags[i] == 'i') // i: Set/remove Invite-only channelkl ,
-					currentChannel->_settings.privateChannel = setting;
+					currentChannel->_settings.inviteOnly = setting;
 				else if (flags[i] == 't') // t: Set/remove the restrictions of the TOPIC command to channel operators
 					currentChannel->_settings.topicOperatorOnly = setting;
 				else if (flags[i] == 'k') // k: Set/remove the channel key (password)
@@ -407,6 +414,7 @@ void	Server::Command_MODE(TranslateBNF msg, int user_id)
 				}
 				else if (flags[i] == 'l') // l: Set/remove the user limit to channel
 				{
+					std::cout << "old limit: " << currentChannel->_settings.userLimit << std::endl;
 					if (setting == false)
 						currentChannel->_settings.userLimit = INT_MAX;
 					else
@@ -417,6 +425,7 @@ void	Server::Command_MODE(TranslateBNF msg, int user_id)
 							currentChannel->_settings.userLimit = INT_MAX; }
 						k++;
 					}
+					std::cout << "new limit: " << currentChannel->_settings.userLimit << std::endl;
 				}
 				else if (flags[i] == 'b') // just for KVIRC
 					(void)flags[i];
@@ -449,9 +458,7 @@ void Server::Command_INVITE(TranslateBNF msg, int user_id)
 		std::string channelName = msg.getter_params()[1].trailing_or_middle;
 		int channel = find_Channel(channelName);
 		std::string invNick = msg.getter_params()[0].trailing_or_middle;
-		out(invNick)
 		int user = find_User(_users, invNick);
-		out(user);
 		if (user != -1){
 			if (_channels[channel].isInvited(invNick)){
 				send_msg(ERR_USERONCHANNEL(invNick, channelName), user_id);
