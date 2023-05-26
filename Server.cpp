@@ -233,9 +233,14 @@ void	Server::parsing(std::string buffer, int user_id, int user_fd)
 void Server::recvMsg(size_t user_id)
 {
 	char buffer[1024];
-	int valread;
+	int valread = -2;
 	memset(buffer, 0, 1024); //set the buffer to 0
-	valread = recv(_fds[user_id].fd, buffer, 1024, 0);
+	while (valread == -2 || !strstr(buffer, "\n"))
+	{
+		valread = recv(_fds[user_id].fd, buffer, 1024, 0);
+		if (valread <= 0)
+			break ;
+	}
 	if (valread == 0)// check for error 
 	{
 		std::cout << "Connection Closed " << user_id << std::endl;
