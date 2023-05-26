@@ -73,10 +73,8 @@ void Server::Command_USER(TranslateBNF msg ,int user_id)
 		this->send_msg(ERR_BADCHANNELKEY(_users[user_id].getNickname(), _channels[channel_id].getName()), user_id);
 	else if (rpl_msg == 471)
 		this->send_msg(ERR_CHANNELISFULL(_users[user_id].getNickname(), _channels[channel_id].getName()), user_id);
-	else if (rpl_msg == rpl_ERR_INVITEONLYCHAN && !(_channels[channel_id].isInvited(_users[user_id].getNickname()))){
-		out("scheisse");
+	else if (rpl_msg == rpl_ERR_INVITEONLYCHAN && !(_channels[channel_id].isInvited(_users[user_id].getNickname())))
 		this->send_msg(ERR_INVITEONLYCHAN(_users[user_id].getNickname(), _channels[channel_id].getName()), user_id);
-	}
 	else if (rpl_msg == rpl_default)
 	{
 		this->_channels[channel_id].send_to_all(RPL_JOIN(_users[user_id].getNickname(), _channels[channel_id].getName()));
@@ -283,7 +281,7 @@ void	Server::Command_PART(TranslateBNF msg, int user_id)
 }
 
 #define PRIVTMSG(nickname,target,message) ":" + nickname + " PRIVMSG " + target + " :" + message + "\r\n"
-void	Server::Command_P_MSG(TranslateBNF msg, int user_id)
+void	Server::Command_P_MSG(TranslateBNF msg, int user_id, int user_fd)
 {
 	if (msg.getter_params().size() > 0)
 	{
@@ -294,7 +292,7 @@ void	Server::Command_P_MSG(TranslateBNF msg, int user_id)
 				this->send_msg(ERR_NOSUCHCHANNEL(_users[user_id].getNickname(),target),user_id);
 			else
 			{
-				this->_channels[i].send_to_not_all(PRIVTMSG(_users[user_id].getNickname(),msg.getter_params()[0].trailing_or_middle,msg.get_all_params(1)), user_id);
+				this->_channels[i].send_to_not_all(PRIVTMSG(_users[user_id].getNickname(),msg.getter_params()[0].trailing_or_middle,msg.get_all_params(1)), user_fd);
 			}
 		}
 		else

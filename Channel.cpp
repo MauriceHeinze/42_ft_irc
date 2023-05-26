@@ -345,11 +345,14 @@ void	Channel::send_to_all(std::string msg)
 
 void	Channel::send_to_not_all(std::string msg, int not_this_fd)
 {
-	out("\e[31m" + msg + "\e[0m")
+	out("\e[31m" + msg + "\e[0m");
 	for (size_t i = 0; i < _perm.size(); i++)
 	{
-		if (_perm[i].user_id != not_this_fd)
+		out(_perm[i].user_id << " --- " << not_this_fd)
+		if (_perm[i].user_id != not_this_fd){
+			out("got it -------")
 			send(_perm[i].user_id, msg.c_str(), msg.size(), SEND_FLAGS);
+		}
 	}
 }
 

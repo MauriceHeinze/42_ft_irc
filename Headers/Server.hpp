@@ -78,13 +78,14 @@ class Server
 		void	Command_NICK( TranslateBNF msg, int user_id );
 		void	Command_PART( TranslateBNF msg, int user_id );
 		void	Command_MODE( TranslateBNF msg, int user_id );
-		void	Command_P_MSG(TranslateBNF msg, int user_id);
+		// void	Command_P_MSG(TranslateBNF msg, int user_id);
+		void	Command_P_MSG(TranslateBNF msg, int user_id, int user_fd);
 		void	Command_PING( TranslateBNF msg, int user_id);
 		void	Command_CAP(  TranslateBNF msg, int user_id);
 		void	Command_INVITE(TranslateBNF msg, int user_id);
 		void	send_WELCOME(int user_id);
 		void	send_msg(std::string msg, int user_id);
-		void	parsing( std::string msg, int user_id);
+		void	parsing( std::string msg, int user_id, int user_fd);
 		int	_socket;
 		int	_port;
 		std::string _password;

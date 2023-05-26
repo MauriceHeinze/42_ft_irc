@@ -151,7 +151,7 @@ void	Server::send_WELCOME(int user_id)
 }
 
 
-void	Server::parsing(std::string buffer, int user_id)
+void	Server::parsing(std::string buffer, int user_id, int user_fd)
 {
  	TranslateBNF msg(buffer);
 
@@ -211,7 +211,7 @@ void	Server::parsing(std::string buffer, int user_id)
 	}
 	else if (msg.getter_command() == "PRIVMSG")
 	{
-		Command_P_MSG(msg, user_id);
+		Command_P_MSG(msg, user_id, user_fd);
 	}
 	else if (msg.getter_command() == "INVITE")
 	{
@@ -247,7 +247,7 @@ void Server::recvMsg(size_t user_id)
 		std::string command= this->_users[user_id].get_next_command();
 		if (command[0] == 0)
 			break;
-		parsing(command, user_id);
+		parsing(command, user_id, _users[user_id]._fd);
 	}
 	_fds[user_id].revents = 0;
 	_fds[user_id].events = POLLIN;
