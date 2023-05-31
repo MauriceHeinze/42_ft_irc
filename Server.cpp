@@ -172,7 +172,7 @@ void	Server::parsing(std::string buffer, int user_id, int user_fd)
 	}
 	else if (this->_users[user_id]._valid_password == false || this->_users[user_id]._valid_nickname == false || this->_users[user_id]._valid_username == false)
 	{
-		this->send_msg("Pass username or nickname incorrect\r\n",user_id);
+		this->send_msg(ERR_NOTREGISTERED,user_id);
 		return ;
 	}
 	else if (msg.getter_command() == "JOIN")
