@@ -181,33 +181,34 @@ void	Server::Command_TOPIC(TranslateBNF msg,int user_id)
 		if (channelName.find("#") == std::string::npos)
 			channelName = "#" + channelName;
 		int channelIndex = this->find_Channel(channelName);
+		if (channelIndex == -1){
+			this->send_msg(ERR_NOSUCHCHANNEL(nickname, channelName), user_id);
+			return ;
+		}
 		Channel	*currentChannel = &this->_channels[channelIndex];
 		int userExists = currentChannel->find_user_in_channel(nickname);
 		std::string topic = msg.getter_params()[1].trailing_or_middle;
-		if (userExists == -1)
+		if (userExists == -1){
 			this->send_msg(ERR_NOTONCHANNEL(nickname, channelName), user_id);
-		else if (channelIndex != -1 && userExists > -1)
+			return ;
+		}
+		if (topic.length() == 0)
 		{
-			if (topic.length() == 0)
+			if (currentChannel->getTopic().length() > 0)
+				this->send_msg(RPL_TOPIC(nickname, channelName, currentChannel->getTopic()), user_id);
+			else
+				this->send_msg(RPL_NOTOPIC(nickname, channelName), user_id);
+		}
+		else
+		{
+			if (currentChannel->isAdmin(nickname) || currentChannel->_settings.topicOperatorOnly == false)
 			{
-				if (currentChannel->getTopic().length() > 0)
-					this->send_msg(RPL_TOPIC(nickname, channelName, currentChannel->getTopic()), user_id);
-				else
-					this->send_msg(RPL_NOTOPIC(nickname, channelName), user_id);
+				currentChannel->setTopic(nickname, topic);
+				this->send_msg(RPL_TOPIC(nickname, channelName, currentChannel->getTopic()), user_id);
 			}
 			else
-			{
-				if (currentChannel->isAdmin(nickname) || currentChannel->_settings.topicOperatorOnly == false)
-				{
-					currentChannel->setTopic(nickname, topic);
-					this->send_msg(RPL_TOPIC(nickname, channelName, currentChannel->getTopic()), user_id);
-				}
-				else
-					this->send_msg(ERR_CHANOPRIVSNEEDED(nickname, channelName), user_id);
-			}
+				this->send_msg(ERR_CHANOPRIVSNEEDED(nickname, channelName), user_id);
 		}
-		else if (channelIndex == -1)
-			this->send_msg(ERR_NOSUCHCHANNEL(nickname, channelName), user_id);
 	}
 	else
 		this->send_msg(ERR_NEEDMOREPARAMS(nickname, "TOPIC"), user_id);
@@ -319,7 +320,6 @@ void	Server::Command_PING(TranslateBNF msg, int user_id)
 void	Server::Command_CAP(TranslateBNF msg, int user_id)
 {
 	(void)msg;
-	std::cout << "Cap send" << std::endl;
 	if (msg.get_all_params(0) == "LS")
 		send_msg(":irc.unknown.net CAP * LS :\r\n", user_id);
 }
@@ -337,14 +337,11 @@ void	Server::Command_MODE(TranslateBNF msg, int user_id)
 	int			argumentsNeeded;
 	int			k = 2;
 
-	std::cout << ">>>>>>>> number of args: " << msg.getter_params().size() << std::endl;
 	// check if enough params are available
 	if (msg.getter_params().size() == 1) // you should return current settings at this point
 	{
-		std::cout << "JUST MODE" << std::endl;
 		if (channelIndex != -1)
 		{
-			std::cout << "Channel exists" << std::endl;
 			currentChannel->send_to_all(RPL_CHANNELMODEIS(nickname, channelName, currentChannel->getSettings()));
 		}
 		else
@@ -390,7 +387,6 @@ void	Server::Command_MODE(TranslateBNF msg, int user_id)
 					currentChannel->_settings.topicOperatorOnly = setting;
 				else if (flags[i] == 'k') // k: Set/remove the channel key (password)
 				{
-					std::cout << "// k: Set password to " << argument << std::endl;
 					if (setting == true)
 					{
 						currentChannel->_settings.password = argument;
@@ -401,7 +397,6 @@ void	Server::Command_MODE(TranslateBNF msg, int user_id)
 				}
 				else if (flags[i] == 'o') // o: Give/take channel operator privilege
 				{
-					std::cout << "// o: Give/take channel operator privilege to: " << argument << std::endl;
 					if (this->_channels[channelIndex].userExists(argument))
 						currentChannel->oper(argument);
 					else
@@ -413,7 +408,6 @@ void	Server::Command_MODE(TranslateBNF msg, int user_id)
 				}
 				else if (flags[i] == 'l') // l: Set/remove the user limit to channel
 				{
-					std::cout << "old limit: " << currentChannel->_settings.userLimit << std::endl;
 					if (setting == false)
 						currentChannel->_settings.userLimit = INT_MAX;
 					else
@@ -424,7 +418,6 @@ void	Server::Command_MODE(TranslateBNF msg, int user_id)
 							currentChannel->_settings.userLimit = INT_MAX; }
 						k++;
 					}
-					std::cout << "new limit: " << currentChannel->_settings.userLimit << std::endl;
 				}
 				else if (flags[i] == 'b') // just for KVIRC
 					(void)flags[i];
