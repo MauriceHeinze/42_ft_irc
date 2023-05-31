@@ -222,13 +222,15 @@ void	Server::Command_NICK(TranslateBNF msg, int user_id)
 		int index = find_User(_users, new_nickname);
 		if (index == -1)
 		{
-			_users[user_id].setNickname(new_nickname);
 			if (_users[user_id]._valid_nickname == true)
 			{
 				update_channel_nickname(new_nickname, user_id);
 				// this->c
 			}
-			send_msg(":" + _users[user_id].getNickname() + " NICK :" + new_nickname + "\r\n", user_id);
+			for (size_t i = 0; i < _users.size(); i++){
+				send_msg(":" + _users[user_id].getNickname() + " NICK :" + new_nickname + "\r\n", i);
+			}
+			_users[user_id].setNickname(new_nickname);
 			_users[user_id]._valid_nickname = true;
 		}
 		else
@@ -455,6 +457,10 @@ void Server::Command_INVITE(TranslateBNF msg, int user_id)
 	{
 		std::string channelName = msg.getter_params()[1].trailing_or_middle;
 		int channel = find_Channel(channelName);
+		if (channel == -1){
+			send_msg(ERR_NOSUCHCHANNEL(nickname, channelName), user_id);
+			return ;
+		}
 		std::string invNick = msg.getter_params()[0].trailing_or_middle;
 		int user = find_User(_users, invNick);
 		if (user != -1){

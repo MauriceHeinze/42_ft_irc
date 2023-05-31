@@ -91,7 +91,7 @@ void	Channel::part(std::string nickname)
 			return ;
 		}
 	}
-	throw("User not found in this channel");
+	// throw("User not found in this channel");
 }
 
 
@@ -132,7 +132,7 @@ void	Channel::kick(std::string nickname)
 			return ;
 		}
 	}
-	throw("User to kick not found in this channel");
+	// throw("User to kick not found in this channel");
 }
 
 void	Channel::oper(std::string nickname)
@@ -147,7 +147,7 @@ void	Channel::oper(std::string nickname)
 			return ;
 		}
 	}
-	throw("User to promote not found in this channel");
+	// throw("User to promote not found in this channel");
 }
 
 void	Channel::invite(std::string nickname)
@@ -157,7 +157,7 @@ void	Channel::invite(std::string nickname)
 	{
 		if (_perm[i].user_nickname == nickname)
 		{
-			throw("User is already member of channel");
+			// throw("User is already member of channel");
 			return ;
 		}
 	}
@@ -166,7 +166,7 @@ void	Channel::invite(std::string nickname)
 	{
 		if (_invited[i] == nickname)
 		{
-			throw("User already invited");
+			// throw("User already invited");
 			return ;
 		}
 	}
