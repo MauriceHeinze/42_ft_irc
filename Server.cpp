@@ -92,13 +92,10 @@ void Server::startServer(){
 			{
 				if (i == 0)
 				{
-					out("acceptConnection")
 					acceptConnection();
-					out("END")
 				}
 				else
 				{
-					out("recvMsg")
 					recvMsg(i);
 				}
 			}
@@ -153,7 +150,6 @@ void	Server::parsing(std::string buffer, int user_id, int user_fd)
 {
  	TranslateBNF msg(buffer);
 
-	// send_WELCOME(user_id);
 	if (msg.getter_command() == "CAP")
 	{
 		Command_CAP(msg, user_id);
@@ -177,7 +173,6 @@ void	Server::parsing(std::string buffer, int user_id, int user_fd)
 	else if (this->_users[user_id]._valid_password == false || this->_users[user_id]._valid_nickname == false || this->_users[user_id]._valid_username == false)
 	{
 		this->send_msg("Pass username or nickname incorrect\r\n",user_id);
-		//maybe more info what is missing 
 		return ;
 	}
 	else if (msg.getter_command() == "JOIN")

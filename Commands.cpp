@@ -84,7 +84,6 @@ void Server::Command_USER(TranslateBNF msg ,int user_id)
 		return;
 	else
 	{
-		out("error missing !!!!(use_old_channel)")
 		return;
 	}
 }
@@ -297,8 +296,6 @@ void	Server::Command_P_MSG(TranslateBNF msg, int user_id, int user_fd)
 			else
 			{
 				send_msg(PRIVTMSG(_users[user_id].getNickname(),msg.getter_params()[0].trailing_or_middle,msg.get_all_params(1)), target_user);
-				send_msg(PRIVTMSG(_users[user_id].getNickname(),msg.getter_params()[0].trailing_or_middle,msg.get_all_params(1)), user_id);
-				//send_msg(PRIVTMSG(_users[target_user].getNickname(),msg.getter_params()[0].trailing_or_middle,msg.get_all_params(1) + (std::string)"test" ), user_id);
 			}
 		}
 	}
