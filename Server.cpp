@@ -7,7 +7,6 @@
 #define SEND_FLAGS 0
 #define LAST_USER 0
 
-
 void	Server::send_msg(std::string msg,int user_id)
 {
 	std::cout << "\e[31m" + msg + "\e[0m" << std::endl;

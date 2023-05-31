@@ -181,33 +181,34 @@ void	Server::Command_TOPIC(TranslateBNF msg,int user_id)
 		if (channelName.find("#") == std::string::npos)
 			channelName = "#" + channelName;
 		int channelIndex = this->find_Channel(channelName);
+		if (channelIndex == -1){
+			this->send_msg(ERR_NOSUCHCHANNEL(nickname, channelName), user_id);
+			return ;
+		}
 		Channel	*currentChannel = &this->_channels[channelIndex];
 		int userExists = currentChannel->find_user_in_channel(nickname);
 		std::string topic = msg.getter_params()[1].trailing_or_middle;
-		if (userExists == -1)
+		if (userExists == -1){
 			this->send_msg(ERR_NOTONCHANNEL(nickname, channelName), user_id);
-		else if (channelIndex != -1 && userExists > -1)
+			return ;
+		}
+		if (topic.length() == 0)
 		{
-			if (topic.length() == 0)
+			if (currentChannel->getTopic().length() > 0)
+				this->send_msg(RPL_TOPIC(nickname, channelName, currentChannel->getTopic()), user_id);
+			else
+				this->send_msg(RPL_NOTOPIC(nickname, channelName), user_id);
+		}
+		else
+		{
+			if (currentChannel->isAdmin(nickname) || currentChannel->_settings.topicOperatorOnly == false)
 			{
-				if (currentChannel->getTopic().length() > 0)
-					this->send_msg(RPL_TOPIC(nickname, channelName, currentChannel->getTopic()), user_id);
-				else
-					this->send_msg(RPL_NOTOPIC(nickname, channelName), user_id);
+				currentChannel->setTopic(nickname, topic);
+				this->send_msg(RPL_TOPIC(nickname, channelName, currentChannel->getTopic()), user_id);
 			}
 			else
-			{
-				if (currentChannel->isAdmin(nickname) || currentChannel->_settings.topicOperatorOnly == false)
-				{
-					currentChannel->setTopic(nickname, topic);
-					this->send_msg(RPL_TOPIC(nickname, channelName, currentChannel->getTopic()), user_id);
-				}
-				else
-					this->send_msg(ERR_CHANOPRIVSNEEDED(nickname, channelName), user_id);
-			}
+				this->send_msg(ERR_CHANOPRIVSNEEDED(nickname, channelName), user_id);
 		}
-		else if (channelIndex == -1)
-			this->send_msg(ERR_NOSUCHCHANNEL(nickname, channelName), user_id);
 	}
 	else
 		this->send_msg(ERR_NEEDMOREPARAMS(nickname, "TOPIC"), user_id);
